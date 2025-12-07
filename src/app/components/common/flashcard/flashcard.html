@@ -1,0 +1,14 @@
+<div class="flashcard-container" (click)="flip()">
+  <div class="flashcard" [class.flipped]="isFlipped()">
+    <div class="flashcard-face flashcard-front">
+      <div class="card-label">Term</div>
+      <div class="card-content">{{ vocabulary.term }}</div>
+      <div class="flip-hint">Click to flip</div>
+    </div>
+    <div class="flashcard-face flashcard-back">
+      <div class="card-label">Definition</div>
+      <div class="card-content">{{ vocabulary.definition }}</div>
+      <div class="flip-hint">Click to flip</div>
+    </div>
+  </div>
+</div>

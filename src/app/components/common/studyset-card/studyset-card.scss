@@ -1,0 +1,102 @@
+.studyset-card {
+  background: linear-gradient(135deg, #2a4d7a 0%, #1e3a5f 100%);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid #4a6782;
+  height: 100%;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+    background: #45657f;
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin: 0;
+      color: #ffffff;
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      line-height: 1.4;
+      max-height: 3.5rem;
+      word-break: break-word;
+    }
+
+    .mode-badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+
+      &.public {
+        background: #e3f2fd;
+        color: #1976d2;
+      }
+
+      &.private {
+        background: #fce4ec;
+        color: #c2185b;
+      }
+    }
+  }
+
+  .card-body {
+    margin-top: auto;
+
+    .terms-count {
+      font-size: 0.875rem;
+      color: #b8c5d0;
+      margin: 0 0 1rem 0;
+    }
+
+    .author-info {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      .author-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: #2d4456;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #b8c5d0;
+      }
+
+      .author-name {
+        font-size: 0.875rem;
+        color: #d1dce5;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .studyset-card {
+    padding: 1rem;
+
+    .card-header .card-title {
+      font-size: 1.1rem;
+    }
+  }
+}

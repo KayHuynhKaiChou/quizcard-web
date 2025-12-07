@@ -1,0 +1,45 @@
+.main-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: #1a2e3f;
+}
+
+.main-content-wrapper {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.main-content {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+  background: #1a2e3f;
+
+  // Scrollbar styling
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+  }
+}
+
+// Mobile responsive styles
+@media (max-width: 768px) {
+  .main-content {
+    padding: 1rem;
+  }
+}
+

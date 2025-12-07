@@ -1,0 +1,25 @@
+<form 
+    class="bl_signin_form"
+    [formGroup]="form" 
+    (ngSubmit)="signin()"
+>
+    <div class="bl_input_group">
+        <label>Tên đăng nhập</label>
+        <input type="text" formControlName="username" placeholder="Nhập tên đăng nhập" pInputText [invalid]="form.get('username')?.dirty && form.get('username')?.invalid"/>
+        @if (form.get('username')?.dirty && form.get('username')?.hasError('required')) {
+            <p-message severity="error" size="small" variant="simple">Username is required.</p-message>
+        }
+    </div>
+    <div class="bl_input_group">
+        <label>Mật khẩu</label>
+        <p-password formControlName="password" placeholder="Nhập mật khẩu" [feedback]="false" [toggleMask]="true" [invalid]="form.get('password')?.dirty && form.get('password')?.invalid"/>
+        @if (form.get('password')?.dirty && form.get('password')?.hasError('required')) {
+            <p-message severity="error" size="small" variant="simple">Password is required.</p-message>
+        }
+    </div>
+    <button 
+        pButton 
+        type="submit" 
+        label="Đăng nhập"
+    ></button>
+</form>

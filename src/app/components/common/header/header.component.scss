@@ -1,0 +1,294 @@
+.header {
+  background: linear-gradient(135deg, #1e3a5f 0%, #2a4d7a 100%);
+  padding: 0.75rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex: 0 0 auto;
+
+    .menu-button {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 8px;
+      transition: background-color 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      .logo-letter {
+        font-size: 22px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+  }
+
+  .header-center {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    max-width: 600px;
+    margin: 0 2rem;
+
+    .search-container {
+      position: relative;
+      width: 100%;
+      max-width: 500px;
+
+      .search-input {
+        width: 100%;
+        padding: 0.75rem 1rem 0.75rem 2.75rem;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 24px;
+        color: white;
+        font-size: 0.95rem;
+        transition: all 0.2s;
+
+        &::placeholder {
+          color: rgba(255, 255, 255, 0.6);
+        }
+
+        &:focus {
+          outline: none;
+          background: rgba(255, 255, 255, 0.15);
+          border-color: rgba(255, 255, 255, 0.3);
+        }
+      }
+
+      .search-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 1rem;
+      }
+    }
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex: 0 0 auto;
+    position: relative;
+
+    .action-button {
+      border: none;
+      padding: 0.625rem 1rem;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      &.create-button {
+        background: rgba(66, 133, 244, 0.2);
+        color: white;
+        width: 44px;
+        height: 44px;
+        padding: 0;
+        justify-content: center;
+        border-radius: 50%;
+        font-size: 1.25rem;
+
+        &:hover {
+          background: rgba(66, 133, 244, 0.3);
+        }
+      }
+
+      &.upgrade-button {
+        background: #ffc107;
+        color: #1e3a5f;
+        padding: 0.75rem 1.25rem;
+        white-space: nowrap;
+
+        &:hover {
+          background: #ffd54f;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 8px rgba(255, 193, 7, 0.3);
+        }
+      }
+    }
+
+    .profile-container {
+      cursor: pointer;
+      border-radius: 50%;
+      overflow: hidden;
+      transition: all 0.2s;
+      border: 2px solid transparent;
+
+      &:hover {
+        border-color: rgba(255, 255, 255, 0.3);
+        transform: scale(1.05);
+      }
+
+      .profile-avatar {
+        width: 40px;
+        height: 40px;
+        object-fit: cover;
+        display: block;
+      }
+    }
+
+    // Profile Dropdown
+    .profile-dropdown {
+      position: absolute;
+      top: calc(100% + 0.5rem);
+      right: 0;
+      background: linear-gradient(180deg, #2a4d7a 0%, #1e3a5f 100%);
+      border-radius: 12px;
+      min-width: 280px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      z-index: 1000;
+      overflow: hidden;
+
+      .dropdown-header {
+        display: flex;
+        align-items: center;
+        padding: 1rem 1.5rem;
+        gap: 1rem;
+
+        .dropdown-avatar {
+          width: 56px;
+          height: 56px;
+          border-radius: 50%;
+          object-fit: cover;
+          flex-shrink: 0;
+        }
+
+        .dropdown-user-info {
+          flex: 1;
+          min-width: 0;
+
+          .username {
+            font-weight: 600;
+            color: white;
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          .fullname {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.875rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+      }
+
+      .dropdown-separator {
+        height: 1px;
+        background: rgba(255, 255, 255, 0.1);
+        margin: 0.5rem 0;
+      }
+
+      .dropdown-menu {
+        padding: 0.5rem 0;
+
+        .menu-item {
+          display: flex;
+          align-items: center;
+          padding: 0.75rem 1.5rem;
+          cursor: pointer;
+          color: white;
+          font-size: 0.9375rem;
+          transition: background-color 0.2s;
+
+          &:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+          }
+
+          &.logout {
+            color: #ff6b6b;
+
+            .menu-icon {
+              color: #ff6b6b;
+            }
+          }
+
+          .menu-icon {
+            margin-right: 0.75rem;
+            font-size: 1.125rem;
+            display: flex;
+            align-items: center;
+          }
+        }
+      }
+    }
+  }
+
+  .dropdown-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: transparent;
+    z-index: 999;
+  }
+}
+
+// Mobile responsive styles
+@media (max-width: 768px) {
+  .header {
+    padding: 0.75rem 1rem;
+
+    .header-center {
+      margin: 0 1rem;
+
+      .search-container {
+        .search-input {
+          font-size: 0.875rem;
+          padding: 0.625rem 1rem 0.625rem 2.5rem;
+        }
+      }
+    }
+
+    .header-right {
+      .action-button.upgrade-button {
+        display: none;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    .header-center {
+      display: none;
+    }
+  }
+}
+

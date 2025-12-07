@@ -1,0 +1,37 @@
+/* Overlay toàn màn hình */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.4); /* Màn hình tối mờ */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  color: white;
+  font-size: 1.2rem;
+  z-index: 10000;
+  animation: fadeIn 0.3s ease-in-out;
+  
+  p {
+    margin-top: 1rem;
+    font-weight: 500;
+  }
+}
+
+/* Animation fade in */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Customize PrimeNG ProgressSpinner */
+::ng-deep .p-progressspinner-circle {
+  stroke: #fff !important;
+}

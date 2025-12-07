@@ -1,0 +1,4 @@
+<div *ngIf="isLoading$ | async" class="loading-overlay">
+  <p-progressSpinner></p-progressSpinner>
+  <p>{{ message$ | async }}</p>
+</div>

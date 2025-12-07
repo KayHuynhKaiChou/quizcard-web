@@ -1,0 +1,74 @@
+<div class="studyset-detail-page" *ngIf="studySet$ | async as studySet">
+  <div class="detail-header">
+    <div class="header-content">
+      <button
+        pButton
+        icon="pi pi-arrow-left"
+        class="p-button-text"
+        [routerLink]="['/library']"
+        label="Back to Library">
+      </button>
+
+      <div class="header-info">
+        <h1>{{ studySet.title }}</h1>
+        <p class="author">By {{ studySet.author }}</p>
+        <p class="terms-count">{{ studySet.vocabularies.length }} terms</p>
+      </div>
+
+      <button
+        pButton
+        label="Start Quiz"
+        icon="pi pi-play"
+        class="p-button-success"
+        (click)="goToQuiz()">
+      </button>
+    </div>
+  </div>
+
+  <div class="flashcard-section">
+    <div class="progress-indicator">
+      <div class="progress-text">
+        {{ currentIndex() + 1 }} / {{ studySet.vocabularies.length }}
+      </div>
+      <div class="progress-bar-container">
+        <div
+          class="progress-bar-fill"
+          [style.width.%]="((currentIndex() + 1) / studySet.vocabularies.length) * 100">
+        </div>
+      </div>
+    </div>
+
+    <app-flashcard
+      *ngIf="studySet.vocabularies[currentIndex()]"
+      [vocabulary]="studySet.vocabularies[currentIndex()]">
+    </app-flashcard>
+
+    <div class="navigation-controls">
+      <button
+        pButton
+        icon="pi pi-chevron-left"
+        class="p-button-rounded p-button-outlined"
+        [disabled]="currentIndex() === 0"
+        (click)="previous()">
+      </button>
+
+      <div class="keyboard-hint">
+        <span><i class="pi pi-arrow-left"></i> / <i class="pi pi-arrow-right"></i> to navigate</span>
+        <span>Click card to flip</span>
+      </div>
+
+      <button
+        pButton
+        icon="pi pi-chevron-right"
+        class="p-button-rounded p-button-outlined"
+        [disabled]="currentIndex() === studySet.vocabularies.length - 1"
+        (click)="next()">
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="loading-container" *ngIf="!(studySet$ | async)">
+  <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+  <p>Loading study set...</p>
+</div>

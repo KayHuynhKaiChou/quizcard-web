@@ -1,0 +1,38 @@
+@use 'variables' as *;
+
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  gap: calc($padding-header-body / 2);
+}
+
+@mixin flex-column {
+  display: flex;
+  flex-direction: column;
+  gap: calc($padding-header-body / 2);
+}
+
+@mixin flex-column-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: calc($padding-header-body / 2);
+}
+
+@mixin msg-input-error {
+  color: $color-error-msg-input;
+  height: 24px;
+  margin-bottom: 4px;
+}
+
+@mixin border-error-msg {
+  border-color: $color-error-msg-input;
+  border-width: 2px;
+}
+
+@mixin grid-columns-repeat($columns: 3, $gap: $padding-header-body) {
+  display: grid;
+  grid-template-columns: repeat($columns, 1fr);
+  gap: $gap;
+}

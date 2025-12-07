@@ -1,0 +1,125 @@
+<div class="quiz-page">
+  <!-- Setup Screen -->
+  <div class="quiz-setup" *ngIf="quizState() === 'setup' && studySet">
+    <div class="setup-card">
+      <h1>Quiz Setup</h1>
+      <p class="subtitle">{{ studySet.title }}</p>
+
+      <div class="setup-content">
+        <div class="form-group">
+          <label>Number of Questions</label>
+          <div class="slider-container">
+            <p-slider
+              [(ngModel)]="questionCount"
+              [min]="10"
+              [max]="Math.min(40, studySet.vocabularies.length)"
+              [step]="5">
+            </p-slider>
+            <span class="slider-value">{{ questionCount() }}</span>
+          </div>
+        </div>
+
+        <div class="quiz-info">
+          <p><i class="pi pi-clock"></i> 20 seconds per question</p>
+          <p><i class="pi pi-book"></i> Multiple choice format</p>
+          <p><i class="pi pi-star"></i> Get instant feedback</p>
+        </div>
+
+        <div class="setup-actions">
+          <button pButton label="Back" icon="pi pi-arrow-left" class="p-button-text" (click)="backToDetail()"></button>
+          <button pButton label="Start Quiz" icon="pi pi-play" class="p-button-success" (click)="startQuiz()"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quiz Screen -->
+  <div class="quiz-screen" *ngIf="quizState() === 'quiz' && currentQuestion">
+    <div class="quiz-header">
+      <div class="progress-info">
+        <span>Question {{ currentQuestionIndex() + 1 }} / {{ questions.length }}</span>
+      </div>
+
+      <div class="timer">
+        <i class="pi pi-clock"></i>
+        <span [class.warning]="timeLeft() <= 5">{{ timeLeft() }}s</span>
+      </div>
+    </div>
+
+    <p-progressBar
+      [value]="timeProgress"
+      [showValue]="false"
+      [style]="{'height': '6px', 'margin-bottom': '2rem'}"
+      [styleClass]="timeLeft() <= 5 ? 'warning-bar' : ''">
+    </p-progressBar>
+
+    <div class="question-card">
+      <h2 class="question-text">{{ currentQuestion.vocabulary.term }}</h2>
+      <p class="question-hint">Select the correct definition:</p>
+
+      <div class="options-grid">
+        <button
+          *ngFor="let option of currentQuestion.options"
+          class="option-button"
+          [class.selected]="selectedAnswer() === option"
+          [class.correct]="isCorrectAnswer(option)"
+          [class.wrong]="isWrongAnswer(option)"
+          [disabled]="isAnswerSubmitted()"
+          (click)="selectAnswer(option)">
+          <span>{{ option }}</span>
+          <i *ngIf="isCorrectAnswer(option)" class="pi pi-check"></i>
+          <i *ngIf="isWrongAnswer(option)" class="pi pi-times"></i>
+        </button>
+      </div>
+
+      <div class="quiz-actions">
+        <button
+          pButton
+          label="Submit Answer"
+          class="p-button-lg"
+          [disabled]="!selectedAnswer() || isAnswerSubmitted()"
+          (click)="submitAnswer()">
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Result Screen -->
+  <div class="quiz-result" *ngIf="quizState() === 'result' && quizResult">
+    <div class="result-card">
+      <div class="result-header">
+        <i class="pi pi-check-circle" [class.high-score]="quizResult.score / quizResult.total >= 0.8"></i>
+        <h1>Quiz Complete!</h1>
+      </div>
+
+      <div class="result-stats">
+        <div class="stat-item">
+          <div class="stat-value">{{ quizResult.score }} / {{ quizResult.total }}</div>
+          <div class="stat-label">Score</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">{{ (quizResult.score / quizResult.total * 100).toFixed(0) }}%</div>
+          <div class="stat-label">Accuracy</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">{{ Math.floor(quizResult.timeTaken / 60) }}:{{ (quizResult.timeTaken % 60).toString().padStart(2, '0') }}</div>
+          <div class="stat-label">Time</div>
+        </div>
+      </div>
+
+      <div class="wrong-answers" *ngIf="quizResult.wrongAnswers.length > 0">
+        <h3>Review Wrong Answers</h3>
+        <div class="wrong-answer-item" *ngFor="let wrong of quizResult.wrongAnswers">
+          <p class="term">{{ wrong.question.term }}</p>
+          <p class="user-answer"><i class="pi pi-times"></i> Your answer: {{ wrong.userAnswer }}</p>
+          <p class="correct-answer"><i class="pi pi-check"></i> Correct answer: {{ wrong.correctAnswer }}</p>
+        </div>
+      </div>
+
+      <div class="result-actions">
+        <button pButton label="Back to Detail" icon="pi pi-arrow-left" class="p-button-outlined" (click)="backToDetail()"></button>
+        <button pButton label="Retry Quiz" icon="pi pi-refresh" class="p-button-success" (click)="retryQuiz()"></button>
+      </div>
+    </div>
+  </div>
+</div>

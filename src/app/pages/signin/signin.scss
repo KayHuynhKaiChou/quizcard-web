@@ -1,0 +1,101 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.bl_signin_form {
+  min-width: 400px;
+  width: 100%;
+  padding: 20px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  margin: 0 auto;
+
+  .bl_input_group {
+    margin-bottom: 24px;
+
+    label {
+      display: block;
+      font-weight: 500;
+      color: $color-text;
+      margin-bottom: 8px;
+    }
+
+    input[type="text"],
+    ::ng-deep .p-password input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid $color-border-infor;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      background-color: #fafafa;
+      color: #333;
+      
+      &::placeholder {
+        color: #999;
+      }
+
+      &:focus {
+        outline: none;
+        border-color: $main-color;
+        background-color: white;
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+      }
+
+      &:hover:not(:focus) {
+        border-color: darken($color-border-infor, 10%);
+      }
+    }
+
+    ::ng-deep .p-password {
+      width: 100%;
+
+      .p-inputtext {
+        width: 100%;
+      }
+
+      .p-password-toggle {
+        color: $main-color;
+        cursor: pointer;
+        transition: color 0.3s ease;
+        
+        &:hover {
+          color: darken($main-color, 10%);
+        }
+      }
+
+      .p-icon-wrapper {
+        right: 12px;
+      }
+    }
+
+    p-message {
+      margin-top: 6px;
+      display: block;
+    }
+  }
+
+  button[pButton] {
+    width: 100%;
+    padding: 14px;
+    background-color: $main-color;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 8px;
+
+    &:hover {
+      background-color: darken($main-color, 8%);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+}

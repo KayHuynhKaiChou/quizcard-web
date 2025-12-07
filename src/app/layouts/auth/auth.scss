@@ -1,0 +1,24 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.bl_auth{
+    display: flex;
+    height: 100%;
+
+    &__part {
+        flex: 50% 1;
+
+        &.bl_part_left {
+            background-image: url('https://assets.quizlet.com/_next/static/media/QZ_Auth_LightV2.d6b0ba3d.png');
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        &.bl_part_right {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    }
+}
