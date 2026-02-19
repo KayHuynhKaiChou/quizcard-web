@@ -1,4 +1,8 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
+import {
+  ApplicationConfig,
+  provideBrowserGlobalErrorListeners,
+  provideZonelessChangeDetection,
+} from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeuix/themes/aura';
@@ -8,33 +12,44 @@ import { provideAnimations, provideNoopAnimations } from '@angular/platform-brow
 import { MessageService } from 'primeng/api';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { authInterceptor } from './interceptors/auth.interceptor';
-import { provideStore, MetaReducer } from '@ngrx/store';
+import { provideStore } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
 import { provideRouterStore } from '@ngrx/router-store';
-import { authReducer } from './store/auth/auth.reducer';
-import { AuthEffects } from './store/auth/auth.effects';
-import { studySetReducer } from './store/studyset/studyset.reducer';
-import { StudySetEffects } from './store/studyset/studyset.effects';
 import { localStorageSync } from 'ngrx-store-localstorage';
 
-// LocalStorage sync meta reducer - tự động persist/rehydrate
+// Reducers
+import { authReducer } from './store/auth/auth.reducer';
+import { studySetReducer } from './store/studyset/studyset.reducer';
+import { notificationReducer } from './store/notification/notification.reducer';
+import { quizReducer } from './store/quiz/quiz.reducer';
+import { learningReducer } from './store/learning/learning.reducer';
+import { exploreReducer } from './store/explore/explore.reducer';
+import { aiReducer } from './store/ai/ai.reducer';
+
+// Effects
+import { AuthEffects } from './store/auth/auth.effects';
+import { StudySetEffects } from './store/studyset/studyset.effects';
+import { NotificationEffects } from './store/notification/notification.effects';
+import { QuizEffects } from './store/quiz/quiz.effects';
+import { LearningEffects } from './store/learning/learning.effects';
+import { ExploreEffects } from './store/explore/explore.effects';
+import { AiEffects } from './store/ai/ai.effects';
+
+// LocalStorage sync meta reducer
 export function localStorageSyncReducer(reducer: any) {
-  // Check if we're in browser environment (fix SSR issue)
   if (typeof localStorage === 'undefined') {
-    // Return original reducer without sync for SSR
     return reducer;
   }
-  
+
   return localStorageSync({
-    keys: ['auth'], // Only persist auth slice
-    rehydrate: true, // Load from localStorage on app start
+    keys: ['auth'],
+    rehydrate: true,
     storage: localStorage,
     checkStorageAvailability: true,
-    // Only sync when no error and not loading
     syncCondition: (state: any) => {
       return !state.auth?.error && !state.auth?.isLoading;
-    }
+    },
   })(reducer);
 }
 
@@ -42,36 +57,53 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
-    provideRouter(routes), 
+    provideRouter(routes),
     provideClientHydration(withEventReplay()),
     provideAnimations(),
     provideNoopAnimations(),
     providePrimeNG({
       theme: {
-        preset: Aura
+        preset: Aura,
+        options: {
+          darkModeSelector: false,
+          cssLayer: false,
+        },
       },
-      ripple: true
+      ripple: true,
     }),
     MessageService,
-    provideHttpClient(
-      withFetch(),
-      withInterceptors([authInterceptor])
+    provideHttpClient(withFetch(), withInterceptors([authInterceptor])),
+    // NgRx Store
+    provideStore(
+      {
+        auth: authReducer,
+        studySet: studySetReducer,
+        notification: notificationReducer,
+        quiz: quizReducer,
+        learning: learningReducer,
+        explore: exploreReducer,
+        ai: aiReducer,
+      },
+      {
+        metaReducers: [localStorageSyncReducer],
+      }
     ),
-    // NgRx Store Configuration with localStorage persistence
-    provideStore({
-      auth: authReducer,
-      studySet: studySetReducer
-    }, {
-      metaReducers: [localStorageSyncReducer]
-    }),
-    provideEffects([AuthEffects, StudySetEffects]),
+    provideEffects([
+      AuthEffects,
+      StudySetEffects,
+      NotificationEffects,
+      QuizEffects,
+      LearningEffects,
+      ExploreEffects,
+      AiEffects,
+    ]),
     provideRouterStore(),
     provideStoreDevtools({
       maxAge: 25,
-      logOnly: false, // Set to true in production
+      logOnly: false,
       autoPause: true,
       trace: false,
-      traceLimit: 75
-    })
-  ]
+      traceLimit: 75,
+    }),
+  ],
 };

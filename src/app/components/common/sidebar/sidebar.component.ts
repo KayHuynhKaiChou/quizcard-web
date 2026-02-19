@@ -21,7 +21,8 @@ export class SidebarComponent {
   navItems: NavItem[] = [
     { label: 'Trang chủ', icon: 'pi-home', route: '/', isActive: true },
     { label: 'Thư viện của bạn', icon: 'pi-folder', route: '/library' },
-    { label: 'Thông báo', icon: 'pi-bell', route: '/notifications' }
+    { label: 'Tạo bộ thẻ', icon: 'pi-plus-circle', route: '/create-set' },
+    { label: 'Thông báo', icon: 'pi-bell', route: '/notifications' },
   ];
   sidebarService = inject(SidebarService);
   private document = inject(DOCUMENT);

@@ -1,4 +1,5 @@
 export const environment = {
   production: false,
-  apiUrl: 'https://server-898671149171.asia-southeast1.run.app'
+  apiUrl: 'http://localhost:8081/api'
+  //apiUrl: 'https://quizcard-server.onrender.com/api',
 };

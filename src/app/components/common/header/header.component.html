@@ -4,16 +4,16 @@
       <i class="pi pi-bars"></i>
     </button>
     <div class="logo">
-      <span class="logo-letter">Hk2t</span>
+      <span class="logo-letter">QuizCard</span>
     </div>
   </div>
 
   <div class="header-center">
     <div class="search-container">
       <i class="pi pi-search search-icon"></i>
-      <input 
-        type="text" 
-        class="search-input" 
+      <input
+        type="text"
+        class="search-input"
         placeholder="Tìm thẻ ghi nhớ"
         [(ngModel)]="searchQuery"
       />
@@ -24,76 +24,61 @@
     <button class="action-button create-button" (click)="onCreateClick()" title="Tạo mới">
       <i class="pi pi-plus"></i>
     </button>
-    
-    <button class="action-button upgrade-button" (click)="onUpgradeClick()">
-      Nâng cấp: dùng thử miễn phí 7 ngày
-    </button>
 
     <div class="profile-container" (click)="onProfileClick()">
-      <img 
-        [src]="currentUser?.avatar ? ('https://server-398431429230.asia-southeast1.run.app//resource/avatar/' + currentUser?.avatar) : 'https://i.pravatar.cc/150?img=36'"
-        alt="Profile" 
+      <img
+        [src]="currentUser?.avatarUrl || 'https://i.pravatar.cc/150?img=36'"
+        alt="Profile"
         class="profile-avatar"
       />
     </div>
 
     <!-- Profile Dropdown -->
-    <div class="profile-dropdown" *ngIf="isProfileDropdownOpen" (click)="$event.stopPropagation()">
-      <div class="dropdown-header">
-        <img 
-          [src]="currentUser?.avatar ? ('https://server-398431429230.asia-southeast1.run.app//resource/avatar/' + currentUser?.avatar) : 'https://i.pravatar.cc/150?img=36'"
-          alt="Avatar" 
-          class="dropdown-avatar"
-        />
-        <div class="dropdown-user-info">
-          <div class="username">{{ currentUser?.username || 'Username' }}</div>
-          <div class="fullname">{{ currentUser?.fullname || 'Full name' }}</div>
+    @if (isProfileDropdownOpen) {
+      <div class="profile-dropdown" (click)="$event.stopPropagation()">
+        <div class="dropdown-header">
+          <img
+            [src]="currentUser?.avatarUrl || 'https://i.pravatar.cc/150?img=36'"
+            alt="Avatar"
+            class="dropdown-avatar"
+          />
+          <div class="dropdown-user-info">
+            <div class="username">{{ currentUser?.displayName || 'User' }}</div>
+            <div class="fullname">{{ currentUser?.email || '' }}</div>
+          </div>
+        </div>
+
+        <div class="dropdown-separator"></div>
+
+        <div class="dropdown-menu">
+          <div class="menu-item">
+            <i class="pi pi-trophy menu-icon"></i>
+            <span>XP: {{ currentUser?.xpPoints || 0 }}</span>
+          </div>
+          <div class="menu-item">
+            <i class="pi pi-bolt menu-icon"></i>
+            <span>Streak: {{ currentUser?.streakCount || 0 }}</span>
+          </div>
+          <div class="menu-item" (click)="onNavigateProfile()">
+            <i class="pi pi-user menu-icon"></i>
+            <span>Hồ sơ</span>
+          </div>
+        </div>
+
+        <div class="dropdown-separator"></div>
+
+        <div class="dropdown-menu">
+          <div class="menu-item logout" (click)="onLogout()">
+            <i class="pi pi-sign-out menu-icon"></i>
+            <span>Đăng xuất</span>
+          </div>
         </div>
       </div>
-
-      <div class="dropdown-separator"></div>
-
-      <div class="dropdown-menu">
-        <div class="menu-item">
-          <i class="pi pi-trophy menu-icon"></i>
-          <span>Thành tựu</span>
-        </div>
-        <div class="menu-item">
-          <i class="pi pi-cog menu-icon"></i>
-          <span>Cài đặt</span>
-        </div>
-        <div class="menu-item">
-          <i class="pi pi-sun menu-icon"></i>
-          <span>Sáng</span>
-        </div>
-      </div>
-
-      <div class="dropdown-separator"></div>
-
-      <div class="dropdown-menu">
-        <div class="menu-item logout" (click)="onLogout()">
-          <i class="pi pi-sign-out menu-icon"></i>
-          <span>Đăng xuất</span>
-        </div>
-      </div>
-
-      <div class="dropdown-separator"></div>
-
-      <div class="dropdown-menu">
-        <div class="menu-item">
-          <span>Quyền riêng tư</span>
-        </div>
-        <div class="menu-item">
-          <span>Giúp đỡ và phản hồi</span>
-        </div>
-        <div class="menu-item">
-          <span>Nâng cấp</span>
-        </div>
-      </div>
-    </div>
+    }
   </div>
 
   <!-- Backdrop -->
-  <div class="dropdown-backdrop" *ngIf="isProfileDropdownOpen" (click)="onClickOutside()"></div>
+  @if (isProfileDropdownOpen) {
+    <div class="dropdown-backdrop" (click)="onClickOutside()"></div>
+  }
 </header>
-

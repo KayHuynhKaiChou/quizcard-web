@@ -6,41 +6,86 @@
         icon="pi pi-arrow-left"
         class="p-button-text"
         [routerLink]="['/library']"
-        label="Back to Library">
+        label="Thư viện">
       </button>
 
       <div class="header-info">
         <h1>{{ studySet.title }}</h1>
-        <p class="author">By {{ studySet.author }}</p>
-        <p class="terms-count">{{ studySet.vocabularies.length }} terms</p>
+        @if (studySet.description) {
+          <p class="description">{{ studySet.description }}</p>
+        }
+        <p class="terms-count">{{ studySet.terms.length }} thuật ngữ</p>
       </div>
 
-      <button
-        pButton
-        label="Start Quiz"
-        icon="pi pi-play"
-        class="p-button-success"
-        (click)="goToQuiz()">
-      </button>
+      <div class="header-actions">
+        <button
+          pButton
+          icon="pi pi-pencil"
+          class="p-button-outlined p-button-sm"
+          label="Sửa"
+          [routerLink]="['/set', studySet.id, 'edit']">
+        </button>
+        <button
+          pButton
+          label="Làm quiz"
+          icon="pi pi-play"
+          class="p-button-success"
+          (click)="goToQuiz()">
+        </button>
+      </div>
     </div>
   </div>
 
-  <div class="flashcard-section">
+  <div class="flashcard-section" *ngIf="activeTerms().length > 0">
+    <!-- Controls toolbar -->
+    <div class="controls-toolbar">
+      <button
+        pButton
+        [icon]="isShuffled() ? 'pi pi-sort-alt' : 'pi pi-sync'"
+        class="p-button-text p-button-sm"
+        [label]="isShuffled() ? 'Bỏ trộn' : 'Trộn'"
+        (click)="toggleShuffle()">
+      </button>
+
+      <button
+        pButton
+        icon="pi pi-arrows-h"
+        class="p-button-text p-button-sm"
+        [label]="showTermFirst() ? 'Thuật ngữ trước' : 'Nghĩa trước'"
+        (click)="toggleFlipOrder()">
+      </button>
+
+      <button
+        pButton
+        [icon]="isCurrentLearned() ? 'pi pi-check-circle' : 'pi pi-circle'"
+        class="p-button-text p-button-sm"
+        [class.learned-active]="isCurrentLearned()"
+        [label]="isCurrentLearned() ? 'Đã thuộc' : 'Đánh dấu thuộc'"
+        (click)="toggleLearned()">
+      </button>
+
+      @if (learnedCount() > 0) {
+        <span class="learned-counter">{{ learnedCount() }}/{{ activeTerms().length }} đã thuộc</span>
+      }
+    </div>
+
+    <!-- Progress -->
     <div class="progress-indicator">
       <div class="progress-text">
-        {{ currentIndex() + 1 }} / {{ studySet.vocabularies.length }}
+        {{ currentIndex() + 1 }} / {{ activeTerms().length }}
       </div>
       <div class="progress-bar-container">
         <div
           class="progress-bar-fill"
-          [style.width.%]="((currentIndex() + 1) / studySet.vocabularies.length) * 100">
+          [style.width.%]="((currentIndex() + 1) / activeTerms().length) * 100">
         </div>
       </div>
     </div>
 
     <app-flashcard
-      *ngIf="studySet.vocabularies[currentIndex()]"
-      [vocabulary]="studySet.vocabularies[currentIndex()]">
+      *ngIf="activeTerms()[currentIndex()]"
+      [term]="activeTerms()[currentIndex()]"
+      [showTermFirst]="showTermFirst()">
     </app-flashcard>
 
     <div class="navigation-controls">
@@ -53,15 +98,15 @@
       </button>
 
       <div class="keyboard-hint">
-        <span><i class="pi pi-arrow-left"></i> / <i class="pi pi-arrow-right"></i> to navigate</span>
-        <span>Click card to flip</span>
+        <span><i class="pi pi-arrow-left"></i> / <i class="pi pi-arrow-right"></i> để điều hướng</span>
+        <span>Click thẻ để lật</span>
       </div>
 
       <button
         pButton
         icon="pi pi-chevron-right"
         class="p-button-rounded p-button-outlined"
-        [disabled]="currentIndex() === studySet.vocabularies.length - 1"
+        [disabled]="currentIndex() === activeTerms().length - 1"
         (click)="next()">
       </button>
     </div>
@@ -70,5 +115,5 @@
 
 <div class="loading-container" *ngIf="!(studySet$ | async)">
   <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
-  <p>Loading study set...</p>
+  <p>Đang tải bộ thẻ...</p>
 </div>

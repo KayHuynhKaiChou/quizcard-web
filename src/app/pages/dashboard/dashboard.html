@@ -1,0 +1,58 @@
+<div class="dashboard">
+  <!-- Welcome + Stats -->
+  <section class="dashboard-hero">
+    @if (user$ | async; as user) {
+      <h1 class="welcome-text">Chào mừng, {{ user.displayName }}!</h1>
+
+      <div class="stats-row">
+        <app-stats-card icon="pi-bolt" [value]="user.streakCount" label="Streak"></app-stats-card>
+        <app-stats-card icon="pi-trophy" [value]="user.xpPoints" label="XP"></app-stats-card>
+      </div>
+    } @else {
+      <h1 class="welcome-text">Chào mừng!</h1>
+    }
+  </section>
+
+  <!-- My Study Sets -->
+  <section class="dashboard-section">
+    <div class="section-header">
+      <h2>Bộ thẻ của bạn</h2>
+      <a routerLink="/library" class="see-all">Xem tất cả <i class="pi pi-arrow-right"></i></a>
+    </div>
+
+    @if (isLoading$ | async) {
+      <div class="card-grid">
+        @for (i of [1, 2, 3, 4]; track i) {
+          <div class="skeleton-card">
+            <p-skeleton height="1.25rem" width="60%" styleClass="mb-3"></p-skeleton>
+            <p-skeleton height="0.875rem" width="40%" styleClass="mb-2"></p-skeleton>
+            <p-skeleton height="0.75rem" width="80%"></p-skeleton>
+          </div>
+        }
+      </div>
+    } @else {
+      @if (studySets$ | async; as studySets) {
+        @if (studySets.length > 0) {
+          <div class="card-grid">
+            @for (studySet of studySets; track studySet.id) {
+              <app-studyset-card [studySet]="studySet"></app-studyset-card>
+            }
+          </div>
+        } @else {
+          <app-empty-state
+            icon="pi-book"
+            title="Chưa có bộ thẻ nào"
+            message="Hãy tạo bộ thẻ đầu tiên để bắt đầu học!">
+            <button
+              pButton
+              label="Tạo bộ thẻ"
+              icon="pi pi-plus"
+              class="p-button-success mt-3"
+              routerLink="/create-set">
+            </button>
+          </app-empty-state>
+        }
+      }
+    }
+  </section>
+</div>

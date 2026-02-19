@@ -1,8 +1,10 @@
+@use '../../styles/variables' as *;
+
 .main-layout {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background: #1a2e3f;
+  background: $bg-primary;
 }
 
 .main-content-wrapper {
@@ -15,7 +17,7 @@
   flex: 1;
   padding: 2rem;
   overflow-y: auto;
-  background: #1a2e3f;
+  background: $bg-primary;
 
   // Scrollbar styling
   &::-webkit-scrollbar {

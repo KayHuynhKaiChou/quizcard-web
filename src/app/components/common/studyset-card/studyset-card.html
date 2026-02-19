@@ -3,20 +3,22 @@
     <h3 class="card-title" [title]="studySet.title">{{ studySet.title }}</h3>
     <span
       class="mode-badge"
-      [class.public]="studySet.mode === 'public'"
-      [class.private]="studySet.mode === 'private'">
-      {{ studySet.mode }}
+      [class.public]="studySet.visibility === 'PUBLIC'"
+      [class.private]="studySet.visibility === 'PRIVATE'"
+      [class.shared]="studySet.visibility === 'SHARED'">
+      {{ studySet.visibility | lowercase }}
     </span>
   </div>
 
   <div class="card-body">
-    <p class="terms-count">{{ studySet.vocabularies.length }} terms</p>
+    <p class="terms-count">{{ studySet.termsCount }} terms</p>
 
-    <div class="author-info">
-      <div class="author-avatar">
-        <i class="pi pi-user"></i>
-      </div>
-      <span class="author-name">{{ studySet.author }}</span>
-    </div>
+    @if (studySet.category) {
+      <span class="category-tag">{{ studySet.category }}</span>
+    }
+
+    @if (studySet.description) {
+      <p class="description">{{ studySet.description }}</p>
+    }
   </div>
 </div>

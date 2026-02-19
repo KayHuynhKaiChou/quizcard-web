@@ -1,0 +1,46 @@
+<div class="term-editor">
+  <div class="term-header">
+    <span class="term-count">{{ rows().length }} thuật ngữ</span>
+  </div>
+
+  <div class="term-list">
+    @for (row of rows(); track trackByIndex($index)) {
+      <div class="term-row">
+        <span class="row-number">{{ $index + 1 }}</span>
+        <div class="row-fields">
+          <input
+            pInputText
+            type="text"
+            placeholder="Thuật ngữ"
+            [(ngModel)]="row.term"
+            (ngModelChange)="onFieldChange()"
+            class="term-input"
+          />
+          <input
+            pInputText
+            type="text"
+            placeholder="Nghĩa / Định nghĩa"
+            [(ngModel)]="row.definition"
+            (ngModelChange)="onFieldChange()"
+            class="term-input"
+          />
+        </div>
+        <button
+          pButton
+          icon="pi pi-trash"
+          class="p-button-text p-button-danger p-button-sm"
+          [disabled]="rows().length <= 1"
+          (click)="removeRow($index)">
+        </button>
+      </div>
+    }
+  </div>
+
+  <button
+    pButton
+    label="Thêm thuật ngữ"
+    icon="pi pi-plus"
+    class="p-button-outlined p-button-sm add-btn"
+    (click)="addRow()">
+  </button>
+</div>

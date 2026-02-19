@@ -1,0 +1,111 @@
+<div class="bl_signup">
+    <div class="bl_signup__header">
+        <h1 class="bl_signup__title">Đăng ký</h1>
+        <p class="bl_signup__subtitle">Tạo tài khoản mới</p>
+    </div>
+
+    <form class="bl_signup__form" [formGroup]="form" (ngSubmit)="signup()">
+        <!-- API error -->
+        @if (error$ | async; as apiError) {
+            <p-message
+                class="bl_signup__api-error"
+                severity="error"
+                size="small"
+                variant="simple"
+            >{{ apiError }}</p-message>
+        }
+
+        <!-- Email -->
+        <div class="bl_input_group">
+            <label class="bl_input_group__label" for="signup-email">Email</label>
+            <input
+                id="signup-email"
+                type="email"
+                formControlName="email"
+                placeholder="Nhập địa chỉ email"
+                pInputText
+                class="bl_input_group__input"
+                [invalid]="form.get('email')?.dirty && form.get('email')?.invalid"
+            />
+            @if (form.get('email')?.dirty && form.get('email')?.hasError('required')) {
+                <p-message severity="error" size="small" variant="simple">Email là bắt buộc.</p-message>
+            }
+            @if (form.get('email')?.dirty && form.get('email')?.hasError('email')) {
+                <p-message severity="error" size="small" variant="simple">Email không hợp lệ.</p-message>
+            }
+        </div>
+
+        <!-- Display Name -->
+        <div class="bl_input_group">
+            <label class="bl_input_group__label" for="signup-displayName">Tên hiển thị</label>
+            <input
+                id="signup-displayName"
+                type="text"
+                formControlName="displayName"
+                placeholder="Nhập tên hiển thị"
+                pInputText
+                class="bl_input_group__input"
+                [invalid]="form.get('displayName')?.dirty && form.get('displayName')?.invalid"
+            />
+            @if (form.get('displayName')?.dirty && form.get('displayName')?.hasError('required')) {
+                <p-message severity="error" size="small" variant="simple">Tên hiển thị là bắt buộc.</p-message>
+            }
+            @if (form.get('displayName')?.dirty && form.get('displayName')?.hasError('minlength')) {
+                <p-message severity="error" size="small" variant="simple">Tên hiển thị phải có ít nhất 2 ký tự.</p-message>
+            }
+        </div>
+
+        <!-- Password -->
+        <div class="bl_input_group">
+            <label class="bl_input_group__label" for="signup-password">Mật khẩu</label>
+            <p-password
+                inputId="signup-password"
+                formControlName="password"
+                placeholder="Nhập mật khẩu (ít nhất 6 ký tự)"
+                [feedback]="false"
+                [toggleMask]="true"
+                [invalid]="form.get('password')?.dirty && form.get('password')?.invalid"
+            />
+            @if (form.get('password')?.dirty && form.get('password')?.hasError('required')) {
+                <p-message severity="error" size="small" variant="simple">Mật khẩu là bắt buộc.</p-message>
+            }
+            @if (form.get('password')?.dirty && form.get('password')?.hasError('minlength')) {
+                <p-message severity="error" size="small" variant="simple">Mật khẩu phải có ít nhất 6 ký tự.</p-message>
+            }
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="bl_input_group">
+            <label class="bl_input_group__label" for="signup-confirmPassword">Xác nhận mật khẩu</label>
+            <p-password
+                inputId="signup-confirmPassword"
+                formControlName="confirmPassword"
+                placeholder="Nhập lại mật khẩu"
+                [feedback]="false"
+                [toggleMask]="true"
+                [invalid]="form.get('confirmPassword')?.dirty && (form.get('confirmPassword')?.invalid || form.hasError('passwordMismatch'))"
+            />
+            @if (form.get('confirmPassword')?.dirty && form.get('confirmPassword')?.hasError('required')) {
+                <p-message severity="error" size="small" variant="simple">Vui lòng xác nhận mật khẩu.</p-message>
+            }
+            @if (form.get('confirmPassword')?.dirty && form.hasError('passwordMismatch')) {
+                <p-message severity="error" size="small" variant="simple">Mật khẩu xác nhận không khớp.</p-message>
+            }
+        </div>
+
+        <!-- Submit -->
+        <button
+            pButton
+            type="submit"
+            class="bl_signup__btn"
+            [disabled]="isLoading$ | async"
+            [label]="(isLoading$ | async) ? 'Đang đăng ký...' : 'Đăng ký'"
+        ></button>
+    </form>
+
+    <!-- Footer link -->
+    <p class="bl_signup__footer">
+        Đã có tài khoản?
+        <a class="bl_signup__footer-link" routerLink="/signin">Đăng nhập</a>
+    </p>
+</div>

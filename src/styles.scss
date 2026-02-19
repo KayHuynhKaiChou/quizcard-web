@@ -1,5 +1,6 @@
-/* You can add global styles to this file, and also import other style files */
+/* QuizCard Global Styles */
 
+@use 'app/styles/variables' as *;
 @import 'primeicons/primeicons.css';
 
 * {
@@ -8,14 +9,91 @@
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   height: 100%;
   overflow: hidden;
 }
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  background: #1a2e3f;
-  color: white;
+  font-family: $font-family;
+  background: $bg-primary;
+  color: $text-primary;
+}
+
+// ── Shared auth form input group (used by signin + signup pages) ────────
+.bl_input_group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  &__label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+  }
+
+  &__input {
+    height: 44px !important;
+    border-radius: 10px !important;
+    border: 1px solid #d1d5db !important;
+    font-size: 14px !important;
+    padding: 0 14px !important;
+    width: 100% !important;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+    background: #fff !important;
+
+    &::placeholder {
+      color: #9ca3af;
+    }
+
+    &:focus {
+      border-color: $accent-color !important;
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.15) !important;
+      outline: none;
+    }
+
+    &:hover:not(:focus) {
+      border-color: #9ca3af !important;
+    }
+  }
+
+  // PrimeNG p-password inner input
+  .p-password {
+    width: 100%;
+
+    input.p-inputtext {
+      height: 44px;
+      border-radius: 10px;
+      border: 1px solid #d1d5db;
+      font-size: 14px;
+      padding: 0 44px 0 14px;
+      width: 100%;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      background: #fff;
+
+      &::placeholder { color: #9ca3af; }
+
+      &:focus {
+        border-color: $accent-color;
+        box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.15);
+        outline: none;
+      }
+
+      &:hover:not(:focus) { border-color: #9ca3af; }
+    }
+
+    .p-password-toggle-mask-icon {
+      color: #6b7280;
+      cursor: pointer;
+
+      &:hover { color: $accent-color; }
+    }
+  }
+
+  p-message {
+    display: block;
+    margin-top: 2px;
+  }
 }

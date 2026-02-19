@@ -1,0 +1,99 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.bl_verify_email {
+  width: 100%;
+  max-width: 420px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 40px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  text-align: center;
+
+  // ── Icon ──────────────────────────────────────────────────────────────
+  &__icon {
+    margin-bottom: 20px;
+
+    i {
+      font-size: 48px;
+      color: $accent-color;
+    }
+
+    &--error i {
+      color: #ef4444;
+    }
+  }
+
+  // ── Spinner ───────────────────────────────────────────────────────────
+  &__spinner {
+    margin-bottom: 20px;
+  }
+
+  // ── Title ─────────────────────────────────────────────────────────────
+  &__title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 12px;
+    font-family: $font-family;
+  }
+
+  &__subtitle {
+    font-size: 14px;
+    color: #666;
+    margin: 0 0 20px;
+    line-height: 1.6;
+  }
+
+  // ── Actions ───────────────────────────────────────────────────────────
+  &__actions {
+    margin-top: 20px;
+  }
+
+  &__btn {
+    width: 100% !important;
+    height: 48px !important;
+    background-color: $accent-color !important;
+    border: none !important;
+    border-radius: 10px !important;
+    color: #fff !important;
+    font-weight: 600 !important;
+    font-size: 15px !important;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+
+    &:hover:not(:disabled) {
+      background-color: $accent-hover !important;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35);
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    &:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+  }
+
+  // ── Footer link ─────────────────────────────────────────────────────────
+  &__footer {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #666;
+  }
+
+  &__footer-link {
+    color: $accent-color;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: $accent-hover;
+      text-decoration: underline;
+    }
+  }
+}

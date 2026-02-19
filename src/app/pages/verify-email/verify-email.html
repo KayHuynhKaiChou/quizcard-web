@@ -1,0 +1,43 @@
+<div class="bl_verify_email">
+    @if (!token) {
+        <!-- No token in URL -->
+        <div class="bl_verify_email__icon">
+            <i class="pi pi-exclamation-circle"></i>
+        </div>
+        <h1 class="bl_verify_email__title">Link không hợp lệ</h1>
+        <p class="bl_verify_email__subtitle">
+            Liên kết xác minh không chứa mã xác thực. Vui lòng kiểm tra lại email hoặc đăng ký tài khoản mới.
+        </p>
+        <p class="bl_verify_email__footer">
+            <a class="bl_verify_email__footer-link" routerLink="/signup">Đăng ký tài khoản</a>
+        </p>
+    } @else if (error$ | async; as errorMsg) {
+        <!-- Error state -->
+        <div class="bl_verify_email__icon bl_verify_email__icon--error">
+            <i class="pi pi-times-circle"></i>
+        </div>
+        <h1 class="bl_verify_email__title">Xác minh thất bại</h1>
+        <p-message severity="error" size="small" variant="simple">{{ errorMsg }}</p-message>
+        <div class="bl_verify_email__actions">
+            <button
+                pButton
+                class="bl_verify_email__btn"
+                label="Thử lại"
+                [disabled]="isLoading$ | async"
+                (click)="retry()"
+            ></button>
+        </div>
+        <p class="bl_verify_email__footer">
+            <a class="bl_verify_email__footer-link" routerLink="/signin">Quay lại đăng nhập</a>
+        </p>
+    } @else {
+        <!-- Loading state (verifying) -->
+        <p-progressSpinner
+            styleClass="bl_verify_email__spinner"
+            strokeWidth="4"
+            [style]="{ width: '50px', height: '50px' }"
+        ></p-progressSpinner>
+        <h1 class="bl_verify_email__title">Đang xác minh email...</h1>
+        <p class="bl_verify_email__subtitle">Vui lòng đợi trong giây lát.</p>
+    }
+</div>

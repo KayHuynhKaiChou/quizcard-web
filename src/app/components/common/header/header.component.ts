@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { SidebarService } from '../../../services/sidebar.service';
 import { AuthService } from '../../../services/auth.service';
 import { User } from '../../../types';
@@ -14,6 +15,7 @@ import { User } from '../../../types';
 })
 export class HeaderComponent {
   searchQuery: string = '';
+  private router = inject(Router);
   sidebarService = inject(SidebarService);
   authService = inject(AuthService);
   
@@ -28,7 +30,7 @@ export class HeaderComponent {
   }
 
   onCreateClick(): void {
-    console.log('Create clicked');
+    this.router.navigate(['/create-set']);
   }
 
   onUpgradeClick(): void {
@@ -42,6 +44,11 @@ export class HeaderComponent {
   onLogout(): void {
     this.authService.logout();
     this.isProfileDropdownOpen = false;
+  }
+
+  onNavigateProfile(): void {
+    this.isProfileDropdownOpen = false;
+    this.router.navigate(['/profile']);
   }
 
   onClickOutside(): void {

@@ -46,12 +46,14 @@ ng g c components/common/name         # Generate component in components/common
 ### State Management (NgRx)
 
 **Store Structure**: Uses feature-based state slicing with NgRx Effects pattern.
-- State is organized in `src/app/store/` with feature folders (currently `auth/`)
+- State is organized in `src/app/store/` with feature folders: `auth/`, `studyset/`, `notification/`, `quiz/`, `learning/`, `explore/`, `ai/`
 - Each feature has: actions, reducer, effects, selectors, and state files
-- **LocalStorage Persistence**: Implemented via `ngrx-store-localstorage` meta reducer in [app.config.ts](src/app/app.config.ts:20-37)
-  - Only syncs when `!state.auth?.error && !state.auth?.isLoading`
+- **AppState**: Combines all features - `auth`, `studySet`, `notification`, `quiz`, `learning`, `explore`, `ai`
+- **LocalStorage Persistence**: Implemented via `ngrx-store-localstorage` meta reducer in [app.config.ts](src/app/app.config.ts:40-54)
+  - Only syncs `auth` slice when `!state.auth?.error && !state.auth?.isLoading`
   - SSR-safe: checks for `localStorage` availability
-- **Store DevTools**: Enabled in [app.config.ts](src/app/app.config.ts:66-72) for debugging
+- **Store Registration**: All reducers and effects registered in [app.config.ts](src/app/app.config.ts:77-99) via `provideStore()` and `provideEffects()`
+- **Store DevTools**: Enabled in [app.config.ts](src/app/app.config.ts:101-107) for debugging
 
 **Effect Pattern**:
 - Effects handle side effects (API calls, navigation, toasts) via [auth.effects.ts](src/app/store/auth/auth.effects.ts)
@@ -79,8 +81,8 @@ ng g c components/common/name         # Generate component in components/common
 
 **Auth Interceptor**: [auth.interceptor.ts](src/app/interceptors/auth.interceptor.ts)
 - Functional interceptor pattern (Angular 20 style)
-- Skips auth header for public URLs: `/account/sign-in`, `/account/sign-up`, `/account/forgot-password`
-- Adds `Authorization: Bearer ${token}` header for protected endpoints
+- Skips auth header for public URLs matching patterns: `/api/auth/login`, `/api/auth/register`, `/api/auth/verify-email`, `/api/auth/resend-verification`, `/api/auth/forgot-password`, `/api/auth/reset-password`, `/api/auth/refresh`, `/api/explore/`, `/api/health`
+- Adds `Authorization: Bearer ${token}` header for all other protected endpoints
 - Gets token synchronously from AuthService
 
 **HTTP Client**: Configured with `withFetch()` and interceptors in [app.config.ts](src/app/app.config.ts:54-57)
@@ -136,7 +138,7 @@ ng g c components/common/name         # Generate component in components/common
 ### Environment Configuration
 
 - Development config in [src/environments/environment.ts](src/environments/environment.ts)
-- API base URL: `https://server-898671149171.asia-southeast1.run.app`
+- API base URL: `http://localhost:8080/api` (Java Spring Boot backend)
 
 ## Key NgRx Patterns Used
 
@@ -156,6 +158,111 @@ ng g c components/common/name         # Generate component in components/common
 - `finalize()` for cleanup (hide loading)
 
 **Selectors**: Created with `createSelector()` for memoized state derivation
+
+## API Integration
+
+### Backend Connection
+
+The application connects to a Java Spring Boot backend running at `http://localhost:8080/api` with 30 REST API endpoints. All API calls are made through service layer classes that dispatch NgRx actions, which are handled by effects.
+
+### Authentication Flow
+
+**Credentials**: Email/password based authentication (not username/password)
+
+**Token Management**:
+- Backend returns two tokens on successful login: `accessToken` and `refreshToken`
+- `accessToken` is stored in NgRx store and used for API authorization
+- `refreshToken` is handled by refresh endpoint for token renewal
+- Auth state persists to localStorage for session resumption
+
+**Service**: [AuthService](src/app/services/auth.service.ts)
+- Dispatches auth actions: `login()`, `register()`, `logout()`, `refreshToken()`
+- Exposes selectors: `isAuthenticated$`, `user$`, `accessToken$`, etc.
+- Provides synchronous getters: `getToken()`, `getCurrentUser()` for interceptors/guards
+
+### API Endpoint Categories
+
+**Auth Endpoints** (`/api/auth/*`):
+- `POST /api/auth/login` - Login with email/password, returns accessToken + refreshToken
+- `POST /api/auth/register` - Register new user
+- `POST /api/auth/verify-email` - Verify email with code
+- `POST /api/auth/resend-verification` - Resend verification email
+- `POST /api/auth/refresh` - Refresh accessToken using refreshToken
+- `POST /api/auth/logout` - Logout user
+- `POST /api/auth/forgot-password` - Request password reset
+- `POST /api/auth/reset-password` - Reset password with token
+- `POST /api/auth/change-password` - Change password (authenticated)
+
+**User Endpoints** (`/api/users/*`):
+- `GET /api/users/me` - Get current user profile
+- `PUT /api/users/me` - Update current user profile
+
+**Study Sets Endpoints** (`/api/study-sets/*`):
+- `GET /api/study-sets` - List all study sets with pagination
+- `POST /api/study-sets` - Create new study set
+- `GET /api/study-sets/{id}` - Get study set details
+- `PUT /api/study-sets/{id}` - Update study set
+- `DELETE /api/study-sets/{id}` - Delete study set
+- `POST /api/study-sets/{id}/clone` - Clone existing study set
+- `POST /api/study-sets/{id}/terms` - Add term to study set
+- `PUT /api/terms/{id}` - Update term
+- `DELETE /api/terms/{id}` - Delete term
+
+**Quiz Endpoints** (`/api/quiz/*`):
+- `POST /api/quiz/generate` - Generate quiz for study set
+- `POST /api/quiz/submit` - Submit quiz answers
+- `GET /api/quiz/history` - Get quiz history with statistics
+
+**Learning Endpoints** (`/api/learning/*`):
+- `GET /api/learning/today` - Get today's review schedule
+- `POST /api/learning/submit` - Submit review result
+- `GET /api/learning/stats` - Get learning statistics
+
+**Explore Endpoints** (`/api/explore/*`, public):
+- `GET /api/explore/trending` - Get trending study sets
+- `GET /api/explore/search` - Search study sets
+- `GET /api/explore/categories` - Get available categories
+
+**Notification Endpoints** (`/api/notifications/*`):
+- `GET /api/notifications` - List notifications
+- `PUT /api/notifications/{id}/read` - Mark notification as read
+
+**AI Endpoints** (`/api/ai/*`):
+- `GET /api/ai/usage` - Get AI feature usage stats
+- `POST /api/ai/generate-terms` - Generate terms using AI
+- `POST /api/ai/extract-from-text` - Extract terms from text using AI
+
+### Service Layer
+
+Each feature has a dedicated service that handles HTTP communication:
+
+**StudySetService**: [studyset.service.ts](src/app/services/studyset.service.ts)
+- Makes real HTTP calls to `/api/study-sets` endpoints
+- Dispatches actions: `loadStudySets()`, `createStudySet()`, `updateStudySet()`, `deleteStudySet()`, `cloneStudySet()`
+- Effects listen via `ofType()` and call service methods
+
+**QuizService**: Manages quiz operations via `/api/quiz` endpoints
+
+**LearningService**: Manages learning/review operations via `/api/learning` endpoints
+
+**ExploreService**: Manages public explore endpoints via `/api/explore` endpoints
+
+**NotificationService**: Manages notification operations via `/api/notifications` endpoints
+
+**AiService**: Manages AI feature operations via `/api/ai` endpoints
+
+### Type Definitions
+
+All TypeScript types match Java Spring Boot DTOs. Key types include:
+
+- `User` - User profile with email, id, createdAt, etc.
+- `StudySet` - Study set metadata with title, description, termCount
+- `StudySetDetail` - Full study set with terms array
+- `Term` - Individual flashcard with term, definition, examples
+- `Quiz` - Quiz session data with questions, answers, score
+- `LearningSession` - Daily review session with scheduled terms
+- `Notification` - User notification with type, message, read status
+- `ApiError` - Error response from backend
 
 ## Prettier Configuration
 

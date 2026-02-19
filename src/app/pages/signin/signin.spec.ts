@@ -1,18 +1,25 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideZonelessChangeDetection } from '@angular/core';
+import { provideRouter } from '@angular/router';
+import { provideStore } from '@ngrx/store';
+import { authReducer } from '../../store/auth/auth.reducer';
+import { SigninPage } from './signin';
 
-import { Signin } from './signin';
-
-describe('Signin', () => {
-  let component: Signin;
-  let fixture: ComponentFixture<Signin>;
+describe('SigninPage', () => {
+  let component: SigninPage;
+  let fixture: ComponentFixture<SigninPage>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Signin]
-    })
-    .compileComponents();
+      imports: [SigninPage],
+      providers: [
+        provideZonelessChangeDetection(),
+        provideRouter([]),
+        provideStore({ auth: authReducer }),
+      ]
+    }).compileComponents();
 
-    fixture = TestBed.createComponent(Signin);
+    fixture = TestBed.createComponent(SigninPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

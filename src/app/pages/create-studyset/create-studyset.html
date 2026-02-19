@@ -1,0 +1,12 @@
+<div class="create-page">
+  <div class="page-header">
+    <h1 class="page-title">Tạo bộ thẻ mới</h1>
+    <p class="page-subtitle">Thêm thuật ngữ và định nghĩa để bắt đầu học</p>
+  </div>
+
+  <app-study-set-form
+    submitLabel="Tạo bộ thẻ"
+    [isSubmitting]="isSubmitting()"
+    (formSubmit)="onFormSubmit($event)"
+  />
+</div>

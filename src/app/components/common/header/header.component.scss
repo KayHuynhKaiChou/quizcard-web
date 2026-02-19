@@ -1,5 +1,7 @@
+@use '../../../styles/variables' as *;
+
 .header {
-  background: linear-gradient(135deg, #1e3a5f 0%, #2a4d7a 100%);
+  background: linear-gradient(135deg, $bg-card 0%, $main-color 100%);
   padding: 0.75rem 2rem;
   display: flex;
   align-items: center;
@@ -126,7 +128,7 @@
 
       &.upgrade-button {
         background: #ffc107;
-        color: #1e3a5f;
+        color: $bg-card;
         padding: 0.75rem 1.25rem;
         white-space: nowrap;
 
@@ -163,7 +165,7 @@
       position: absolute;
       top: calc(100% + 0.5rem);
       right: 0;
-      background: linear-gradient(180deg, #2a4d7a 0%, #1e3a5f 100%);
+      background: linear-gradient(180deg, $main-color 0%, $bg-card 100%);
       border-radius: 12px;
       min-width: 280px;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);

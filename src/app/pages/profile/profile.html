@@ -1,0 +1,67 @@
+@if (user) {
+<div class="profile-page">
+  <!-- Profile Header -->
+  <div class="profile-header">
+    <img
+      [src]="user.avatarUrl || 'https://i.pravatar.cc/150?img=36'"
+      alt="Avatar"
+      class="profile-avatar"
+    />
+    <div class="profile-info">
+      <h1>{{ user.displayName }}</h1>
+      <p class="email">{{ user.email }}</p>
+      <p class="joined">Tham gia {{ user.createdAt | date:'dd/MM/yyyy' }}</p>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <app-stats-card icon="pi pi-bolt" [value]="user.streakCount" label="Streak" color="#f59e0b"></app-stats-card>
+    <app-stats-card icon="pi pi-trophy" [value]="user.xpPoints" label="XP" color="#8b5cf6"></app-stats-card>
+  </div>
+
+  <!-- Edit Profile -->
+  <div class="section-card">
+    <h2>Thông tin cá nhân</h2>
+    <form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
+      <div class="form-field">
+        <label for="displayName">Tên hiển thị</label>
+        <input pInputText id="displayName" formControlName="displayName" class="w-full" />
+      </div>
+      <div class="form-field">
+        <label for="bio">Giới thiệu</label>
+        <textarea pTextarea id="bio" formControlName="bio" rows="3" class="w-full"></textarea>
+      </div>
+      @if (profileSaved()) {
+        <p-message severity="success" text="Đã lưu thành công!"></p-message>
+      }
+      <button pButton label="Lưu thay đổi" icon="pi pi-check" type="submit"
+        class="p-button-success" [disabled]="profileForm.invalid"></button>
+    </form>
+  </div>
+
+  <!-- Change Password -->
+  <div class="section-card">
+    <h2>Đổi mật khẩu</h2>
+    <form [formGroup]="passwordForm" (ngSubmit)="changePassword()">
+      <div class="form-field">
+        <label for="oldPw">Mật khẩu hiện tại</label>
+        <p-password id="oldPw" formControlName="oldPassword" [toggleMask]="true" [feedback]="false" styleClass="w-full"></p-password>
+      </div>
+      <div class="form-field">
+        <label for="newPw">Mật khẩu mới</label>
+        <p-password id="newPw" formControlName="newPassword" [toggleMask]="true" [feedback]="false" styleClass="w-full"></p-password>
+      </div>
+      <div class="form-field">
+        <label for="confirmPw">Xác nhận mật khẩu</label>
+        <p-password id="confirmPw" formControlName="confirmPassword" [toggleMask]="true" [feedback]="false" styleClass="w-full"></p-password>
+      </div>
+      @if (passwordError()) {
+        <p-message severity="error" [text]="passwordError()"></p-message>
+      }
+      <button pButton label="Đổi mật khẩu" icon="pi pi-lock" type="submit"
+        class="p-button-outlined" [disabled]="passwordForm.invalid"></button>
+    </form>
+  </div>
+</div>
+}

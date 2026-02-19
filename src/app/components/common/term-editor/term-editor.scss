@@ -1,0 +1,76 @@
+@use '../../../styles/variables' as *;
+
+.term-editor {
+  .term-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    .term-count {
+      font-size: 0.875rem;
+      color: $text-secondary;
+      font-weight: 500;
+    }
+  }
+
+  .term-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .term-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: $bg-secondary;
+    border: 1px solid $border-color;
+    border-radius: $radius-button;
+    padding: 0.75rem 1rem;
+
+    .row-number {
+      font-size: 0.8125rem;
+      color: $text-secondary;
+      font-weight: 600;
+      min-width: 24px;
+      text-align: center;
+    }
+
+    .row-fields {
+      flex: 1;
+      display: flex;
+      gap: 0.75rem;
+
+      .term-input {
+        flex: 1;
+        background: $bg-primary;
+        border: 1px solid $border-color;
+        color: $text-primary;
+        border-radius: 6px;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
+
+        &::placeholder {
+          color: $text-secondary;
+        }
+
+        &:focus {
+          border-color: $accent-color;
+          outline: none;
+        }
+      }
+    }
+  }
+
+  .add-btn {
+    margin-top: 1rem;
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .term-editor .term-row .row-fields {
+    flex-direction: column;
+  }
+}

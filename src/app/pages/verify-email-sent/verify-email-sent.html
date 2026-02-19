@@ -1,0 +1,36 @@
+<div class="bl_verify_email_sent">
+    <div class="bl_verify_email_sent__icon">
+        <i class="pi pi-envelope"></i>
+    </div>
+
+    <div class="bl_verify_email_sent__header">
+        <h1 class="bl_verify_email_sent__title">Kiểm tra email của bạn</h1>
+
+        @if (pendingEmail$ | async; as email) {
+            <p class="bl_verify_email_sent__subtitle">
+                Chúng tôi đã gửi email xác minh đến <strong>{{ email }}</strong>.
+                Vui lòng kiểm tra hộp thư và nhấn vào liên kết xác minh.
+            </p>
+        } @else {
+            <p class="bl_verify_email_sent__subtitle">
+                Vui lòng kiểm tra hộp thư email và nhấn vào liên kết xác minh.
+            </p>
+        }
+    </div>
+
+    @if (pendingEmail$ | async) {
+        <button
+            pButton
+            class="bl_verify_email_sent__btn"
+            [disabled]="(isLoading$ | async) || cooldown() > 0"
+            [label]="cooldown() > 0
+                ? 'Gửi lại sau ' + cooldown() + 's'
+                : (isLoading$ | async) ? 'Đang gửi...' : 'Gửi lại email xác minh'"
+            (click)="resendEmail()"
+        ></button>
+    }
+
+    <p class="bl_verify_email_sent__footer">
+        <a class="bl_verify_email_sent__footer-link" routerLink="/signin">Quay lại đăng nhập</a>
+    </p>
+</div>

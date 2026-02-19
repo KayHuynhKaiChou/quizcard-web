@@ -1,3 +1,5 @@
+@use '../../styles/variables' as *;
+
 .studyset-detail-page {
   min-height: 100vh;
   padding: 2rem;
@@ -20,21 +22,27 @@
         h1 {
           font-size: 2rem;
           font-weight: 700;
-          color: #ffffff;
+          color: $text-primary;
           margin: 0 0 0.5rem 0;
         }
 
         .author {
           font-size: 1rem;
-          color: #b8c5d0;
+          color: $text-secondary;
           margin: 0 0 0.25rem 0;
         }
 
         .terms-count {
           font-size: 0.875rem;
-          color: #8a9aa8;
+          color: $text-secondary;
           margin: 0;
         }
+      }
+
+      .header-actions {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
       }
     }
   }
@@ -43,6 +51,25 @@
     max-width: 800px;
     margin: 0 auto;
 
+    .controls-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+
+      .learned-active {
+        color: $accent-color !important;
+      }
+
+      .learned-counter {
+        font-size: 0.8125rem;
+        color: $accent-color;
+        font-weight: 600;
+        margin-left: auto;
+      }
+    }
+
     .progress-indicator {
       margin-bottom: 1.5rem;
 
@@ -50,7 +77,7 @@
         text-align: center;
         font-size: 1.125rem;
         font-weight: 600;
-        color: #b8c5d0;
+        color: $text-secondary;
         margin-bottom: 0.75rem;
       }
 
@@ -63,7 +90,7 @@
 
         .progress-bar-fill {
           height: 100%;
-          background: linear-gradient(90deg, #4caf50 0%, #66bb6a 100%);
+          background: linear-gradient(90deg, $accent-color 0%, $accent-hover 100%);
           border-radius: 4px;
           transition: width 0.3s ease;
         }
@@ -83,7 +110,7 @@
         align-items: center;
         gap: 0.5rem;
         font-size: 0.875rem;
-        color: #999;
+        color: $text-secondary;
 
         i {
           font-size: 0.75rem;
@@ -100,7 +127,7 @@
   justify-content: center;
   min-height: 400px;
   gap: 1rem;
-  color: #666;
+  color: $text-secondary;
 }
 
 @media (max-width: 768px) {

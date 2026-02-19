@@ -1,15 +1,21 @@
-import { StudySet } from '../../types';
+import { StudySet, StudySetDetail } from '../../types';
 
 export interface StudySetState {
   studySets: StudySet[];
-  selectedStudySet: StudySet | null;
+  selectedStudySet: StudySetDetail | null;
   isLoading: boolean;
   error: string | null;
+  page: number;
+  totalPages: number;
+  totalElements: number;
 }
 
 export const initialStudySetState: StudySetState = {
   studySets: [],
   selectedStudySet: null,
   isLoading: false,
-  error: null
+  error: null,
+  page: 0,
+  totalPages: 0,
+  totalElements: 0,
 };

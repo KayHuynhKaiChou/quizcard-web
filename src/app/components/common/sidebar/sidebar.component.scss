@@ -1,5 +1,7 @@
+@use '../../../styles/variables' as *;
+
 .sidebar {
-  background: linear-gradient(180deg, #253d54 0%, #1e3a5f 100%);
+  background: linear-gradient(180deg, $bg-secondary 0%, $bg-card 100%);
   width: 280px;
   height: calc(100vh - 64px);
   padding: 1.5rem 0;
@@ -37,7 +39,7 @@
         &.active {
           .nav-link {
             background: rgba(255, 255, 255, 0.1);
-            border-left: 3px solid #4caf50;
+            border-left: 3px solid $accent-color;
           }
         }
 

@@ -1,14 +1,33 @@
 <div class="flashcard-container" (click)="flip()">
   <div class="flashcard" [class.flipped]="isFlipped()">
     <div class="flashcard-face flashcard-front">
-      <div class="card-label">Term</div>
-      <div class="card-content">{{ vocabulary.term }}</div>
-      <div class="flip-hint">Click to flip</div>
+      <div class="card-label">{{ frontLabel }}</div>
+      <div class="card-content">{{ frontContent }}</div>
+      @if (frontIpa) {
+        <div class="card-ipa">{{ frontIpa }}</div>
+      }
+      <button class="tts-btn" [class.speaking]="isSpeaking()"
+        (click)="speak(frontContent, $event)" title="Phát âm">
+        <i class="pi" [class.pi-volume-up]="!isSpeaking()" [class.pi-spin]="isSpeaking()"
+          [class.pi-spinner]="isSpeaking()"></i>
+      </button>
+      <div class="flip-hint">Click để lật</div>
     </div>
     <div class="flashcard-face flashcard-back">
-      <div class="card-label">Definition</div>
-      <div class="card-content">{{ vocabulary.definition }}</div>
-      <div class="flip-hint">Click to flip</div>
+      <div class="card-label">{{ backLabel }}</div>
+      <div class="card-content">{{ backContent }}</div>
+      @if (backIpa) {
+        <div class="card-ipa">{{ backIpa }}</div>
+      }
+      @if (term.exampleSentence) {
+        <div class="card-example">{{ term.exampleSentence }}</div>
+      }
+      <button class="tts-btn" [class.speaking]="isSpeaking()"
+        (click)="speak(backContent, $event)" title="Phát âm">
+        <i class="pi" [class.pi-volume-up]="!isSpeaking()" [class.pi-spin]="isSpeaking()"
+          [class.pi-spinner]="isSpeaking()"></i>
+      </button>
+      <div class="flip-hint">Click để lật</div>
     </div>
   </div>
 </div>

@@ -9,7 +9,7 @@ import { CardModule } from 'primeng/card';
   selector: 'app-studyset-card',
   imports: [CommonModule, RouterModule, BadgeModule, CardModule],
   templateUrl: './studyset-card.html',
-  styleUrl: './studyset-card.scss'
+  styleUrl: './studyset-card.scss',
 })
 export class StudysetCard {
   @Input() studySet!: StudySet;

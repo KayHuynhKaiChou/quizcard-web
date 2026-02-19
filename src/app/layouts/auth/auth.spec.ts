@@ -1,18 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideZonelessChangeDetection } from '@angular/core';
+import { provideRouter } from '@angular/router';
+import { AuthLayoutComponent } from './auth';
 
-import { Auth } from './auth';
-
-describe('Auth', () => {
-  let component: Auth;
-  let fixture: ComponentFixture<Auth>;
+describe('AuthLayoutComponent', () => {
+  let component: AuthLayoutComponent;
+  let fixture: ComponentFixture<AuthLayoutComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Auth]
-    })
-    .compileComponents();
+      imports: [AuthLayoutComponent],
+      providers: [provideZonelessChangeDetection(), provideRouter([])]
+    }).compileComponents();
 
-    fixture = TestBed.createComponent(Auth);
+    fixture = TestBed.createComponent(AuthLayoutComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

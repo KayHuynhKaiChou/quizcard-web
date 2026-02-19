@@ -56,6 +56,39 @@
     overflow-wrap: break-word;
   }
 
+  .card-ipa {
+    font-size: 1rem;
+    opacity: 0.85;
+  }
+
+  .card-example {
+    font-size: 0.875rem;
+    font-style: italic;
+    opacity: 0.8;
+    text-align: center;
+  }
+
+  .tts-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: white;
+    font-size: 1rem;
+    transition: background 0.2s;
+
+    &:hover { background: rgba(255, 255, 255, 0.35); }
+    &.speaking { background: rgba(255, 255, 255, 0.4); }
+  }
+
   .flip-hint {
     font-size: 0.75rem;
     color: #999;

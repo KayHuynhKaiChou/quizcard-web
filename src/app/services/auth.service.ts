@@ -4,14 +4,16 @@ import { Observable } from 'rxjs';
 import { AppState } from '../store/app.state';
 import * as AuthActions from '../store/auth/auth.actions';
 import * as AuthSelectors from '../store/auth/auth.selectors';
-
-export interface LoginRequest {
-  username: string;
-  password: string;
-}
+import {
+  LoginRequest,
+  RegisterRequest,
+  ForgotPasswordRequest,
+  ResetPasswordRequest,
+  ChangePasswordRequest,
+} from '../types';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
   private store = inject(Store<AppState>);
@@ -22,52 +24,84 @@ export class AuthService {
   token$ = this.store.select(AuthSelectors.selectToken);
   isLoading$ = this.store.select(AuthSelectors.selectIsLoading);
   error$ = this.store.select(AuthSelectors.selectError);
+  pendingVerificationEmail$ = this.store.select(AuthSelectors.selectPendingVerificationEmail);
 
-  // Login method - dispatches action instead of direct API call
   login(credentials: LoginRequest): void {
-    // dispatch() nhận 1 param là 1 action obj có dạng {username,password,type:"[Auth] Login Request"}
-    // Effect lắng nghe qua ofType()
-    this.store.dispatch(AuthActions.loginRequest({
-      username: credentials.username,
-      password: credentials.password
-    }));
+    this.store.dispatch(AuthActions.loginRequest(credentials));
   }
 
-  // Logout method - dispatches action
+  register(data: RegisterRequest): void {
+    this.store.dispatch(AuthActions.registerRequest(data));
+  }
+
   logout(): void {
     this.store.dispatch(AuthActions.logout());
   }
 
-  // Load user profile
   loadUserProfile(): void {
     this.store.dispatch(AuthActions.loadUserProfile());
   }
 
-  // Clear error
+  forgotPassword(data: ForgotPasswordRequest): void {
+    this.store.dispatch(AuthActions.forgotPassword(data));
+  }
+
+  resetPassword(data: ResetPasswordRequest): void {
+    this.store.dispatch(AuthActions.resetPassword(data));
+  }
+
+  changePassword(data: ChangePasswordRequest): void {
+    this.store.dispatch(AuthActions.changePassword(data));
+  }
+
+  verifyEmail(token: string): void {
+    this.store.dispatch(AuthActions.verifyEmailRequest({ token }));
+  }
+
+  resendVerification(email: string): void {
+    this.store.dispatch(AuthActions.resendVerificationRequest({ email }));
+  }
+
+  refreshToken(): void {
+    this.store.dispatch(AuthActions.refreshToken());
+  }
+
   clearError(): void {
     this.store.dispatch(AuthActions.clearError());
   }
 
-  // Get current token synchronously (for HTTP interceptors)
+  // Synchronous getters (for interceptors/guards)
   getToken(): string | null {
     let token: string | null = null;
-    this.store.select(AuthSelectors.selectToken).subscribe(t => token = t).unsubscribe();
+    this.store
+      .select(AuthSelectors.selectToken)
+      .subscribe((t) => (token = t))
+      .unsubscribe();
     return token;
   }
 
-  // Get current user synchronously
+  getRefreshToken(): string | null {
+    let token: string | null = null;
+    this.store
+      .select(AuthSelectors.selectRefreshToken)
+      .subscribe((t) => (token = t))
+      .unsubscribe();
+    return token;
+  }
+
   getCurrentUser() {
     let user = null;
-    this.store.select(AuthSelectors.selectUser).subscribe(u => user = u).unsubscribe();
+    this.store
+      .select(AuthSelectors.selectUser)
+      .subscribe((u) => (user = u))
+      .unsubscribe();
     return user;
   }
 
-  // Check if user has specific role
   hasRole(role: string): Observable<boolean> {
     return this.store.select(AuthSelectors.selectHasRole(role));
   }
 
-  // Check if user is admin
   isAdmin(): Observable<boolean> {
     return this.store.select(AuthSelectors.selectIsAdmin);
   }

@@ -1,23 +1,62 @@
 <div class="library-page">
   <div class="library-header">
-    <h1>Study Sets Library</h1>
-    <p class="subtitle">Browse and learn from your vocabulary collections</p>
+    <div class="header-top">
+      <div>
+        <h1>Thư viện của tôi</h1>
+        <p class="subtitle">Quản lý và học các bộ thẻ của bạn</p>
+      </div>
+      <button
+        pButton
+        label="Tạo bộ thẻ"
+        icon="pi pi-plus"
+        class="p-button-success"
+        routerLink="/create-set">
+      </button>
+    </div>
+
+    <div class="header-toolbar">
+      <app-search-toolbar
+        placeholder="Tìm kiếm bộ thẻ..."
+        (searchChange)="onSearchChange($event)"
+      />
+      <app-view-toggle (viewChange)="onViewChange($event)" />
+    </div>
   </div>
 
-  <div class="loading-container" *ngIf="isLoading$ | async">
-    <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
-    <p>Loading study sets...</p>
-  </div>
-
-  <div class="studyset-grid" *ngIf="!(isLoading$ | async)">
-    <app-studyset-card
-      *ngFor="let studySet of studySets$ | async"
-      [studySet]="studySet">
-    </app-studyset-card>
-  </div>
-
-  <div class="empty-state" *ngIf="!(isLoading$ | async) && (studySets$ | async)?.length === 0">
-    <i class="pi pi-book" style="font-size: 4rem; color: #ccc;"></i>
-    <p>No study sets available</p>
-  </div>
+  @if (isLoading$ | async) {
+    <div class="skeleton-grid">
+      @for (i of [1, 2, 3, 4, 5, 6]; track i) {
+        <div class="skeleton-card">
+          <p-skeleton height="1.25rem" width="70%" />
+          <p-skeleton height="0.875rem" width="40%" />
+          <p-skeleton height="0.875rem" width="55%" />
+        </div>
+      }
+    </div>
+  } @else {
+    @if (filterStudySets((studySets$ | async) ?? []); as filtered) {
+      @if (filtered.length > 0) {
+        <div class="studyset-grid" [class.list-view]="viewMode() === 'list'">
+          @for (studySet of filtered; track studySet.id) {
+            <app-studyset-card [studySet]="studySet" />
+          }
+        </div>
+      } @else {
+        <app-empty-state
+          icon="pi pi-book"
+          title="Chưa có bộ thẻ nào"
+          [message]="searchQuery() ? 'Không tìm thấy kết quả phù hợp' : 'Tạo bộ thẻ đầu tiên để bắt đầu học!'">
+          @if (!searchQuery()) {
+            <button
+              pButton
+              label="Tạo bộ thẻ"
+              icon="pi pi-plus"
+              class="p-button-success p-button-sm"
+              routerLink="/create-set">
+            </button>
+          }
+        </app-empty-state>
+      }
+    }
+  }
 </div>

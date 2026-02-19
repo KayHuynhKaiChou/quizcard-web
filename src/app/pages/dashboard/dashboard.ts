@@ -1,68 +1,42 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
+import { StudySet, User } from '../../types';
+import { AppState } from '../../store/app.state';
+import * as StudySetActions from '../../store/studyset/studyset.actions';
+import * as StudySetSelectors from '../../store/studyset/studyset.selectors';
+import * as AuthSelectors from '../../store/auth/auth.selectors';
+import { StudysetCard } from '../../components/common/studyset-card/studyset-card';
+import { StatsCard } from '../../components/common/stats-card/stats-card';
+import { EmptyState } from '../../components/common/empty-state/empty-state';
+import { ButtonModule } from 'primeng/button';
+import { SkeletonModule } from 'primeng/skeleton';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule],
-  template: `
-    <div style="padding: 2rem;">
-      <h1 style="color: white; margin-bottom: 1rem;">Trang chủ</h1>
-      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;">
-        <div *ngFor="let card of cards" class="content-card">
-          <div class="card-icon">📚</div>
-          <h3 class="card-title">{{ card.title }}</h3>
-          <div class="card-info">
-            <span>{{ card.terms }} thuật ngữ</span>
-          </div>
-          <div class="card-info">
-            <span>Tác giả: {{ card.author }}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  `,
-  styles: [`
-    .content-card {
-      background: linear-gradient(135deg, #2a4d7a 0%, #1e3a5f 100%);
-      border-radius: 12px;
-      padding: 1.5rem;
-      cursor: pointer;
-      transition: all 0.2s;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-
-      &:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-        border-color: rgba(76, 175, 80, 0.3);
-      }
-
-      .card-icon {
-        font-size: 2.5rem;
-        margin-bottom: 1rem;
-      }
-
-      .card-title {
-        color: white;
-        font-size: 1.125rem;
-        font-weight: 600;
-        margin-bottom: 1rem;
-      }
-
-      .card-info {
-        color: rgba(255, 255, 255, 0.7);
-        font-size: 0.875rem;
-        margin-bottom: 0.5rem;
-      }
-    }
-  `]
+  imports: [
+    CommonModule,
+    RouterModule,
+    StudysetCard,
+    StatsCard,
+    EmptyState,
+    ButtonModule,
+    SkeletonModule,
+  ],
+  templateUrl: './dashboard.html',
+  styleUrl: './dashboard.scss',
 })
-export class DashboardPage {
-  cards = [
-    { title: 'TOEIC vocabulary', terms: '500', author: 'Huyen0996' },
-    { title: 'từ vựng tiếng anh', terms: '200', author: 'bạn' },
-    { title: 'Kayhuyn IELTS Part 1', terms: '150', author: 'bạn' },
-    { title: 'Kayhuyn IELTS practice', terms: '300', author: 'Huyen0996' }
-  ];
-}
+export class DashboardPage implements OnInit {
+  private store = inject(Store<AppState>);
 
+  user$: Observable<User | null> = this.store.select(AuthSelectors.selectUser);
+  studySets$: Observable<StudySet[]> = this.store.select(StudySetSelectors.selectAllStudySets);
+  isLoading$: Observable<boolean> = this.store.select(StudySetSelectors.selectIsLoading);
+
+  ngOnInit(): void {
+    this.store.dispatch(StudySetActions.loadStudySets({ page: 0, size: 12 }));
+  }
+}

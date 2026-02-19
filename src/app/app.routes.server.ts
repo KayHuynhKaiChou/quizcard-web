@@ -6,6 +6,10 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Server
   },
   {
+    path: 'set/:id/edit',
+    renderMode: RenderMode.Server
+  },
+  {
     path: 'quiz/:id',
     renderMode: RenderMode.Server
   },
