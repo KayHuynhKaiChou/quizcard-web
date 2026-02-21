@@ -2,9 +2,12 @@ import { StudySet } from '../../types';
 
 export interface ExploreState {
   trending: StudySet[];
+  recent: StudySet[];
   searchResults: StudySet[];
   categories: string[];
   isLoading: boolean;
+  isTrendingLoading: boolean;
+  isRecentLoading: boolean;
   error: string | null;
   searchQuery: string;
   page: number;
@@ -14,9 +17,12 @@ export interface ExploreState {
 
 export const initialExploreState: ExploreState = {
   trending: [],
+  recent: [],
   searchResults: [],
   categories: [],
   isLoading: false,
+  isTrendingLoading: false,
+  isRecentLoading: false,
   error: null,
   searchQuery: '',
   page: 0,

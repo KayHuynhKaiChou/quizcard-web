@@ -6,13 +6,14 @@ import { Subscription } from 'rxjs';
 import { AppState } from '../../store/app.state';
 import * as StudySetActions from '../../store/studyset/studyset.actions';
 import * as StudySetSelectors from '../../store/studyset/studyset.selectors';
+import { StudySetFormPage } from '../../components/common/study-set-form-page/study-set-form-page';
 import { StudySetForm, StudySetFormData } from '../../components/common/study-set-form/study-set-form';
 import { StudySetDetail, UpdateStudySetRequest } from '../../types';
 
 @Component({
   selector: 'app-edit-studyset',
   standalone: true,
-  imports: [CommonModule, StudySetForm],
+  imports: [CommonModule, StudySetFormPage, StudySetForm],
   templateUrl: './edit-studyset.html',
   styleUrl: './edit-studyset.scss',
 })

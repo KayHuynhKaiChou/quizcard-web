@@ -9,6 +9,7 @@ import {
   Term,
   CreateTermRequest,
   UpdateTermRequest,
+  RateStudySetRequest,
   Page,
 } from '../types';
 import { environment } from '../../environments/environment';
@@ -57,5 +58,24 @@ export class StudySetService {
 
   deleteTerm(id: string): Observable<void> {
     return this.http.delete<void>(`${this.API}/terms/${id}`);
+  }
+
+  // Bookmark
+  bookmarkStudySet(id: string): Observable<void> {
+    return this.http.post<void>(`${this.API}/study-sets/${id}/bookmark`, {});
+  }
+
+  unbookmarkStudySet(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.API}/study-sets/${id}/bookmark`);
+  }
+
+  getMyBookmarks(page = 0, size = 20): Observable<Page<StudySet>> {
+    const params = new HttpParams().set('page', page).set('size', size);
+    return this.http.get<Page<StudySet>>(`${this.API}/users/me/bookmarks`, { params });
+  }
+
+  // Rating
+  rateStudySet(id: string, data: RateStudySetRequest): Observable<StudySet> {
+    return this.http.post<StudySet>(`${this.API}/study-sets/${id}/rate`, data);
   }
 }

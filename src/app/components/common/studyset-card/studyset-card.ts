@@ -13,4 +13,6 @@ import { CardModule } from 'primeng/card';
 })
 export class StudysetCard {
   @Input() studySet!: StudySet;
+  @Input() showAuthor = false;
+  @Input() hideVisibility = false;
 }

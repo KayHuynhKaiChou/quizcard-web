@@ -1,13 +1,15 @@
 <div class="studyset-card" [routerLink]="['/set', studySet.id]">
   <div class="card-header">
     <h3 class="card-title" [title]="studySet.title">{{ studySet.title }}</h3>
-    <span
-      class="mode-badge"
-      [class.public]="studySet.visibility === 'PUBLIC'"
-      [class.private]="studySet.visibility === 'PRIVATE'"
-      [class.shared]="studySet.visibility === 'SHARED'">
-      {{ studySet.visibility | lowercase }}
-    </span>
+    @if (!hideVisibility) {
+      <span
+        class="mode-badge"
+        [class.public]="studySet.visibility === 'PUBLIC'"
+        [class.private]="studySet.visibility === 'PRIVATE'"
+        [class.shared]="studySet.visibility === 'SHARED'">
+        {{ studySet.visibility | lowercase }}
+      </span>
+    }
   </div>
 
   <div class="card-body">
@@ -21,4 +23,19 @@
       <p class="description">{{ studySet.description }}</p>
     }
   </div>
+
+  @if (showAuthor && studySet.authorDisplayName) {
+    <div class="card-footer">
+      <div class="author-info">
+        @if (studySet.authorAvatarUrl) {
+          <img [src]="studySet.authorAvatarUrl" [alt]="studySet.authorDisplayName" class="author-avatar" />
+        } @else {
+          <div class="author-avatar">
+            <i class="pi pi-user"></i>
+          </div>
+        }
+        <span class="author-name">{{ studySet.authorDisplayName }}</span>
+      </div>
+    </div>
+  }
 </div>

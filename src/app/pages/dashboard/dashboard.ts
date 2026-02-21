@@ -7,6 +7,8 @@ import { StudySet, User } from '../../types';
 import { AppState } from '../../store/app.state';
 import * as StudySetActions from '../../store/studyset/studyset.actions';
 import * as StudySetSelectors from '../../store/studyset/studyset.selectors';
+import * as ExploreActions from '../../store/explore/explore.actions';
+import * as ExploreSelectors from '../../store/explore/explore.selectors';
 import * as AuthSelectors from '../../store/auth/auth.selectors';
 import { StudysetCard } from '../../components/common/studyset-card/studyset-card';
 import { StatsCard } from '../../components/common/stats-card/stats-card';
@@ -36,7 +38,20 @@ export class DashboardPage implements OnInit {
   studySets$: Observable<StudySet[]> = this.store.select(StudySetSelectors.selectAllStudySets);
   isLoading$: Observable<boolean> = this.store.select(StudySetSelectors.selectIsLoading);
 
+  trending$: Observable<StudySet[]> = this.store.select(ExploreSelectors.selectTrending);
+  recent$: Observable<StudySet[]> = this.store.select(ExploreSelectors.selectRecent);
+  categories$: Observable<string[]> = this.store.select(ExploreSelectors.selectCategories);
+  isTrendingLoading$: Observable<boolean> = this.store.select(
+    ExploreSelectors.selectIsTrendingLoading
+  );
+  isRecentLoading$: Observable<boolean> = this.store.select(
+    ExploreSelectors.selectIsRecentLoading
+  );
+
   ngOnInit(): void {
-    this.store.dispatch(StudySetActions.loadStudySets({ page: 0, size: 12 }));
+    this.store.dispatch(StudySetActions.loadStudySets({ page: 0, size: 4 }));
+    this.store.dispatch(ExploreActions.loadTrending({ page: 0, size: 8 }));
+    this.store.dispatch(ExploreActions.loadRecent({ page: 0, size: 8 }));
+    this.store.dispatch(ExploreActions.loadCategories());
   }
 }

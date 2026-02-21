@@ -55,4 +55,94 @@
       }
     }
   </section>
+
+  <!-- Trending Public Sets -->
+  <section class="dashboard-section">
+    <div class="section-header">
+      <h2><i class="pi pi-bolt section-icon trending-icon"></i> Bộ thẻ thịnh hành</h2>
+    </div>
+
+    @if (isTrendingLoading$ | async) {
+      <div class="card-grid">
+        @for (i of [1, 2, 3, 4]; track i) {
+          <div class="skeleton-card">
+            <p-skeleton height="1.25rem" width="60%" styleClass="mb-3"></p-skeleton>
+            <p-skeleton height="0.875rem" width="40%" styleClass="mb-2"></p-skeleton>
+            <p-skeleton height="0.75rem" width="80%"></p-skeleton>
+          </div>
+        }
+      </div>
+    } @else {
+      @if (trending$ | async; as trending) {
+        @if (trending.length > 0) {
+          <div class="card-grid">
+            @for (studySet of trending; track studySet.id) {
+              <app-studyset-card
+                [studySet]="studySet"
+                [showAuthor]="true"
+                [hideVisibility]="true">
+              </app-studyset-card>
+            }
+          </div>
+        } @else {
+          <p class="empty-text">Chưa có bộ thẻ thịnh hành nào.</p>
+        }
+      }
+    }
+  </section>
+
+  <!-- Recent Public Sets -->
+  <section class="dashboard-section">
+    <div class="section-header">
+      <h2><i class="pi pi-clock section-icon recent-icon"></i> Bộ thẻ mới nhất</h2>
+    </div>
+
+    @if (isRecentLoading$ | async) {
+      <div class="card-grid">
+        @for (i of [1, 2, 3, 4]; track i) {
+          <div class="skeleton-card">
+            <p-skeleton height="1.25rem" width="60%" styleClass="mb-3"></p-skeleton>
+            <p-skeleton height="0.875rem" width="40%" styleClass="mb-2"></p-skeleton>
+            <p-skeleton height="0.75rem" width="80%"></p-skeleton>
+          </div>
+        }
+      </div>
+    } @else {
+      @if (recent$ | async; as recent) {
+        @if (recent.length > 0) {
+          <div class="card-grid">
+            @for (studySet of recent; track studySet.id) {
+              <app-studyset-card
+                [studySet]="studySet"
+                [showAuthor]="true"
+                [hideVisibility]="true">
+              </app-studyset-card>
+            }
+          </div>
+        } @else {
+          <p class="empty-text">Chưa có bộ thẻ mới nào.</p>
+        }
+      }
+    }
+  </section>
+
+  <!-- Categories -->
+  @if (categories$ | async; as categories) {
+    @if (categories.length > 0) {
+      <section class="dashboard-section">
+        <div class="section-header">
+          <h2><i class="pi pi-th-large section-icon category-icon"></i> Danh mục phổ biến</h2>
+        </div>
+
+        <div class="categories-grid">
+          @for (category of categories; track category) {
+            <div class="category-chip">
+              <i class="pi pi-bookmark"></i>
+              <span>{{ category }}</span>
+            </div>
+          }
+        </div>
+      </section>
+    }
+  }
 </div>

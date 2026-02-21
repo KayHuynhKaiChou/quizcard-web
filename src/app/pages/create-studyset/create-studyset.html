@@ -1,12 +1,97 @@
-<div class="create-page">
-  <div class="page-header">
-    <h1 class="page-title">Tạo bộ thẻ mới</h1>
-    <p class="page-subtitle">Thêm thuật ngữ và định nghĩa để bắt đầu học</p>
-  </div>
+<app-study-set-form-page pageTitle="Tạo bộ thẻ mới" pageSubtitle="Thêm thuật ngữ và định nghĩa để bắt đầu học"
+  manualTabLabel="Tạo thủ công" mode="create" [aiUsage]="usage()" #formPage>
+  <!-- Manual Tab -->
+  <ng-container manual>
+    <app-study-set-form submitLabel="Tạo bộ thẻ" [isSubmitting]="isSubmitting()" (formSubmit)="onFormSubmit($event)" />
+  </ng-container>
 
-  <app-study-set-form
-    submitLabel="Tạo bộ thẻ"
-    [isSubmitting]="isSubmitting()"
-    (formSubmit)="onFormSubmit($event)"
-  />
-</div>
+  <!-- AI Tab -->
+  <ng-container ai>
+    <div class="ai-tab-content">
+      <app-ai-usage-badge [remaining]="usage()?.remaining ?? 5" [max]="usage()?.maxUsage ?? 5" />
+
+      <!-- Prompt Form -->
+      @if (generatedTerms().length === 0) {
+      <div class="form-card">
+        <div class="form-field">
+          <label>Chủ đề / Prompt <span class="required">*</span></label>
+          <textarea pTextarea [(ngModel)]="prompt" placeholder="VD: Từ vựng IELTS chủ đề môi trường..." rows="3"
+            class="w-full"></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label>Số từ</label>
+            <input pInputText type="number" [(ngModel)]="count" min="5" max="50" class="w-full" />
+          </div>
+          <div class="form-field">
+            <label>Ngôn ngữ nguồn</label>
+            <p-select [options]="languageOptions" [(ngModel)]="sourceLanguage" optionLabel="label" optionValue="value"
+              class="w-full"></p-select>
+          </div>
+          <div class="form-field">
+            <label>Ngôn ngữ đích</label>
+            <p-select [options]="languageOptions" [(ngModel)]="targetLanguage" optionLabel="label" optionValue="value"
+              class="w-full"></p-select>
+          </div>
+          <div class="form-field">
+            <label>Độ khó</label>
+            <p-select [options]="difficultyOptions" [(ngModel)]="difficulty" optionLabel="label" optionValue="value"
+              class="w-full"></p-select>
+          </div>
+        </div>
+
+        <button pButton label="Tạo thuật ngữ" icon="pi pi-sparkles" class="p-button-success generate-btn"
+          [disabled]="!prompt.trim() || isLoading() || aiDisabled()" [loading]="isLoading()" (click)="generate()">
+        </button>
+      </div>
+      }
+
+      <!-- Results -->
+      @if (generatedTerms().length > 0) {
+      <div class="results-section">
+        <div class="results-header">
+          <h2>Kết quả ({{ generatedTerms().length }} thuật ngữ)</h2>
+          @if (!showSaveForm()) {
+          <div class="results-actions">
+            <button pButton label="Tạo lại" icon="pi pi-refresh" class="p-button-outlined p-button-sm"
+              (click)="generatedTerms.set([])"></button>
+            <button pButton label="Lưu thành bộ thẻ" icon="pi pi-save" class="p-button-success p-button-sm"
+              (click)="openSaveForm()"></button>
+          </div>
+          } @else {
+          <div class="save-form">
+            <input pInputText type="text" placeholder="Nhập tên bộ thẻ..." [(ngModel)]="saveTitle" class="save-input" />
+            <button pButton label="Lưu" icon="pi pi-check" class="p-button-success" [disabled]="!saveTitle.trim()"
+              (click)="saveAsStudySet()"></button>
+            <button pButton icon="pi pi-times" class="p-button-text p-button-secondary p-button-sm"
+              (click)="showSaveForm.set(false)"></button>
+          </div>
+          }
+        </div>
+
+        <div class="terms-table">
+          @for (term of generatedTerms(); track $index) {
+          <div class="term-row">
+            <span class="row-num">{{ $index + 1 }}</span>
+            <div class="row-content">
+              <div class="term-main">
+                <strong>{{ term.term }}</strong>
+                @if (term.ipa) { <span class="ipa">{{ term.ipa }}</span> }
+              </div>
+              <div class="term-def">{{ term.definition }}</div>
+              @if (term.example) {
+              <div class="term-example">{{ term.example }}</div>
+              }
+            </div>
+            <button pButton icon="pi pi-trash" class="p-button-text p-button-danger p-button-sm"
+              (click)="removeTerm($index)"></button>
+          </div>
+          }
+        </div>
+
+      </div>
+      }
+    </div>
+  </ng-container>
+</app-study-set-form-page>

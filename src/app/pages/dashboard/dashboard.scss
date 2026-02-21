@@ -37,6 +37,25 @@
       font-weight: 600;
       color: $text-primary;
       margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .section-icon {
+      font-size: 1.1rem;
+
+      &.trending-icon {
+        color: #f59e0b;
+      }
+
+      &.recent-icon {
+        color: #3b82f6;
+      }
+
+      &.category-icon {
+        color: #8b5cf6;
+      }
     }
 
     .see-all {
@@ -57,6 +76,13 @@
       }
     }
   }
+
+  .empty-text {
+    color: $text-secondary;
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 2rem 0;
+  }
 }
 
 .card-grid {
@@ -70,6 +96,36 @@
   border: 1px solid $border-color;
   border-radius: $radius-card;
   padding: 1.5rem;
+}
+
+.categories-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+
+  .category-chip {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1.25rem;
+    background: $bg-card;
+    border: 1px solid $border-color;
+    border-radius: 24px;
+    color: $text-primary;
+    font-size: 0.875rem;
+    cursor: default;
+    transition: all 0.2s;
+
+    i {
+      font-size: 0.8rem;
+      color: #8b5cf6;
+    }
+
+    &:hover {
+      border-color: #8b5cf6;
+      background: rgba(139, 92, 246, 0.1);
+    }
+  }
 }
 
 .mt-3 {

@@ -8,6 +8,11 @@ export const selectTrending = createSelector(
   (state) => state.trending
 );
 
+export const selectRecent = createSelector(
+  selectExploreState,
+  (state) => state.recent
+);
+
 export const selectSearchResults = createSelector(
   selectExploreState,
   (state) => state.searchResults
@@ -21,6 +26,16 @@ export const selectCategories = createSelector(
 export const selectIsLoading = createSelector(
   selectExploreState,
   (state) => state.isLoading
+);
+
+export const selectIsTrendingLoading = createSelector(
+  selectExploreState,
+  (state) => state.isTrendingLoading
+);
+
+export const selectIsRecentLoading = createSelector(
+  selectExploreState,
+  (state) => state.isRecentLoading
 );
 
 export const selectError = createSelector(

@@ -8,7 +8,7 @@ export const exploreReducer = createReducer(
   // Load Trending
   on(ExploreActions.loadTrending, (state) => ({
     ...state,
-    isLoading: true,
+    isTrendingLoading: true,
     error: null,
   })),
 
@@ -18,13 +18,33 @@ export const exploreReducer = createReducer(
     totalPages,
     totalElements,
     page,
-    isLoading: false,
+    isTrendingLoading: false,
     error: null,
   })),
 
   on(ExploreActions.loadTrendingFailure, (state, { error }) => ({
     ...state,
-    isLoading: false,
+    isTrendingLoading: false,
+    error,
+  })),
+
+  // Load Recent
+  on(ExploreActions.loadRecent, (state) => ({
+    ...state,
+    isRecentLoading: true,
+    error: null,
+  })),
+
+  on(ExploreActions.loadRecentSuccess, (state, { studySets }) => ({
+    ...state,
+    recent: studySets,
+    isRecentLoading: false,
+    error: null,
+  })),
+
+  on(ExploreActions.loadRecentFailure, (state, { error }) => ({
+    ...state,
+    isRecentLoading: false,
     error,
   })),
 

@@ -1,25 +1,19 @@
-<div class="edit-page">
-  @if (isLoading()) {
-    <div class="loading-state">
-      <i class="pi pi-spin pi-spinner" style="font-size: 2rem; color: var(--text-secondary)"></i>
-      <p>Đang tải bộ thẻ...</p>
-    </div>
-  } @else if (studySet) {
-    <div class="page-header">
-      <h1 class="page-title">Chỉnh sửa bộ thẻ</h1>
-      <p class="page-subtitle">{{ studySet.title }}</p>
-    </div>
-
-    <app-study-set-form
-      [initialData]="studySet"
-      submitLabel="Lưu thay đổi"
-      [isSubmitting]="isSubmitting()"
-      (formSubmit)="onFormSubmit($event)"
-    />
-  } @else {
-    <div class="loading-state">
-      <i class="pi pi-exclamation-triangle" style="font-size: 2rem; color: #ef4444"></i>
-      <p>Không tìm thấy bộ thẻ</p>
-    </div>
-  }
+@if (isLoading()) {
+<div class="edit-loading-state">
+  <i class="pi pi-spin pi-spinner" style="font-size: 2rem; color: var(--text-secondary)"></i>
+  <p>Đang tải bộ thẻ...</p>
 </div>
+} @else if (studySet) {
+<app-study-set-form-page [pageTitle]="'Chỉnh sửa bộ thẻ'" [pageSubtitle]="studySet.title" manualTabLabel="Chỉnh sửa"
+  mode="edit">
+  <ng-container manual>
+    <app-study-set-form [initialData]="studySet" submitLabel="Lưu thay đổi" [isSubmitting]="isSubmitting()"
+      (formSubmit)="onFormSubmit($event)" />
+  </ng-container>
+</app-study-set-form-page>
+} @else {
+<div class="edit-loading-state">
+  <i class="pi pi-exclamation-triangle" style="font-size: 2rem; color: #ef4444"></i>
+  <p>Không tìm thấy bộ thẻ</p>
+</div>
+}

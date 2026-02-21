@@ -81,6 +81,8 @@ export interface UpdateProfileRequest {
 export interface StudySet {
   id: string;
   userId: string;
+  authorDisplayName: string | null;
+  authorAvatarUrl: string | null;
   title: string;
   description: string | null;
   sourceLanguage: string | null;
@@ -269,5 +271,21 @@ export interface Notification {
   message: string | null;
   read: boolean;
   referenceId: string | null;
+  createdAt: string;
+}
+
+// ============ Rating DTO ============
+export interface RateStudySetRequest {
+  rating: number;
+}
+
+// ============ User Public Profile DTO ============
+export interface UserPublicProfile {
+  id: string;
+  displayName: string;
+  avatarUrl: string | null;
+  bio: string | null;
+  streakCount: number;
+  xpPoints: number;
   createdAt: string;
 }

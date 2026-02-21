@@ -15,10 +15,14 @@ export class ExploreEffects {
   loadTrending$ = createEffect(() =>
     this.actions$.pipe(
       ofType(ExploreActions.loadTrending),
-      switchMap(({ page = 0, size = 20 }) => {
-        const params = new HttpParams()
+      switchMap(({ page = 0, size = 20, category }) => {
+        let params = new HttpParams()
           .set('page', page.toString())
           .set('size', size.toString());
+
+        if (category) {
+          params = params.set('category', category);
+        }
 
         return this.http
           .get<Page<StudySet>>(`${environment.apiUrl}/explore/trending`, { params })
@@ -35,6 +39,37 @@ export class ExploreEffects {
               of(
                 ExploreActions.loadTrendingFailure({
                   error: error.error?.message || 'Failed to load trending study sets',
+                })
+              )
+            )
+          );
+      })
+    )
+  );
+
+  loadRecent$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ExploreActions.loadRecent),
+      switchMap(({ page = 0, size = 20 }) => {
+        const params = new HttpParams()
+          .set('page', page.toString())
+          .set('size', size.toString());
+
+        return this.http
+          .get<Page<StudySet>>(`${environment.apiUrl}/explore/recent`, { params })
+          .pipe(
+            map((response) =>
+              ExploreActions.loadRecentSuccess({
+                studySets: response.content,
+                totalPages: response.totalPages,
+                totalElements: response.totalElements,
+                page: response.number,
+              })
+            ),
+            catchError((error) =>
+              of(
+                ExploreActions.loadRecentFailure({
+                  error: error.error?.message || 'Failed to load recent study sets',
                 })
               )
             )

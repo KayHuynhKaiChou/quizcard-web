@@ -98,12 +98,7 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/profile/profile').then((m) => m.ProfilePage),
       },
-      {
-        path: 'ai-generate',
-        loadComponent: () =>
-          import('./pages/ai-generate/ai-generate').then((m) => m.AiGeneratePage),
-      },
-      { path: 'notifications', component: NotificationsComponent },
+{ path: 'notifications', component: NotificationsComponent },
     ],
     canActivate: [AuthGuard],
   },
