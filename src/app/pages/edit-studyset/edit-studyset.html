@@ -1,8 +1,4 @@
 @if (isLoading()) {
-<div class="edit-loading-state">
-  <i class="pi pi-spin pi-spinner" style="font-size: 2rem; color: var(--text-secondary)"></i>
-  <p>Đang tải bộ thẻ...</p>
-</div>
 } @else if (studySet) {
 <app-study-set-form-page [pageTitle]="'Chỉnh sửa bộ thẻ'" [pageSubtitle]="studySet.title" manualTabLabel="Chỉnh sửa"
   mode="edit">

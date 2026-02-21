@@ -5,19 +5,28 @@ import { BehaviorSubject, Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class LoadingService {
+  private activeRequests = 0;
   private isLoadingSubject = new BehaviorSubject<boolean>(false);
   private messageSubject = new BehaviorSubject<string>('Loading...');
-  
+
   isLoading$: Observable<boolean> = this.isLoadingSubject.asObservable();
   message$: Observable<string> = this.messageSubject.asObservable();
 
   show(message: string = 'Loading...'): void {
-    this.messageSubject.next(message);
-    this.isLoadingSubject.next(true);
+    if (this.activeRequests === 0) {
+      this.messageSubject.next(message);
+      this.isLoadingSubject.next(true);
+    }
+    this.activeRequests++;
   }
 
   hide(): void {
-    this.isLoadingSubject.next(false);
+    if (this.activeRequests > 0) {
+      this.activeRequests--;
+    }
+    if (this.activeRequests === 0) {
+      this.isLoadingSubject.next(false);
+    }
   }
 
   get isLoading(): boolean {

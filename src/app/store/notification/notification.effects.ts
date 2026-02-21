@@ -21,6 +21,7 @@ export class NotificationEffects {
   loadNotifications$ = createEffect(() =>
     this.actions$.pipe(
       ofType(NotificationActions.loadNotifications),
+      tap(() => this.loadingService.show('Đang tải thông báo...')),
       switchMap(({ page, size }) => {
         let params = new HttpParams();
         if (page !== undefined) {
@@ -46,7 +47,8 @@ export class NotificationEffects {
                   error: error.error?.message || 'Tải thông báo thất bại',
                 })
               )
-            )
+            ),
+            finalize(() => this.loadingService.hide())
           );
       })
     )

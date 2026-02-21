@@ -19,6 +19,7 @@ export class StudySetEffects {
   loadStudySets$ = createEffect(() =>
     this.actions$.pipe(
       ofType(StudySetActions.loadStudySets),
+      tap(() => this.loadingService.show('Đang tải danh sách bộ thẻ...')),
       switchMap(({ page, size }) =>
         this.studySetService.getMyStudySets(page, size).pipe(
           map((response) =>
@@ -31,7 +32,8 @@ export class StudySetEffects {
           ),
           catchError((error) =>
             of(StudySetActions.loadStudySetsFailure({ error: error.error?.message || 'Tải danh sách thất bại' }))
-          )
+          ),
+          finalize(() => this.loadingService.hide())
         )
       )
     )
@@ -40,7 +42,7 @@ export class StudySetEffects {
   loadStudySetById$ = createEffect(() =>
     this.actions$.pipe(
       ofType(StudySetActions.loadStudySetById),
-      tap(() => this.loadingService.show()),
+      tap(() => this.loadingService.show('Đang tải bộ thẻ...')),
       switchMap(({ id }) =>
         this.studySetService.getStudySetById(id).pipe(
           map((studySet) => StudySetActions.loadStudySetByIdSuccess({ studySet })),

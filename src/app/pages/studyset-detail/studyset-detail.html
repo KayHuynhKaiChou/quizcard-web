@@ -1,36 +1,22 @@
 <div class="studyset-detail-page" *ngIf="studySet$ | async as studySet">
   <div class="detail-header">
     <div class="header-content">
-      <button
-        pButton
-        icon="pi pi-arrow-left"
-        class="p-button-text"
-        [routerLink]="['/library']"
-        label="Thư viện">
+      <button pButton icon="pi pi-arrow-left" class="p-button-text" [routerLink]="['/library']" label="Thư viện">
       </button>
 
       <div class="header-info">
         <h1>{{ studySet.title }}</h1>
         @if (studySet.description) {
-          <p class="description">{{ studySet.description }}</p>
+        <p class="description">{{ studySet.description }}</p>
         }
         <p class="terms-count">{{ studySet.terms.length }} thuật ngữ</p>
       </div>
 
       <div class="header-actions">
-        <button
-          pButton
-          icon="pi pi-pencil"
-          class="p-button-outlined p-button-sm"
-          label="Sửa"
+        <button pButton icon="pi pi-pencil" class="p-button-outlined p-button-sm" label="Sửa"
           [routerLink]="['/set', studySet.id, 'edit']">
         </button>
-        <button
-          pButton
-          label="Làm quiz"
-          icon="pi pi-play"
-          class="p-button-success"
-          (click)="goToQuiz()">
+        <button pButton label="Làm quiz" icon="pi pi-play" class="p-button-success" (click)="goToQuiz()">
         </button>
       </div>
     </div>
@@ -39,33 +25,21 @@
   <div class="flashcard-section" *ngIf="activeTerms().length > 0">
     <!-- Controls toolbar -->
     <div class="controls-toolbar">
-      <button
-        pButton
-        [icon]="isShuffled() ? 'pi pi-sort-alt' : 'pi pi-sync'"
-        class="p-button-text p-button-sm"
-        [label]="isShuffled() ? 'Bỏ trộn' : 'Trộn'"
-        (click)="toggleShuffle()">
+      <button pButton [icon]="isShuffled() ? 'pi pi-sort-alt' : 'pi pi-sync'" class="p-button-text p-button-sm"
+        [label]="isShuffled() ? 'Bỏ trộn' : 'Trộn'" (click)="toggleShuffle()">
       </button>
 
-      <button
-        pButton
-        icon="pi pi-arrows-h"
-        class="p-button-text p-button-sm"
-        [label]="showTermFirst() ? 'Thuật ngữ trước' : 'Nghĩa trước'"
-        (click)="toggleFlipOrder()">
+      <button pButton icon="pi pi-arrows-h" class="p-button-text p-button-sm"
+        [label]="showTermFirst() ? 'Thuật ngữ trước' : 'Nghĩa trước'" (click)="toggleFlipOrder()">
       </button>
 
-      <button
-        pButton
-        [icon]="isCurrentLearned() ? 'pi pi-check-circle' : 'pi pi-circle'"
-        class="p-button-text p-button-sm"
-        [class.learned-active]="isCurrentLearned()"
-        [label]="isCurrentLearned() ? 'Đã thuộc' : 'Đánh dấu thuộc'"
-        (click)="toggleLearned()">
+      <button pButton [icon]="isCurrentLearned() ? 'pi pi-check-circle' : 'pi pi-circle'"
+        class="p-button-text p-button-sm" [class.learned-active]="isCurrentLearned()"
+        [label]="isCurrentLearned() ? 'Đã thuộc' : 'Đánh dấu thuộc'" (click)="toggleLearned()">
       </button>
 
       @if (learnedCount() > 0) {
-        <span class="learned-counter">{{ learnedCount() }}/{{ activeTerms().length }} đã thuộc</span>
+      <span class="learned-counter">{{ learnedCount() }}/{{ activeTerms().length }} đã thuộc</span>
       }
     </div>
 
@@ -75,26 +49,18 @@
         {{ currentIndex() + 1 }} / {{ activeTerms().length }}
       </div>
       <div class="progress-bar-container">
-        <div
-          class="progress-bar-fill"
-          [style.width.%]="((currentIndex() + 1) / activeTerms().length) * 100">
+        <div class="progress-bar-fill" [style.width.%]="((currentIndex() + 1) / activeTerms().length) * 100">
         </div>
       </div>
     </div>
 
-    <app-flashcard
-      *ngIf="activeTerms()[currentIndex()]"
-      [term]="activeTerms()[currentIndex()]"
+    <app-flashcard *ngIf="activeTerms()[currentIndex()]" [term]="activeTerms()[currentIndex()]"
       [showTermFirst]="showTermFirst()">
     </app-flashcard>
 
     <div class="navigation-controls">
-      <button
-        pButton
-        icon="pi pi-chevron-left"
-        class="p-button-rounded p-button-outlined"
-        [disabled]="currentIndex() === 0"
-        (click)="previous()">
+      <button pButton icon="pi pi-chevron-left" class="p-button-rounded p-button-outlined"
+        [disabled]="currentIndex() === 0" (click)="previous()">
       </button>
 
       <div class="keyboard-hint">
@@ -102,18 +68,12 @@
         <span>Click thẻ để lật</span>
       </div>
 
-      <button
-        pButton
-        icon="pi pi-chevron-right"
-        class="p-button-rounded p-button-outlined"
-        [disabled]="currentIndex() === activeTerms().length - 1"
-        (click)="next()">
+      <button pButton icon="pi pi-chevron-right" class="p-button-rounded p-button-outlined"
+        [disabled]="currentIndex() === activeTerms().length - 1" (click)="next()">
       </button>
     </div>
   </div>
 </div>
 
-<div class="loading-container" *ngIf="!(studySet$ | async)">
-  <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
-  <p>Đang tải bộ thẻ...</p>
+<div class="loading-container" *ngIf="false">
 </div>

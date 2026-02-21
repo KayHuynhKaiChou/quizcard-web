@@ -2,31 +2,27 @@
   <h1 style="color: white; margin-bottom: 1rem;">Thông báo</h1>
 
   @if (isLoading$ | async) {
-    <div style="display: flex; justify-content: center; padding: 2rem;">
-      <i class="pi pi-spin pi-spinner" style="font-size: 2rem; color: white;"></i>
-    </div>
   } @else {
-    @for (notification of notifications$ | async; track notification.id) {
-      <div
-        style="padding: 1rem; margin-bottom: 0.75rem; border-radius: 8px; cursor: pointer;"
-        [style.background]="notification.read ? 'rgba(255,255,255,0.05)' : 'rgba(99,102,241,0.15)'"
-        [style.border-left]="notification.read ? '3px solid transparent' : '3px solid #6366f1'"
-        (click)="markAsRead(notification.id)">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <strong style="color: white;">{{ notification.title }}</strong>
-          @if (!notification.read) {
-            <span style="width: 8px; height: 8px; border-radius: 50%; background: #6366f1;"></span>
-          }
-        </div>
-        @if (notification.message) {
-          <p style="color: rgba(255,255,255,0.6); margin-top: 0.25rem; font-size: 0.875rem;">
-            {{ notification.message }}
-          </p>
-        }
-        <small style="color: rgba(255,255,255,0.4);">{{ notification.createdAt | date:'short' }}</small>
-      </div>
-    } @empty {
-      <p style="color: rgba(255, 255, 255, 0.6);">Không có thông báo nào.</p>
+  @for (notification of notifications$ | async; track notification.id) {
+  <div style="padding: 1rem; margin-bottom: 0.75rem; border-radius: 8px; cursor: pointer;"
+    [style.background]="notification.read ? 'rgba(255,255,255,0.05)' : 'rgba(99,102,241,0.15)'"
+    [style.border-left]="notification.read ? '3px solid transparent' : '3px solid #6366f1'"
+    (click)="markAsRead(notification.id)">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <strong style="color: white;">{{ notification.title }}</strong>
+      @if (!notification.read) {
+      <span style="width: 8px; height: 8px; border-radius: 50%; background: #6366f1;"></span>
+      }
+    </div>
+    @if (notification.message) {
+    <p style="color: rgba(255,255,255,0.6); margin-top: 0.25rem; font-size: 0.875rem;">
+      {{ notification.message }}
+    </p>
     }
+    <small style="color: rgba(255,255,255,0.4);">{{ notification.createdAt | date:'short' }}</small>
+  </div>
+  } @empty {
+  <p style="color: rgba(255, 255, 255, 0.6);">Không có thông báo nào.</p>
+  }
   }
 </div>

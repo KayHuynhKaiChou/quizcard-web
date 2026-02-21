@@ -5,58 +5,34 @@
         <h1>Thư viện của tôi</h1>
         <p class="subtitle">Quản lý và học các bộ thẻ của bạn</p>
       </div>
-      <button
-        pButton
-        label="Tạo bộ thẻ"
-        icon="pi pi-plus"
-        class="p-button-success"
-        routerLink="/create-set">
+      <button pButton label="Tạo bộ thẻ" icon="pi pi-plus" class="p-button-success" routerLink="/create-set">
       </button>
     </div>
 
     <div class="header-toolbar">
-      <app-search-toolbar
-        placeholder="Tìm kiếm bộ thẻ..."
-        (searchChange)="onSearchChange($event)"
-      />
+      <app-search-toolbar placeholder="Tìm kiếm bộ thẻ..." (searchChange)="onSearchChange($event)" />
       <app-view-toggle (viewChange)="onViewChange($event)" />
     </div>
   </div>
 
   @if (isLoading$ | async) {
-    <div class="skeleton-grid">
-      @for (i of [1, 2, 3, 4, 5, 6]; track i) {
-        <div class="skeleton-card">
-          <p-skeleton height="1.25rem" width="70%" />
-          <p-skeleton height="0.875rem" width="40%" />
-          <p-skeleton height="0.875rem" width="55%" />
-        </div>
-      }
-    </div>
   } @else {
-    @if (filterStudySets((studySets$ | async) ?? []); as filtered) {
-      @if (filtered.length > 0) {
-        <div class="studyset-grid" [class.list-view]="viewMode() === 'list'">
-          @for (studySet of filtered; track studySet.id) {
-            <app-studyset-card [studySet]="studySet" />
-          }
-        </div>
-      } @else {
-        <app-empty-state
-          icon="pi pi-book"
-          title="Chưa có bộ thẻ nào"
-          [message]="searchQuery() ? 'Không tìm thấy kết quả phù hợp' : 'Tạo bộ thẻ đầu tiên để bắt đầu học!'">
-          @if (!searchQuery()) {
-            <button
-              pButton
-              label="Tạo bộ thẻ"
-              icon="pi pi-plus"
-              class="p-button-success p-button-sm"
-              routerLink="/create-set">
-            </button>
-          }
-        </app-empty-state>
-      }
+  @if (filterStudySets((studySets$ | async) ?? []); as filtered) {
+  @if (filtered.length > 0) {
+  <div class="studyset-grid" [class.list-view]="viewMode() === 'list'">
+    @for (studySet of filtered; track studySet.id) {
+    <app-studyset-card [studySet]="studySet" />
     }
+  </div>
+  } @else {
+  <app-empty-state icon="pi pi-book" title="Chưa có bộ thẻ nào"
+    [message]="searchQuery() ? 'Không tìm thấy kết quả phù hợp' : 'Tạo bộ thẻ đầu tiên để bắt đầu học!'">
+    @if (!searchQuery()) {
+    <button pButton label="Tạo bộ thẻ" icon="pi pi-plus" class="p-button-success p-button-sm" routerLink="/create-set">
+    </button>
+    }
+  </app-empty-state>
+  }
+  }
   }
 </div>
