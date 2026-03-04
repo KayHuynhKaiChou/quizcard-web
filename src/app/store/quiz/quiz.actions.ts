@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { QuizConfigRequest, QuizResult, QuizSubmitRequest } from '../../types';
+import { QuizConfigRequest, QuizResult, QuizResultDetail, QuizSubmitRequest } from '../../types';
 
 // Generate Quiz Actions
 export const generateQuiz = createAction('[Quiz] Generate Quiz', props<QuizConfigRequest>());
@@ -42,6 +42,24 @@ export const loadQuizHistoryFailure = createAction(
   '[Quiz] Load Quiz History Failure',
   props<{ error: string }>()
 );
+
+// Load Quiz Result Detail Actions
+export const loadQuizResultDetail = createAction(
+  '[Quiz] Load Quiz Result Detail',
+  props<{ id: string }>()
+);
+
+export const loadQuizResultDetailSuccess = createAction(
+  '[Quiz] Load Quiz Result Detail Success',
+  props<{ result: QuizResultDetail }>()
+);
+
+export const loadQuizResultDetailFailure = createAction(
+  '[Quiz] Load Quiz Result Detail Failure',
+  props<{ error: string }>()
+);
+
+export const clearSelectedResult = createAction('[Quiz] Clear Selected Result');
 
 // Utility Actions
 export const clearCurrentQuiz = createAction('[Quiz] Clear Current Quiz');

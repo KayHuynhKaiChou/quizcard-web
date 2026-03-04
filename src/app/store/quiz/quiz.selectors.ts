@@ -19,3 +19,15 @@ export const selectQuizTotalElements = createSelector(
   selectQuizState,
   (state) => state.totalElements
 );
+
+export const selectQuizHistoryWithPagination = createSelector(selectQuizState, (state) => ({
+  history: state.history,
+  page: state.page,
+  totalPages: state.totalPages,
+  totalElements: state.totalElements,
+}));
+
+export const selectSelectedResult = createSelector(
+  selectQuizState,
+  (state) => state.selectedResult
+);

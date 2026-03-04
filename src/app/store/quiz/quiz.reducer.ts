@@ -68,6 +68,32 @@ export const quizReducer = createReducer(
     error,
   })),
 
+  // Load Quiz Result Detail
+  on(QuizActions.loadQuizResultDetail, (state) => ({
+    ...state,
+    isLoading: true,
+    error: null,
+  })),
+
+  on(QuizActions.loadQuizResultDetailSuccess, (state, { result }) => ({
+    ...state,
+    selectedResult: result,
+    isLoading: false,
+    error: null,
+  })),
+
+  on(QuizActions.loadQuizResultDetailFailure, (state, { error }) => ({
+    ...state,
+    selectedResult: null,
+    isLoading: false,
+    error,
+  })),
+
+  on(QuizActions.clearSelectedResult, (state) => ({
+    ...state,
+    selectedResult: null,
+  })),
+
   // Utility
   on(QuizActions.clearCurrentQuiz, (state) => ({
     ...state,

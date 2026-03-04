@@ -53,20 +53,42 @@
 
     .controls-toolbar {
       display: flex;
-      align-items: center;
-      gap: 0.5rem;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
       margin-bottom: 1.5rem;
-      flex-wrap: wrap;
 
-      .learned-active {
-        color: $accent-color !important;
+      .left-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        flex: 1;
+
+        // Loại bỏ padding trái để các nút căn thật sát lề trái
+        ::ng-deep .p-button.p-button-text {
+          padding-left: 0;
+          padding-right: 1rem;
+
+          &:hover {
+            background: transparent;
+            color: $accent-hover;
+          }
+        }
+
+        .learned-active {
+          color: $accent-color !important;
+        }
       }
 
-      .learned-counter {
-        font-size: 0.8125rem;
-        color: $accent-color;
-        font-weight: 600;
-        margin-left: auto;
+      .right-actions {
+        display: flex;
+        align-items: center;
+
+        .learned-counter {
+          font-size: 0.8125rem;
+          color: $accent-color;
+          font-weight: 600;
+        }
       }
     }
 
@@ -115,6 +137,27 @@
         i {
           font-size: 0.75rem;
         }
+      }
+    }
+  }
+
+  .term-grid-section {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .load-more-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+    padding: 1rem 0;
+
+    .load-more-btn {
+      min-width: 150px;
+      font-weight: 600;
+
+      &:hover {
+        background-color: rgba($accent-color, 0.05);
       }
     }
   }

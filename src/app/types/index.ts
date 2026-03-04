@@ -9,6 +9,12 @@ export interface Page<T> {
   number: number;
 }
 
+export interface CursorPage<T, C> {
+  items: T[];
+  nextCursor: C | null;
+  hasMore: boolean;
+}
+
 // ============ Auth DTOs ============
 export interface LoginRequest {
   email: string;
@@ -187,6 +193,7 @@ export interface QuizResult {
   id: string;
   userId: string;
   studySetId: string;
+  studySetTitle: string | null;
   quizType: string;
   totalQuestions: number;
   correctAnswers: number;
@@ -194,6 +201,29 @@ export interface QuizResult {
   timeSpentSeconds: number | null;
   details: string;
   createdAt: string;
+}
+
+export interface QuizAnswerDetail {
+  termId: string;
+  term: string;
+  definition: string;
+  userAnswer: string;
+  correctAnswer: string;
+  correct: boolean;
+}
+
+export interface QuizResultDetail {
+  id: string;
+  userId: string;
+  studySetId: string;
+  studySetTitle: string | null;
+  quizType: string;
+  totalQuestions: number;
+  correctAnswers: number;
+  score: number;
+  timeSpentSeconds: number | null;
+  createdAt: string;
+  answers: QuizAnswerDetail[];
 }
 
 // ============ Learning DTOs ============

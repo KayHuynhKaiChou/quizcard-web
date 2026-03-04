@@ -98,6 +98,18 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/profile/profile').then((m) => m.ProfilePage),
       },
+      {
+        path: 'quiz-history/:id',
+        loadComponent: () =>
+          import('./pages/quiz-result-detail/quiz-result-detail').then(
+            (m) => m.QuizResultDetailPage
+          ),
+      },
+      {
+        path: 'quiz-history',
+        loadComponent: () =>
+          import('./pages/quiz-history/quiz-history').then((m) => m.QuizHistoryPage),
+      },
 { path: 'notifications', component: NotificationsComponent },
     ],
     canActivate: [AuthGuard],

@@ -38,16 +38,57 @@ export const studySetReducer = createReducer(
     error: null,
   })),
 
-  on(StudySetActions.loadStudySetByIdSuccess, (state, { studySet }) => ({
-    ...state,
-    selectedStudySet: studySet,
-    isLoading: false,
-    error: null,
-  })),
+  on(StudySetActions.loadStudySetByIdSuccess, (state, { studySet }) => {
+    const terms = studySet.terms ?? [];
+    return {
+      ...state,
+      selectedStudySet: { ...studySet, terms },
+      termsCursor: null,
+      hasMoreTerms: terms.length < studySet.termsCount,
+      isLoading: false,
+      error: null,
+    };
+  }),
 
   on(StudySetActions.loadStudySetByIdFailure, (state, { error }) => ({
     ...state,
     isLoading: false,
+    error,
+  })),
+
+  // Load Study Set Terms
+  on(StudySetActions.loadStudySetTerms, (state) => ({
+    ...state,
+    isLoadingTerms: true,
+    error: null,
+  })),
+
+  on(StudySetActions.loadStudySetTermsSuccess, (state, { termsPage }) => {
+    if (!state.selectedStudySet) return state;
+
+    // Filter out duplicates if any
+    const existingIds = new Set(state.selectedStudySet.terms.map((t) => t.id));
+    const newItems = termsPage.items.filter((t) => !existingIds.has(t.id));
+
+    return {
+      ...state,
+      selectedStudySet: {
+        ...state.selectedStudySet,
+        terms:
+          termsPage.nextCursor === null && state.termsCursor === null // First page
+            ? termsPage.items
+            : [...state.selectedStudySet.terms, ...newItems],
+      },
+      termsCursor: termsPage.nextCursor,
+      hasMoreTerms: termsPage.hasMore,
+      isLoadingTerms: false,
+      error: null,
+    };
+  }),
+
+  on(StudySetActions.loadStudySetTermsFailure, (state, { error }) => ({
+    ...state,
+    isLoadingTerms: false,
     error,
   })),
 
@@ -139,10 +180,10 @@ export const studySetReducer = createReducer(
     ...state,
     selectedStudySet: state.selectedStudySet
       ? {
-          ...state.selectedStudySet,
-          terms: [...state.selectedStudySet.terms, term],
-          termsCount: state.selectedStudySet.termsCount + 1,
-        }
+        ...state.selectedStudySet,
+        terms: [...state.selectedStudySet.terms, term],
+        termsCount: state.selectedStudySet.termsCount + 1,
+      }
       : null,
   })),
 
@@ -151,9 +192,9 @@ export const studySetReducer = createReducer(
     ...state,
     selectedStudySet: state.selectedStudySet
       ? {
-          ...state.selectedStudySet,
-          terms: state.selectedStudySet.terms.map((t) => (t.id === term.id ? term : t)),
-        }
+        ...state.selectedStudySet,
+        terms: state.selectedStudySet.terms.map((t) => (t.id === term.id ? term : t)),
+      }
       : null,
   })),
 
@@ -162,10 +203,10 @@ export const studySetReducer = createReducer(
     ...state,
     selectedStudySet: state.selectedStudySet
       ? {
-          ...state.selectedStudySet,
-          terms: state.selectedStudySet.terms.filter((t) => t.id !== id),
-          termsCount: state.selectedStudySet.termsCount - 1,
-        }
+        ...state.selectedStudySet,
+        terms: state.selectedStudySet.terms.filter((t) => t.id !== id),
+        termsCount: state.selectedStudySet.termsCount - 1,
+      }
       : null,
   })),
 

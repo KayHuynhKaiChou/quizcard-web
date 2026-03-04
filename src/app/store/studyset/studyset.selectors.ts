@@ -41,3 +41,18 @@ export const selectSelectedTerms = createSelector(
   selectSelectedStudySet,
   (studySet) => studySet?.terms ?? []
 );
+
+export const selectTermsCursor = createSelector(
+  selectStudySetState,
+  (state) => state.termsCursor
+);
+
+export const selectHasMoreTerms = createSelector(
+  selectStudySetState,
+  (state) => state.hasMoreTerms
+);
+
+export const selectIsLoadingTerms = createSelector(
+  selectStudySetState,
+  (state) => state.isLoadingTerms
+);

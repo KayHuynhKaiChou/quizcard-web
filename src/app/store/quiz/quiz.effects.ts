@@ -7,7 +7,7 @@ import { of } from 'rxjs';
 import * as QuizActions from './quiz.actions';
 import { environment } from '../../../environments/environment';
 import { LoadingService } from '../../services/loading.service';
-import { Page, QuizResult } from '../../types';
+import { Page, QuizResult, QuizResultDetail } from '../../types';
 
 @Injectable()
 export class QuizEffects {
@@ -90,6 +90,27 @@ export class QuizEffects {
           finalize(() => this.loadingService.hide())
         );
       })
+    )
+  );
+
+  // Load Quiz Result Detail Effect
+  loadQuizResultDetail$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(QuizActions.loadQuizResultDetail),
+      tap(() => this.loadingService.show('Đang tải chi tiết...')),
+      switchMap(({ id }) =>
+        this.http.get<QuizResultDetail>(`${this.API}/quiz/history/${id}`).pipe(
+          map((result) => QuizActions.loadQuizResultDetailSuccess({ result })),
+          catchError((error) =>
+            of(
+              QuizActions.loadQuizResultDetailFailure({
+                error: error.error?.message || 'Tải chi tiết thất bại',
+              })
+            )
+          ),
+          finalize(() => this.loadingService.hide())
+        )
+      )
     )
   );
 

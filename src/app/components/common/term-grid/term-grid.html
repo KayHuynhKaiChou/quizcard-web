@@ -1,0 +1,9 @@
+<div class="term-grid">
+    @for (term of terms; track term.id) {
+    <div class="grid-item">
+        <app-flashcard [term]="term" [showTermFirst]="true"></app-flashcard>
+    </div>
+    } @empty {
+    <p class="empty-msg">Chưa có thuật ngữ nào.</p>
+    }
+</div>

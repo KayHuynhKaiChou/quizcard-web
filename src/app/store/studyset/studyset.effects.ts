@@ -47,9 +47,39 @@ export class StudySetEffects {
         this.studySetService.getStudySetById(id).pipe(
           map((studySet) => StudySetActions.loadStudySetByIdSuccess({ studySet })),
           catchError((error) =>
-            of(StudySetActions.loadStudySetByIdFailure({ error: error.error?.message || 'Không tìm thấy bộ thẻ' }))
+            of(
+              StudySetActions.loadStudySetByIdFailure({
+                error: error.error?.message || 'Không tìm thấy bộ thẻ',
+              })
+            )
           ),
           finalize(() => this.loadingService.hide())
+        )
+      )
+    )
+  );
+
+  // Auto-load terms after study set metadata is loaded
+  autoLoadTerms$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(StudySetActions.loadStudySetByIdSuccess),
+      map(({ studySet }) => StudySetActions.loadStudySetTerms({ id: studySet.id }))
+    )
+  );
+
+  loadStudySetTerms$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(StudySetActions.loadStudySetTerms),
+      switchMap(({ id, cursor, limit }) =>
+        this.studySetService.getTerms(id, cursor, limit).pipe(
+          map((termsPage) => StudySetActions.loadStudySetTermsSuccess({ termsPage })),
+          catchError((error) =>
+            of(
+              StudySetActions.loadStudySetTermsFailure({
+                error: error.error?.message || 'Tải thuật ngữ thất bại',
+              })
+            )
+          )
         )
       )
     )

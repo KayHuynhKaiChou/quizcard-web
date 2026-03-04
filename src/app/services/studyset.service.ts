@@ -11,6 +11,7 @@ import {
   UpdateTermRequest,
   RateStudySetRequest,
   Page,
+  CursorPage,
 } from '../types';
 import { environment } from '../../environments/environment';
 
@@ -48,6 +49,13 @@ export class StudySetService {
   }
 
   // Term CRUD
+  getTerms(id: string, cursor?: number, limit: number = 20): Observable<CursorPage<Term, number>> {
+    let params = new HttpParams().set('limit', limit);
+    if (cursor !== undefined && cursor !== null) {
+      params = params.set('cursor', cursor);
+    }
+    return this.http.get<CursorPage<Term, number>>(`${this.API}/study-sets/${id}/terms`, { params });
+  }
   addTerm(studySetId: string, data: CreateTermRequest): Observable<Term> {
     return this.http.post<Term>(`${this.API}/study-sets/${studySetId}/terms`, data);
   }

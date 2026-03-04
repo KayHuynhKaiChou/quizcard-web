@@ -13,6 +13,7 @@
       </div>
 
       <div class="header-actions">
+        <app-term-view-toggle (viewChange)="onViewChange($event)"></app-term-view-toggle>
         <button pButton icon="pi pi-pencil" class="p-button-outlined p-button-sm" label="Sửa"
           [routerLink]="['/set', studySet.id, 'edit']">
         </button>
@@ -22,24 +23,29 @@
     </div>
   </div>
 
+  @if (viewMode() === 'flashcard') {
   <div class="flashcard-section" *ngIf="activeTerms().length > 0">
     <!-- Controls toolbar -->
     <div class="controls-toolbar">
-      <button pButton [icon]="isShuffled() ? 'pi pi-sort-alt' : 'pi pi-sync'" class="p-button-text p-button-sm"
-        [label]="isShuffled() ? 'Bỏ trộn' : 'Trộn'" (click)="toggleShuffle()">
-      </button>
+      <div class="left-actions">
+        <button pButton [icon]="isShuffled() ? 'pi pi-sort-alt' : 'pi pi-sync'" class="p-button-text p-button-sm"
+          [label]="isShuffled() ? 'Bỏ trộn' : 'Trộn'" (click)="toggleShuffle()">
+        </button>
 
-      <button pButton icon="pi pi-arrows-h" class="p-button-text p-button-sm"
-        [label]="showTermFirst() ? 'Thuật ngữ trước' : 'Nghĩa trước'" (click)="toggleFlipOrder()">
-      </button>
+        <button pButton icon="pi pi-arrows-h" class="p-button-text p-button-sm"
+          [label]="showTermFirst() ? 'Thuật ngữ trước' : 'Nghĩa trước'" (click)="toggleFlipOrder()">
+        </button>
 
-      <button pButton [icon]="isCurrentLearned() ? 'pi pi-check-circle' : 'pi pi-circle'"
-        class="p-button-text p-button-sm" [class.learned-active]="isCurrentLearned()"
-        [label]="isCurrentLearned() ? 'Đã thuộc' : 'Đánh dấu thuộc'" (click)="toggleLearned()">
-      </button>
+        <button pButton [icon]="isCurrentLearned() ? 'pi pi-check-circle' : 'pi pi-circle'"
+          class="p-button-text p-button-sm" [class.learned-active]="isCurrentLearned()"
+          [label]="isCurrentLearned() ? 'Đã thuộc' : 'Đánh dấu thuộc'" (click)="toggleLearned()">
+        </button>
+      </div>
 
       @if (learnedCount() > 0) {
-      <span class="learned-counter">{{ learnedCount() }}/{{ activeTerms().length }} đã thuộc</span>
+      <div class="right-actions">
+        <span class="learned-counter">{{ learnedCount() }}/{{ activeTerms().length }} đã thuộc</span>
+      </div>
       }
     </div>
 
@@ -73,6 +79,23 @@
       </button>
     </div>
   </div>
+  }
+
+  @if (viewMode() === 'grid') {
+  <div class="term-grid-section">
+    <app-term-grid [terms]="activeTerms()"></app-term-grid>
+  </div>
+  }
+
+  @if (hasMoreTerms$ | async) {
+  <div class="load-more-container">
+    <button pButton [label]="(isLoadingTerms$ | async) ? 'Đang tải...' : 'Tải thêm'"
+      [icon]="(isLoadingTerms$ | async) ? 'pi pi-spin pi-spinner' : 'pi pi-refresh'"
+      class="p-button-outlined p-button-rounded load-more-btn" [disabled]="isLoadingTerms$ | async"
+      (click)="loadMoreTerms()">
+    </button>
+  </div>
+  }
 </div>
 
 <div class="loading-container" *ngIf="false">

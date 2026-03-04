@@ -4,10 +4,11 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { Subject, takeUntil, interval } from 'rxjs';
-import { StudySetDetail, Term } from '../../types';
+import { StudySetDetail, Term, QuizAnswer } from '../../types';
 import { AppState } from '../../store/app.state';
 import * as StudySetActions from '../../store/studyset/studyset.actions';
 import * as StudySetSelectors from '../../store/studyset/studyset.selectors';
+import * as QuizActions from '../../store/quiz/quiz.actions';
 import { ButtonModule } from 'primeng/button';
 import { SliderModule } from 'primeng/slider';
 import { ProgressBarModule } from 'primeng/progressbar';
@@ -67,6 +68,7 @@ export class QuizPage implements OnInit, OnDestroy {
   isAnswerSubmitted = signal(false);
   correctAnswersCount = signal(0);
   wrongAnswers: LocalQuizResult['wrongAnswers'] = [];
+  allAnswers: QuizAnswer[] = [];
 
   // Timer
   timePerQuestion = 20;
@@ -185,6 +187,13 @@ export class QuizPage implements OnInit, OnDestroy {
       ? this.fuzzyMatch(userAnswer, q.correctAnswer)
       : userAnswer === q.correctAnswer;
 
+    this.allAnswers.push({
+      termId: q.term.id,
+      userAnswer,
+      correctAnswer: q.correctAnswer,
+      correct: isCorrect,
+    });
+
     if (isCorrect) {
       this.correctAnswersCount.update((c) => c + 1);
     } else {
@@ -205,6 +214,12 @@ export class QuizPage implements OnInit, OnDestroy {
     this.isAnswerSubmitted.set(true);
     this.stopTimer();
     const q = this.questions[this.currentQuestionIndex()];
+    this.allAnswers.push({
+      termId: q.term.id,
+      userAnswer: '',
+      correctAnswer: q.correctAnswer,
+      correct: false,
+    });
     this.wrongAnswers.push({
       term: q.term, userAnswer: 'Hết giờ', correctAnswer: q.correctAnswer,
     });
@@ -230,6 +245,16 @@ export class QuizPage implements OnInit, OnDestroy {
       timeTaken, wrongAnswers: this.wrongAnswers,
     };
     this.quizState.set('result');
+
+    // Persist quiz result to backend
+    if (this.studySet) {
+      this.store.dispatch(QuizActions.submitQuiz({
+        studySetId: this.studySet.id,
+        quizType: this.selectedType(),
+        timeSpentSeconds: timeTaken,
+        answers: this.allAnswers,
+      }));
+    }
   }
 
   retryQuiz(): void {
@@ -239,6 +264,7 @@ export class QuizPage implements OnInit, OnDestroy {
     this.isAnswerSubmitted.set(false);
     this.correctAnswersCount.set(0);
     this.wrongAnswers = [];
+    this.allAnswers = [];
     this.quizResult = null;
     this.quizState.set('setup');
   }

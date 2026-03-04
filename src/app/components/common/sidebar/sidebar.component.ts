@@ -21,6 +21,7 @@ export class SidebarComponent {
   navItems: NavItem[] = [
     { label: 'Trang chủ', icon: 'pi-home', route: '/', isActive: true },
     { label: 'Thư viện của bạn', icon: 'pi-folder', route: '/library' },
+    { label: 'Lịch sử Quiz', icon: 'pi-history', route: '/quiz-history' },
     { label: 'Thông báo', icon: 'pi-bell', route: '/notifications' },
   ];
   sidebarService = inject(SidebarService);

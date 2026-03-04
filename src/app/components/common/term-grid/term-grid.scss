@@ -1,0 +1,67 @@
+@use '../../../styles/variables' as *;
+
+.term-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    padding: 1rem 0;
+
+    .grid-item {
+        height: 300px;
+
+        ::ng-deep .flashcard-container {
+            height: 100%;
+            max-width: 100%;
+
+            .flashcard-face {
+                padding: 1rem;
+                border-radius: 12px;
+
+                .card-label {
+                    font-size: 0.75rem;
+                }
+
+                .card-content {
+                    font-size: 1.25rem;
+                }
+
+                .tts-btn {
+                    top: 0.5rem;
+                    right: 0.5rem;
+                    width: 28px;
+                    height: 28px;
+
+                    i {
+                        font-size: 0.85rem;
+                    }
+                }
+            }
+        }
+    }
+
+    .empty-msg {
+        grid-column: 1 / -1;
+        text-align: center;
+        color: $text-secondary;
+        font-size: 0.875rem;
+        padding: 2rem 0;
+    }
+}
+
+@media (max-width: 1200px) {
+    .term-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+    .term-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .term-grid {
+        grid-template-columns: 1fr;
+    }
+}

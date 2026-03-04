@@ -1,0 +1,163 @@
+<div class="quiz-result-detail-page">
+  <!-- Header -->
+  <div class="page-header">
+    <button pButton class="back-btn" (click)="goBack()">
+      <i class="pi pi-arrow-left"></i>
+      Quay lại
+    </button>
+    <h1 class="page-title">
+      <i class="pi pi-chart-bar"></i>
+      Chi tiết kết quả Quiz
+    </h1>
+  </div>
+
+  <!-- Loading skeleton -->
+  @if (isLoading) {
+    <div class="detail-content">
+      <div class="result-summary-card skeleton-card">
+        <p-skeleton width="50%" height="1.5rem" styleClass="mb-3" />
+        <p-skeleton width="30%" height="1rem" styleClass="mb-2" />
+        <p-skeleton width="40%" height="1rem" styleClass="mb-3" />
+        <div class="skeleton-stats">
+          <p-skeleton width="80px" height="60px" borderRadius="8px" />
+          <p-skeleton width="80px" height="60px" borderRadius="8px" />
+          <p-skeleton width="80px" height="60px" borderRadius="8px" />
+        </div>
+      </div>
+      <div class="answers-section">
+        @for (item of getSkeletonItems(); track $index) {
+          <div class="answer-card skeleton-card">
+            <p-skeleton width="60%" height="1rem" styleClass="mb-2" />
+            <p-skeleton width="80%" height="0.875rem" styleClass="mb-1" />
+            <p-skeleton width="70%" height="0.875rem" />
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- Error / empty state -->
+  @if (!isLoading && !result) {
+    <div class="empty-state">
+      <i class="pi pi-exclamation-circle empty-icon"></i>
+      <h3>Không tìm thấy kết quả</h3>
+      <p>Kết quả quiz này không tồn tại hoặc đã bị xoá.</p>
+      <button pButton class="back-btn-center" (click)="goBack()">
+        <i class="pi pi-arrow-left"></i>
+        Quay lại lịch sử
+      </button>
+    </div>
+  }
+
+  <!-- Detail content -->
+  @if (!isLoading && result) {
+    <div class="detail-content">
+      <!-- Summary card -->
+      <div class="result-summary-card">
+        <div class="summary-header">
+          <div class="summary-info">
+            <a [routerLink]="['/set', result.studySetId]" class="study-set-title">
+              {{ result.studySetTitle ?? 'Bộ thẻ không tồn tại' }}
+            </a>
+            <div class="summary-meta">
+              <p-tag
+                [value]="getQuizTypeLabel(result.quizType)"
+                [severity]="getQuizTypeSeverity(result.quizType)"
+                [styleClass]="'quiz-type-tag quiz-type-' + result.quizType"
+              />
+              <span class="meta-item">
+                <i class="pi pi-calendar"></i>
+                {{ formatDate(result.createdAt) }}
+              </span>
+              <span class="meta-item">
+                <i class="pi pi-clock"></i>
+                {{ formatTime(result.timeSpentSeconds) }}
+              </span>
+            </div>
+          </div>
+          <div class="score-badge" [class]="getScoreClass(result.score)">
+            <span class="score-num">{{ result.score }}%</span>
+            <span class="score-sub">{{ result.correctAnswers }}/{{ result.totalQuestions }}</span>
+          </div>
+        </div>
+
+        <div class="summary-stats">
+          <div class="stat-block correct-block">
+            <span class="stat-count">{{ correctAnswers.length }}</span>
+            <span class="stat-label">Câu đúng</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-block wrong-block">
+            <span class="stat-count">{{ wrongAnswers.length }}</span>
+            <span class="stat-label">Câu sai</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-block total-block">
+            <span class="stat-count">{{ result.totalQuestions }}</span>
+            <span class="stat-label">Tổng cộng</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Wrong answers section -->
+      @if (wrongAnswers.length > 0) {
+        <div class="answers-section wrong-section">
+          <h2 class="section-title wrong-title">
+            <i class="pi pi-times-circle"></i>
+            Câu sai
+            <span class="section-count wrong-count">{{ wrongAnswers.length }}</span>
+          </h2>
+          <div class="answers-list">
+            @for (answer of wrongAnswers; track answer.termId) {
+              <div class="answer-card wrong-card">
+                <div class="answer-term">
+                  <span class="term-label">Thuật ngữ</span>
+                  <span class="term-word">{{ answer.term }}</span>
+                  <span class="term-definition">{{ answer.definition }}</span>
+                </div>
+                <div class="answer-results">
+                  <div class="answer-row user-answer wrong">
+                    <span class="answer-label">Câu trả lời của bạn</span>
+                    <span class="answer-value">{{ answer.userAnswer || '(Không trả lời)' }}</span>
+                  </div>
+                  <div class="answer-row correct-answer">
+                    <span class="answer-label">Đáp án đúng</span>
+                    <span class="answer-value correct">{{ answer.correctAnswer }}</span>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Correct answers section -->
+      @if (correctAnswers.length > 0) {
+        <div class="answers-section correct-section">
+          <h2 class="section-title correct-title">
+            <i class="pi pi-check-circle"></i>
+            Câu đúng
+            <span class="section-count correct-count">{{ correctAnswers.length }}</span>
+          </h2>
+          <div class="answers-list">
+            @for (answer of correctAnswers; track answer.termId) {
+              <div class="answer-card correct-card">
+                <div class="answer-term">
+                  <span class="term-label">Thuật ngữ</span>
+                  <span class="term-word">{{ answer.term }}</span>
+                  <span class="term-definition">{{ answer.definition }}</span>
+                </div>
+                <div class="answer-results">
+                  <div class="answer-row correct-answer">
+                    <span class="answer-label">Câu trả lời của bạn</span>
+                    <span class="answer-value correct">{{ answer.userAnswer }}</span>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

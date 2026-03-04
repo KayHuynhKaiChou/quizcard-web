@@ -10,5 +10,5 @@ import { LoadingOverlayComponent } from './components/common/loading-overlay/loa
   styleUrl: './app.scss',
 })
 export class App {
-  
+
 }

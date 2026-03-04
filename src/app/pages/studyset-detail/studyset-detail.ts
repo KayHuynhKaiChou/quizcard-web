@@ -8,11 +8,13 @@ import { AppState } from '../../store/app.state';
 import * as StudySetActions from '../../store/studyset/studyset.actions';
 import * as StudySetSelectors from '../../store/studyset/studyset.selectors';
 import { Flashcard } from '../../components/common/flashcard/flashcard';
+import { TermViewToggle } from '../../components/common/term-view-toggle/term-view-toggle';
+import { TermGrid } from '../../components/common/term-grid/term-grid';
 import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-studyset-detail',
-  imports: [CommonModule, RouterModule, Flashcard, ButtonModule],
+  imports: [CommonModule, RouterModule, Flashcard, TermViewToggle, TermGrid, ButtonModule],
   templateUrl: './studyset-detail.html',
   styleUrl: './studyset-detail.scss',
 })
@@ -25,20 +27,27 @@ export class StudySetDetailPage implements OnInit, OnDestroy {
   studySet$: Observable<StudySetDetail | null> = this.store.select(
     StudySetSelectors.selectSelectedStudySet
   );
-  studySet: StudySetDetail | null = null;
+  hasMoreTerms$: Observable<boolean> = this.store.select(
+    StudySetSelectors.selectHasMoreTerms
+  );
+  isLoadingTerms$: Observable<boolean> = this.store.select(
+    StudySetSelectors.selectIsLoadingTerms
+  );
+  studySet = signal<StudySetDetail | null>(null);
 
   currentIndex = signal(0);
   showTermFirst = signal(true);
   isShuffled = signal(false);
   learnedIds = signal<Set<string>>(new Set());
   shuffledTerms = signal<Term[]>([]);
+  viewMode = signal<'flashcard' | 'grid'>('flashcard');
 
   // Computed: active terms list (shuffled or original)
   activeTerms = computed(() => {
     if (this.isShuffled() && this.shuffledTerms().length > 0) {
       return this.shuffledTerms();
     }
-    return this.studySet?.terms ?? [];
+    return this.studySet()?.terms ?? [];
   });
 
   learnedCount = computed(() => this.learnedIds().size);
@@ -50,7 +59,7 @@ export class StudySetDetailPage implements OnInit, OnDestroy {
     }
 
     this.studySet$.pipe(takeUntil(this.destroy$)).subscribe((studySet) => {
-      this.studySet = studySet;
+      this.studySet.set(studySet);
     });
   }
 
@@ -62,7 +71,7 @@ export class StudySetDetailPage implements OnInit, OnDestroy {
 
   @HostListener('window:keydown', ['$event'])
   handleKeyboard(event: KeyboardEvent): void {
-    if (!this.studySet) return;
+    if (!this.studySet()) return;
     if (event.key === 'ArrowLeft') this.previous();
     else if (event.key === 'ArrowRight') this.next();
   }
@@ -82,12 +91,13 @@ export class StudySetDetailPage implements OnInit, OnDestroy {
 
   // Fisher-Yates shuffle
   toggleShuffle(): void {
-    if (!this.studySet) return;
+    const currentSet = this.studySet();
+    if (!currentSet) return;
     if (this.isShuffled()) {
       this.isShuffled.set(false);
       this.shuffledTerms.set([]);
     } else {
-      const shuffled = [...this.studySet.terms];
+      const shuffled = [...currentSet.terms];
       for (let i = shuffled.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
@@ -122,8 +132,26 @@ export class StudySetDetailPage implements OnInit, OnDestroy {
     return currentTerm ? this.learnedIds().has(currentTerm.id) : false;
   }
 
+  onViewChange(mode: 'flashcard' | 'grid'): void {
+    this.viewMode.set(mode);
+  }
+
   goToQuiz(): void {
-    if (!this.studySet) return;
-    this.router.navigate(['/quiz', this.studySet.id]);
+    const currentSet = this.studySet();
+    if (!currentSet) return;
+    this.router.navigate(['/quiz', currentSet.id]);
+  }
+
+  loadMoreTerms(): void {
+    const currentSet = this.studySet();
+    if (!currentSet) return;
+
+    // Get current cursor from store
+    this.store.select(StudySetSelectors.selectTermsCursor).subscribe(cursor => {
+      this.store.dispatch(StudySetActions.loadStudySetTerms({
+        id: currentSet.id,
+        cursor: cursor ?? undefined
+      }));
+    }).unsubscribe();
   }
 }

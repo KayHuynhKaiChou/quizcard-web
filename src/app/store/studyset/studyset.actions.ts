@@ -7,6 +7,7 @@ import {
   Term,
   CreateTermRequest,
   UpdateTermRequest,
+  CursorPage,
 } from '../../types';
 
 // Load My Study Sets (paginated)
@@ -43,6 +44,22 @@ export const loadStudySetByIdSuccess = createAction(
 
 export const loadStudySetByIdFailure = createAction(
   '[StudySet] Load Study Set By ID Failure',
+  props<{ error: string }>()
+);
+
+// Load Study Set Terms
+export const loadStudySetTerms = createAction(
+  '[StudySet] Load Study Set Terms',
+  props<{ id: string; cursor?: number; limit?: number }>()
+);
+
+export const loadStudySetTermsSuccess = createAction(
+  '[StudySet] Load Study Set Terms Success',
+  props<{ termsPage: CursorPage<Term, number> }>()
+);
+
+export const loadStudySetTermsFailure = createAction(
+  '[StudySet] Load Study Set Terms Failure',
   props<{ error: string }>()
 );
 

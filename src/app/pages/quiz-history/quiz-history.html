@@ -1,0 +1,101 @@
+<div class="quiz-history-page">
+  <!-- Header -->
+  <div class="page-header">
+    <h1 class="page-title">
+      <i class="pi pi-history"></i>
+      Lịch sử Quiz
+    </h1>
+    <p class="page-subtitle">Xem lại kết quả các bài quiz đã làm</p>
+  </div>
+
+  <!-- Loading skeleton -->
+  @if (isLoading) {
+    <div class="history-list">
+      @for (item of getSkeletonItems(); track $index) {
+        <div class="history-card skeleton-card">
+          <p-skeleton width="60%" height="1.25rem" styleClass="mb-2" />
+          <p-skeleton width="40%" height="1rem" styleClass="mb-3" />
+          <div class="card-footer">
+            <p-skeleton width="80px" height="1.5rem" borderRadius="12px" />
+            <p-skeleton width="60px" height="1rem" />
+            <p-skeleton width="70px" height="1rem" />
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Empty state -->
+  @if (!isLoading && history.length === 0) {
+    <div class="empty-state">
+      <i class="pi pi-inbox empty-icon"></i>
+      <h3>Chưa có lịch sử quiz</h3>
+      <p>Bạn chưa hoàn thành bài quiz nào. Hãy bắt đầu ngay!</p>
+    </div>
+  }
+
+  <!-- History list -->
+  @if (!isLoading && history.length > 0) {
+    <div class="history-list">
+      @for (item of history; track item.id) {
+        <div class="history-card" [routerLink]="['/quiz-history', item.id]" style="cursor: pointer;">
+          <div class="card-main">
+            <div class="card-info">
+              <span
+                class="study-set-title"
+                title="{{ item.studySetTitle ?? 'Bộ thẻ không tồn tại' }}"
+              >
+                {{ item.studySetTitle ?? 'Bộ thẻ không tồn tại' }}
+              </span>
+              <div class="card-meta">
+                <p-tag
+                  [value]="getQuizTypeLabel(item.quizType)"
+                  [severity]="getQuizTypeSeverity(item.quizType)"
+                  [styleClass]="'quiz-type-tag quiz-type-' + item.quizType"
+                />
+                <span class="meta-item">
+                  <i class="pi pi-calendar"></i>
+                  {{ formatDate(item.createdAt) }}
+                </span>
+              </div>
+            </div>
+            <div class="card-stats">
+              <div class="stat-item">
+                <span class="stat-label">Điểm số</span>
+                <span class="stat-value score-value" [class]="getScoreClass(item.score)">
+                  {{ item.correctAnswers }}/{{ item.totalQuestions }}
+                  <span class="score-percent">({{ item.score }}%)</span>
+                </span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Thời gian</span>
+                <span class="stat-value time-value">
+                  <i class="pi pi-clock"></i>
+                  {{ formatTime(item.timeSpentSeconds) }}
+                </span>
+              </div>
+              <div class="stat-item">
+                <span class="detail-link">
+                  <i class="pi pi-eye"></i>
+                  Xem chi tiết
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Paginator -->
+    @if (totalElements > pageSize) {
+      <div class="paginator-wrapper">
+        <p-paginator
+          [rows]="pageSize"
+          [totalRecords]="totalElements"
+          [first]="currentPage * pageSize"
+          (onPageChange)="onPageChange($event)"
+        />
+      </div>
+    }
+  }
+</div>
