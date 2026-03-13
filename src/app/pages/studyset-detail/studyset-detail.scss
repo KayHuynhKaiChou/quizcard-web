@@ -144,6 +144,18 @@
   .term-grid-section {
     max-width: 1200px;
     margin: 0 auto;
+
+    .grid-loading-indicator {
+      display: flex;
+      justify-content: center;
+      padding: 2rem 0;
+      color: $text-secondary;
+      font-size: 1.5rem;
+    }
+
+    .scroll-sentinel {
+      height: 1px;
+    }
   }
 
   .load-more-container {

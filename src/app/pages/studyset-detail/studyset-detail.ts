@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, HostListener, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewChecked, HostListener, inject, signal, computed, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Store } from '@ngrx/store';
@@ -18,11 +18,15 @@ import { ButtonModule } from 'primeng/button';
   templateUrl: './studyset-detail.html',
   styleUrl: './studyset-detail.scss',
 })
-export class StudySetDetailPage implements OnInit, OnDestroy {
+export class StudySetDetailPage implements OnInit, OnDestroy, AfterViewChecked {
   private store = inject(Store<AppState>);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private destroy$ = new Subject<void>();
+  private scrollObserver: IntersectionObserver | null = null;
+  private observedElement: Element | null = null;
+
+  @ViewChild('scrollSentinel') scrollSentinelRef?: ElementRef<HTMLDivElement>;
 
   studySet$: Observable<StudySetDetail | null> = this.store.select(
     StudySetSelectors.selectSelectedStudySet
@@ -63,7 +67,12 @@ export class StudySetDetailPage implements OnInit, OnDestroy {
     });
   }
 
+  ngAfterViewChecked(): void {
+    this.setupScrollObserver();
+  }
+
   ngOnDestroy(): void {
+    this.teardownScrollObserver();
     this.destroy$.next();
     this.destroy$.complete();
     this.store.dispatch(StudySetActions.clearSelectedStudySet());
@@ -84,8 +93,34 @@ export class StudySetDetailPage implements OnInit, OnDestroy {
 
   next(): void {
     const terms = this.activeTerms();
+
+    // Check if we need to load more (e.g. reached the 19th term of a 20-term batch)
+    // terms.length is usually a multiple of 20
+    if (this.currentIndex() >= terms.length - 2) {
+      this.triggerLoadMoreIfNeeded();
+    }
+
     if (this.currentIndex() < terms.length - 1) {
       this.currentIndex.update((i) => i + 1);
+
+      // Check again after advancing just in case
+      if (this.currentIndex() >= terms.length - 2) {
+        this.triggerLoadMoreIfNeeded();
+      }
+    } else {
+      // If at the end of loaded terms but hasn't fully loaded, try to load more
+      this.triggerLoadMoreIfNeeded();
+    }
+  }
+
+  private triggerLoadMoreIfNeeded(): void {
+    let hasMore = false;
+    let isLoading = false;
+    this.store.select(StudySetSelectors.selectHasMoreTerms).subscribe(v => hasMore = v).unsubscribe();
+    this.store.select(StudySetSelectors.selectIsLoadingTerms).subscribe(v => isLoading = v).unsubscribe();
+
+    if (hasMore && !isLoading) {
+      this.loadMoreTerms();
     }
   }
 
@@ -153,5 +188,30 @@ export class StudySetDetailPage implements OnInit, OnDestroy {
         cursor: cursor ?? undefined
       }));
     }).unsubscribe();
+  }
+
+  private setupScrollObserver(): void {
+    const el = this.scrollSentinelRef?.nativeElement;
+    if (!el || this.observedElement === el) return;
+
+    this.teardownScrollObserver();
+
+    this.scrollObserver = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          this.triggerLoadMoreIfNeeded();
+        }
+      },
+      { rootMargin: '200px' }
+    );
+
+    this.scrollObserver.observe(el);
+    this.observedElement = el;
+  }
+
+  private teardownScrollObserver(): void {
+    this.scrollObserver?.disconnect();
+    this.scrollObserver = null;
+    this.observedElement = null;
   }
 }

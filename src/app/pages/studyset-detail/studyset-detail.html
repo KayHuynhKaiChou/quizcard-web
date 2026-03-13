@@ -9,7 +9,7 @@
         @if (studySet.description) {
         <p class="description">{{ studySet.description }}</p>
         }
-        <p class="terms-count">{{ studySet.terms.length }} thuật ngữ</p>
+        <p class="terms-count">{{ studySet.termsCount }} thuật ngữ</p>
       </div>
 
       <div class="header-actions">
@@ -44,7 +44,7 @@
 
       @if (learnedCount() > 0) {
       <div class="right-actions">
-        <span class="learned-counter">{{ learnedCount() }}/{{ activeTerms().length }} đã thuộc</span>
+        <span class="learned-counter">{{ learnedCount() }}/{{ studySet.termsCount }} đã thuộc</span>
       </div>
       }
     </div>
@@ -52,10 +52,10 @@
     <!-- Progress -->
     <div class="progress-indicator">
       <div class="progress-text">
-        {{ currentIndex() + 1 }} / {{ activeTerms().length }}
+        {{ currentIndex() + 1 }} / {{ studySet.termsCount }}
       </div>
       <div class="progress-bar-container">
-        <div class="progress-bar-fill" [style.width.%]="((currentIndex() + 1) / activeTerms().length) * 100">
+        <div class="progress-bar-fill" [style.width.%]="((currentIndex() + 1) / studySet.termsCount) * 100">
         </div>
       </div>
     </div>
@@ -74,8 +74,11 @@
         <span>Click thẻ để lật</span>
       </div>
 
-      <button pButton icon="pi pi-chevron-right" class="p-button-rounded p-button-outlined"
-        [disabled]="currentIndex() === activeTerms().length - 1" (click)="next()">
+      <button pButton
+        [icon]="(currentIndex() === activeTerms().length - 1 && (isLoadingTerms$ | async)) ? 'pi pi-spin pi-spinner' : 'pi pi-chevron-right'"
+        class="p-button-rounded p-button-outlined"
+        [disabled]="currentIndex() === studySet.termsCount - 1 || (currentIndex() === activeTerms().length - 1 && (isLoadingTerms$ | async) === true)"
+        (click)="next()">
       </button>
     </div>
   </div>
@@ -84,18 +87,19 @@
   @if (viewMode() === 'grid') {
   <div class="term-grid-section">
     <app-term-grid [terms]="activeTerms()"></app-term-grid>
+
+    @if (isLoadingTerms$ | async) {
+    <div class="grid-loading-indicator">
+      <i class="pi pi-spin pi-spinner"></i>
+    </div>
+    }
+
+    @if (hasMoreTerms$ | async) {
+    <div class="scroll-sentinel" #scrollSentinel></div>
+    }
   </div>
   }
 
-  @if (hasMoreTerms$ | async) {
-  <div class="load-more-container">
-    <button pButton [label]="(isLoadingTerms$ | async) ? 'Đang tải...' : 'Tải thêm'"
-      [icon]="(isLoadingTerms$ | async) ? 'pi pi-spin pi-spinner' : 'pi pi-refresh'"
-      class="p-button-outlined p-button-rounded load-more-btn" [disabled]="isLoadingTerms$ | async"
-      (click)="loadMoreTerms()">
-    </button>
-  </div>
-  }
 </div>
 
 <div class="loading-container" *ngIf="false">
