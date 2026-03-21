@@ -5,7 +5,6 @@ import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
-import { PasswordModule } from 'primeng/password';
 import { TextareaModule } from 'primeng/textarea';
 import { MessageModule } from 'primeng/message';
 import { DialogModule } from 'primeng/dialog';
@@ -22,7 +21,7 @@ import { StatsCard } from '../../components/common/stats-card/stats-card';
   standalone: true,
   imports: [
     CommonModule, ReactiveFormsModule,
-    InputTextModule, ButtonModule, PasswordModule, TextareaModule, MessageModule,
+    InputTextModule, ButtonModule, TextareaModule, MessageModule,
     DialogModule, DividerModule, TooltipModule,
     StatsCard,
   ],
@@ -35,11 +34,15 @@ export class ProfilePage implements OnInit, OnDestroy {
   private platformId = inject(PLATFORM_ID);
   private sub = new Subscription();
 
-  user: User | null = null;
+  user = signal<User | null>(null);
   profileForm!: FormGroup;
   passwordForm!: FormGroup;
   passwordError = signal('');
   profileSaved = signal(false);
+
+  showOldPw = signal(false);
+  showNewPw = signal(false);
+  showConfirmPw = signal(false);
 
   // Avatar dialog state
   selectedFile = signal<File | null>(null);
@@ -52,7 +55,7 @@ export class ProfilePage implements OnInit, OnDestroy {
   });
 
   avatarPreviewUrl = computed(() => {
-    return this.localPreviewUrl() || this.user?.avatarUrl || 'https://i.pravatar.cc/150?img=36';
+    return this.localPreviewUrl() || this.user()?.avatarUrl || 'https://i.pravatar.cc/150?img=36';
   });
 
   private readonly STYLES = [
@@ -95,7 +98,7 @@ export class ProfilePage implements OnInit, OnDestroy {
     this.sub.add(
       this.store.select(AuthSelectors.selectUser).subscribe((user) => {
         if (user) {
-          this.user = user;
+          this.user.set(user);
           this.profileForm.patchValue({
             displayName: user.displayName,
             bio: user.bio || '',

@@ -109,6 +109,32 @@
       width: 100%;
     }
 
+    .pw-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+
+      .pw-input {
+        width: 100%;
+        padding-right: 2.75rem;
+      }
+
+      .pw-toggle {
+        position: absolute;
+        right: 0.75rem;
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: $text-secondary;
+        display: flex;
+        align-items: center;
+        padding: 0;
+        font-size: 1rem;
+
+        &:hover { color: $text-primary; }
+      }
+    }
+
     button[type='submit'] {
       margin-top: 0.5rem;
     }

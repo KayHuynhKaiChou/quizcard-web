@@ -216,7 +216,13 @@ export const authReducer = createReducer(
 
   on(AuthActions.uploadAvatarSuccess, (state, { user }) => ({
     ...state,
-    user,
+    user: {
+      ...user,
+      // Cache-bust: Supabase overwrites same filename, browser would show cached old image
+      avatarUrl: user.avatarUrl
+        ? user.avatarUrl.split('?')[0] + '?v=' + Date.now()
+        : user.avatarUrl,
+    },
     isLoading: false,
     error: null,
   })),

@@ -1,4 +1,4 @@
-@if (user) {
+@if (user(); as u) {
 <div class="profile-page">
   <!-- Profile Header -->
   <div class="profile-header">
@@ -13,16 +13,16 @@
       </div>
     </div>
     <div class="profile-info">
-      <h1>{{ user.displayName }}</h1>
-      <p class="email">{{ user.email }}</p>
-      <p class="joined">Tham gia {{ user.createdAt | date:'dd/MM/yyyy' }}</p>
+      <h1>{{ u.displayName }}</h1>
+      <p class="email">{{ u.email }}</p>
+      <p class="joined">Tham gia {{ u.createdAt | date:'dd/MM/yyyy' }}</p>
     </div>
   </div>
 
   <!-- Stats -->
   <div class="stats-row">
-    <app-stats-card icon="pi pi-bolt" [value]="user.streakCount" label="Streak" color="#f59e0b"></app-stats-card>
-    <app-stats-card icon="pi pi-trophy" [value]="user.xpPoints" label="XP" color="#8b5cf6"></app-stats-card>
+    <app-stats-card icon="pi pi-bolt" [value]="u.streakCount" label="Streak" color="#f59e0b"></app-stats-card>
+    <app-stats-card icon="pi pi-trophy" [value]="u.xpPoints" label="XP" color="#8b5cf6"></app-stats-card>
   </div>
 
   <!-- Edit Profile -->
@@ -51,15 +51,33 @@
     <form [formGroup]="passwordForm" (ngSubmit)="changePassword()">
       <div class="form-field">
         <label for="oldPw">Mật khẩu hiện tại</label>
-        <p-password id="oldPw" formControlName="oldPassword" [toggleMask]="true" [feedback]="false" styleClass="w-full"></p-password>
+        <div class="pw-wrapper">
+          <input pInputText [type]="showOldPw() ? 'text' : 'password'"
+            id="oldPw" formControlName="oldPassword" class="pw-input" />
+          <button type="button" class="pw-toggle" (click)="showOldPw.set(!showOldPw())">
+            <i [class]="showOldPw() ? 'pi pi-eye-slash' : 'pi pi-eye'"></i>
+          </button>
+        </div>
       </div>
       <div class="form-field">
         <label for="newPw">Mật khẩu mới</label>
-        <p-password id="newPw" formControlName="newPassword" [toggleMask]="true" [feedback]="false" styleClass="w-full"></p-password>
+        <div class="pw-wrapper">
+          <input pInputText [type]="showNewPw() ? 'text' : 'password'"
+            id="newPw" formControlName="newPassword" class="pw-input" />
+          <button type="button" class="pw-toggle" (click)="showNewPw.set(!showNewPw())">
+            <i [class]="showNewPw() ? 'pi pi-eye-slash' : 'pi pi-eye'"></i>
+          </button>
+        </div>
       </div>
       <div class="form-field">
         <label for="confirmPw">Xác nhận mật khẩu</label>
-        <p-password id="confirmPw" formControlName="confirmPassword" [toggleMask]="true" [feedback]="false" styleClass="w-full"></p-password>
+        <div class="pw-wrapper">
+          <input pInputText [type]="showConfirmPw() ? 'text' : 'password'"
+            id="confirmPw" formControlName="confirmPassword" class="pw-input" />
+          <button type="button" class="pw-toggle" (click)="showConfirmPw.set(!showConfirmPw())">
+            <i [class]="showConfirmPw() ? 'pi pi-eye-slash' : 'pi pi-eye'"></i>
+          </button>
+        </div>
       </div>
       @if (passwordError()) {
         <p-message severity="error" [text]="passwordError()"></p-message>
@@ -108,7 +126,7 @@
     @for (preset of avatarPresets(); track preset.url) {
       <div
         class="preset-item"
-        [class.active]="user?.avatarUrl === preset.url"
+        [class.active]="user()?.avatarUrl === preset.url"
         (click)="selectPresetAvatar(preset.url)"
       >
         <img [src]="preset.url" [alt]="preset.label" />

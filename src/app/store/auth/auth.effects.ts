@@ -485,9 +485,10 @@ export class AuthEffects {
           this.messageService.add({
             severity: 'success',
             summary: 'Đổi mật khẩu thành công',
-            detail: message,
-            life: 3000,
+            detail: message || 'Vui lòng đăng nhập lại với mật khẩu mới',
+            life: 2500,
           });
+          setTimeout(() => this.store.dispatch(AuthActions.logout()), 2000);
         })
       ),
     { dispatch: false }
