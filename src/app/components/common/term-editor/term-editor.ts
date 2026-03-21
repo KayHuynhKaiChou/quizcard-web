@@ -2,8 +2,12 @@ import { Component, Input, Output, EventEmitter, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
+import { TextareaModule } from 'primeng/textarea';
 import { ButtonModule } from 'primeng/button';
 import { CreateTermRequest } from '../../../types';
+
+const LINE_HEIGHT_PX = 21; // 0.875rem * 1.5 line-height ≈ 21px
+const MAX_ROWS = 4;
 
 export interface TermRow {
   term: string;
@@ -13,7 +17,7 @@ export interface TermRow {
 @Component({
   selector: 'app-term-editor',
   standalone: true,
-  imports: [CommonModule, FormsModule, InputTextModule, ButtonModule],
+  imports: [CommonModule, FormsModule, InputTextModule, TextareaModule, ButtonModule],
   templateUrl: './term-editor.html',
   styleUrl: './term-editor.scss',
 })
@@ -40,6 +44,15 @@ export class TermEditor {
 
   onFieldChange(): void {
     this.emitChange();
+  }
+
+  autoResize(el: EventTarget | null): void {
+    const textarea = el as HTMLTextAreaElement;
+    if (!textarea) return;
+    const maxHeight = LINE_HEIGHT_PX * MAX_ROWS + 16; // 16px = vertical padding
+    textarea.style.height = 'auto';
+    textarea.style.overflowY = textarea.scrollHeight > maxHeight ? 'auto' : 'hidden';
+    textarea.style.height = Math.min(textarea.scrollHeight, maxHeight) + 'px';
   }
 
   private emitChange(): void {

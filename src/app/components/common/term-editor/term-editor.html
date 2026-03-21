@@ -6,32 +6,37 @@
   <div class="term-list">
     @for (row of rows(); track trackByIndex($index)) {
       <div class="term-row">
-        <span class="row-number">{{ $index + 1 }}</span>
+        <div class="row-top">
+          <span class="row-number">{{ $index + 1 }}</span>
+          @if ($index >= 2) {
+            <button
+              pButton
+              icon="pi pi-trash"
+              class="p-button-text p-button-danger p-button-sm delete-btn"
+              (click)="removeRow($index)">
+            </button>
+          }
+        </div>
         <div class="row-fields">
-          <input
-            pInputText
-            type="text"
+          <textarea
+            pTextarea
             placeholder="Thuật ngữ"
             [(ngModel)]="row.term"
             (ngModelChange)="onFieldChange()"
+            (input)="autoResize($event.target)"
             class="term-input"
-          />
-          <input
-            pInputText
-            type="text"
+            rows="1"
+          ></textarea>
+          <textarea
+            pTextarea
             placeholder="Nghĩa / Định nghĩa"
             [(ngModel)]="row.definition"
             (ngModelChange)="onFieldChange()"
+            (input)="autoResize($event.target)"
             class="term-input"
-          />
+            rows="1"
+          ></textarea>
         </div>
-        <button
-          pButton
-          icon="pi pi-trash"
-          class="p-button-text p-button-danger p-button-sm"
-          [disabled]="rows().length <= 1"
-          (click)="removeRow($index)">
-        </button>
       </div>
     }
   </div>
