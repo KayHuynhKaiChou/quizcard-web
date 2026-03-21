@@ -40,6 +40,22 @@
       word-break: break-word;
     }
 
+    .card-header-right {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      flex-shrink: 0;
+
+      .clone-btn {
+        color: #b8c5d0;
+        padding: 0.15rem 0.35rem;
+        min-width: unset;
+        &:hover {
+          color: #ffffff;
+        }
+      }
+    }
+
     .mode-badge {
       padding: 0.25rem 0.75rem;
       border-radius: 20px;

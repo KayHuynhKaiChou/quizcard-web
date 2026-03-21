@@ -7,7 +7,6 @@ export interface NavItem {
   label: string;
   icon: string;
   route: string;
-  isActive?: boolean;
 }
 
 @Component({
@@ -19,7 +18,7 @@ export interface NavItem {
 })
 export class SidebarComponent {
   navItems: NavItem[] = [
-    { label: 'Trang chủ', icon: 'pi-home', route: '/', isActive: true },
+    { label: 'Trang chủ', icon: 'pi-home', route: '/' },
     { label: 'Thư viện của bạn', icon: 'pi-folder', route: '/library' },
     { label: 'Lịch sử Quiz', icon: 'pi-history', route: '/quiz-history' },
     { label: 'Thông báo', icon: 'pi-bell', route: '/notifications' },
@@ -35,11 +34,7 @@ export class SidebarComponent {
     }
   }
 
-  onNavClick(item: NavItem): void {
-    // Update active state
-    this.navItems.forEach(nav => nav.isActive = nav === item);
-
-    // Close sidebar on mobile after navigation
+  onNavClick(): void {
     if (this.document.defaultView && this.document.defaultView.innerWidth <= 768) {
       this.sidebarService.close();
     }

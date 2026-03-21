@@ -72,16 +72,10 @@
   }
 
   &__logo-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
     width: 44px;
     height: 44px;
-    background: $accent-color;
-    color: #fff;
-    font-size: 22px;
-    font-weight: 800;
     border-radius: 10px;
+    object-fit: contain;
   }
 
   &__logo-name {

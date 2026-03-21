@@ -204,10 +204,10 @@ export class StudySetEffects {
         tap(({ studySet }) => {
           this.messageService.add({
             severity: 'success',
-            summary: 'Sao chép thành công',
-            detail: `Bộ thẻ "${studySet.title}" đã được sao chép.`,
+            summary: 'Đã clone bộ thẻ thành công',
             life: 3000,
           });
+          this.router.navigate(['/set', studySet.id]);
         })
       ),
     { dispatch: false }

@@ -1,10 +1,11 @@
-import { Component, OnInit, OnDestroy, AfterViewChecked, HostListener, inject, signal, computed, ViewChild, ElementRef, effect } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewChecked, HostListener, inject, signal, computed, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable, Subject, takeUntil, combineLatest, debounceTime, distinctUntilChanged } from 'rxjs';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { StudySetDetail, Term } from '../../types';
+import { Visibility } from '../../types/enum';
 import { AppState } from '../../store/app.state';
 import * as StudySetActions from '../../store/studyset/studyset.actions';
 import * as StudySetSelectors from '../../store/studyset/studyset.selectors';
@@ -14,11 +15,13 @@ import { TermViewToggle } from '../../components/common/term-view-toggle/term-vi
 import { TermGrid } from '../../components/common/term-grid/term-grid';
 import { ButtonModule } from 'primeng/button';
 import { FormsModule } from '@angular/forms';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmationService } from 'primeng/api';
 import { StudySetService } from '../../services/studyset.service';
 
 @Component({
   selector: 'app-studyset-detail',
-  imports: [CommonModule, RouterModule, Flashcard, TermViewToggle, TermGrid, ButtonModule, FormsModule],
+  imports: [CommonModule, RouterModule, Flashcard, TermViewToggle, TermGrid, ButtonModule, FormsModule, ConfirmDialogModule],
   templateUrl: './studyset-detail.html',
   styleUrl: './studyset-detail.scss',
 })
@@ -27,6 +30,7 @@ export class StudySetDetailPage implements OnInit, OnDestroy, AfterViewChecked {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private studySetService = inject(StudySetService);
+  private confirmationService = inject(ConfirmationService);
   private destroy$ = new Subject<void>();
 
   constructor() {
@@ -61,6 +65,15 @@ export class StudySetDetailPage implements OnInit, OnDestroy, AfterViewChecked {
   );
   studySet = signal<StudySetDetail | null>(null);
   isOwner = signal(false);
+  currentUserId = signal<string | null>(null);
+
+  // Show clone button: own sets (any visibility) OR public sets by others; hide private sets by others
+  canClone = computed(() => {
+    const ss = this.studySet();
+    if (!ss) return false;
+    if (this.isOwner()) return true;
+    return ss.visibility === Visibility.PUBLIC;
+  });
 
   currentIndex = signal(0);
   showTermFirst = signal(true);
@@ -103,6 +116,7 @@ export class StudySetDetailPage implements OnInit, OnDestroy, AfterViewChecked {
       this.store.select(AuthSelectors.selectUser)
     ]).pipe(takeUntil(this.destroy$)).subscribe(([ss, user]) => {
       this.studySet.set(ss);
+      this.currentUserId.set(user?.id ?? null);
       this.isOwner.set(!!ss && !!user && ss.userId === user.id);
     });
 
@@ -219,6 +233,28 @@ export class StudySetDetailPage implements OnInit, OnDestroy, AfterViewChecked {
     const currentSet = this.studySet();
     if (!currentSet) return;
     this.router.navigate(['/quiz', currentSet.id]);
+  }
+
+  confirmDelete(): void {
+    const currentSet = this.studySet();
+    if (!currentSet) return;
+    this.confirmationService.confirm({
+      message: 'Xóa bộ thẻ này? Các thuật ngữ sẽ bị xóa theo.',
+      header: 'Xác nhận xóa',
+      icon: 'pi pi-trash',
+      acceptLabel: 'Xóa',
+      rejectLabel: 'Hủy',
+      acceptButtonStyleClass: 'p-button-danger',
+      accept: () => {
+        this.store.dispatch(StudySetActions.deleteStudySet({ id: currentSet.id }));
+      },
+    });
+  }
+
+  cloneStudySet(): void {
+    const currentSet = this.studySet();
+    if (!currentSet) return;
+    this.store.dispatch(StudySetActions.cloneStudySet({ id: currentSet.id }));
   }
 
   setSearchField(field: 'term' | 'definition'): void {

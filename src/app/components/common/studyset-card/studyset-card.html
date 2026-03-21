@@ -1,15 +1,17 @@
 <div class="studyset-card" [routerLink]="['/set', studySet.id]">
   <div class="card-header">
     <h3 class="card-title" [title]="studySet.title">{{ studySet.title }}</h3>
-    @if (!hideVisibility) {
-      <span
-        class="mode-badge"
-        [class.public]="studySet.visibility === 'PUBLIC'"
-        [class.private]="studySet.visibility === 'PRIVATE'"
-        [class.shared]="studySet.visibility === 'SHARED'">
-        {{ studySet.visibility | lowercase }}
-      </span>
-    }
+    <div class="card-header-right">
+      @if (!hideVisibility) {
+        <span
+          class="mode-badge"
+          [class.public]="studySet.visibility === 'PUBLIC'"
+          [class.private]="studySet.visibility === 'PRIVATE'"
+          [class.shared]="studySet.visibility === 'SHARED'">
+          {{ studySet.visibility | lowercase }}
+        </span>
+      }
+    </div>
   </div>
 
   <div class="card-body">

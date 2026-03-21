@@ -9,7 +9,7 @@ import Aura from '@primeuix/themes/aura';
 import { routes } from './app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideAnimations, provideNoopAnimations } from '@angular/platform-browser/animations';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { authInterceptor } from './interceptors/auth.interceptor';
 import { provideStore } from '@ngrx/store';
@@ -74,6 +74,7 @@ export const appConfig: ApplicationConfig = {
       ripple: true,
     }),
     MessageService,
+    ConfirmationService,
     provideHttpClient(withFetch(), withInterceptors([authInterceptor])),
     // NgRx Store
     provideStore(

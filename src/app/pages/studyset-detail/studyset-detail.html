@@ -1,29 +1,41 @@
+<p-confirmDialog></p-confirmDialog>
 <div class="studyset-detail-page" *ngIf="studySet$ | async as studySet">
   <div class="detail-header">
-    <div class="header-content">
-      <button pButton icon="pi pi-arrow-left" class="p-button-text" [routerLink]="['/library']" label="Thư viện">
+    <div class="header-top-bar">
+      <button pButton icon="pi pi-arrow-left" class="p-button-text back-btn" [routerLink]="['/library']" label="Thư viện">
       </button>
-
-      <div class="header-info">
-        <h1>{{ studySet.title }}</h1>
-        @if (studySet.description) {
-        <p class="description">{{ studySet.description }}</p>
-        }
-        <p class="terms-count">{{ studySet.termsCount }} thuật ngữ</p>
-      </div>
-
       <div class="header-actions">
-        <app-term-view-toggle (viewChange)="onViewChange($event)"></app-term-view-toggle>
-        @if (isOwner()) {
-        <button pButton icon="pi pi-pencil" class="p-button-outlined p-button-sm" label="Sửa"
-          [routerLink]="['/set', studySet.id, 'edit']">
-        </button>
-        }
-        <button pButton label="Làm quiz" icon="pi pi-play" class="p-button-success" (click)="goToQuiz()">
-        </button>
+        <div class="actions-row">
+          <app-term-view-toggle (viewChange)="onViewChange($event)"></app-term-view-toggle>
+        </div>
+        <div class="actions-row secondary">
+          @if (canClone()) {
+          <button pButton icon="pi pi-copy" class="p-button-outlined p-button-sm" label="Clone" (click)="cloneStudySet()">
+          </button>
+          }
+          @if (isOwner()) {
+          <button pButton icon="pi pi-pencil" class="p-button-outlined p-button-sm" label="Sửa"
+            [routerLink]="['/set', studySet.id, 'edit']">
+          </button>
+          <button pButton icon="pi pi-trash" class="p-button-outlined p-button-danger p-button-sm" label="Xóa"
+            (click)="confirmDelete()">
+          </button>
+          }
+          <button pButton label="Quiz" icon="pi pi-play" class="p-button-success p-button-sm" (click)="goToQuiz()">
+          </button>
+        </div>
       </div>
     </div>
+    <div class="header-info">
+      <h1>{{ studySet.title }}</h1>
+      @if (studySet.description) {
+      <p class="description">{{ studySet.description }}</p>
+      }
+      <p class="terms-count"><i class="pi pi-book"></i> {{ studySet.termsCount }} thuật ngữ</p>
+    </div>
   </div>
+
+  <hr class="section-divider">
 
   @if (viewMode() === 'flashcard') {
   <div class="flashcard-section" *ngIf="activeTerms().length > 0">

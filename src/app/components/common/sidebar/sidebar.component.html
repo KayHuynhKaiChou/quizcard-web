@@ -9,8 +9,9 @@
       @for (item of navItems; track item.route) {
         <li
           class="nav-item"
-          [class.active]="item.isActive"
-          (click)="onNavClick(item)"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: item.route === '/' }"
+          (click)="onNavClick()"
         >
           <a [routerLink]="item.route" class="nav-link">
             <i [class]="'pi ' + item.icon" class="nav-icon"></i>
