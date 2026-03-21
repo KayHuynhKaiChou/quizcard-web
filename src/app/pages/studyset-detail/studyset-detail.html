@@ -14,9 +14,11 @@
 
       <div class="header-actions">
         <app-term-view-toggle (viewChange)="onViewChange($event)"></app-term-view-toggle>
+        @if (isOwner()) {
         <button pButton icon="pi pi-pencil" class="p-button-outlined p-button-sm" label="Sửa"
           [routerLink]="['/set', studySet.id, 'edit']">
         </button>
+        }
         <button pButton label="Làm quiz" icon="pi pi-play" class="p-button-success" (click)="goToQuiz()">
         </button>
       </div>
@@ -86,16 +88,56 @@
 
   @if (viewMode() === 'grid') {
   <div class="term-grid-section">
+    <!-- Term search bar (grid view only) -->
+    <div class="term-search-bar">
+      <div class="search-input-wrapper">
+        <i class="pi pi-search search-icon"></i>
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Tìm kiếm thuật ngữ..."
+          [(ngModel)]="searchQuery"
+        />
+        @if (searchQuery()) {
+          <button class="clear-btn" (click)="clearSearch()">
+            <i class="pi pi-times"></i>
+          </button>
+        }
+      </div>
+      <div class="field-toggle">
+        <button class="field-btn" [class.active]="searchField() === 'term'" (click)="setSearchField('term')">Thuật ngữ</button>
+        <button class="field-btn" [class.active]="searchField() === 'definition'" (click)="setSearchField('definition')">Định nghĩa</button>
+      </div>
+    </div>
+
+    @if (isSearching()) {
+    <div class="grid-loading-indicator">
+      <i class="pi pi-spin pi-spinner"></i>
+    </div>
+    } @else if (isSearchMode() && activeTerms().length === 0) {
+    <div class="search-empty-state">
+      <i class="pi pi-search"></i>
+      <p>Không tìm thấy thuật ngữ nào</p>
+    </div>
+    } @else {
     <app-term-grid [terms]="activeTerms()"></app-term-grid>
 
-    @if (isLoadingTerms$ | async) {
+    @if (!isSearchMode() && (isLoadingTerms$ | async)) {
     <div class="grid-loading-indicator">
       <i class="pi pi-spin pi-spinner"></i>
     </div>
     }
 
-    @if (hasMoreTerms$ | async) {
+    @if (isSearchMode() && searchHasMore()) {
+    <div class="load-more-container">
+      <button pButton label="Tải thêm" class="p-button-outlined load-more-btn" (click)="loadMoreSearchResults()">
+      </button>
+    </div>
+    }
+
+    @if (!isSearchMode() && (hasMoreTerms$ | async)) {
     <div class="scroll-sentinel" #scrollSentinel></div>
+    }
     }
   </div>
   }

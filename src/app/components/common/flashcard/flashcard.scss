@@ -133,3 +133,17 @@
     }
   }
 }
+
+@media (max-width: 480px) {
+  .flashcard-container {
+    height: 260px;
+  }
+
+  .flashcard-face {
+    padding: 1.25rem;
+
+    .card-content {
+      font-size: 1.1rem;
+    }
+  }
+}

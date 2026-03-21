@@ -33,6 +33,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     '/api/auth/forgot-password',
     '/api/auth/reset-password',
     '/api/auth/refresh',
+    '/api/auth/logout',
     '/api/explore/',
     '/api/health',
   ];

@@ -1,0 +1,167 @@
+@use '../../styles/variables' as *;
+
+.search-page {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.search-header {
+  margin-bottom: 2rem;
+
+  .search-heading {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+
+    .search-heading-icon {
+      font-size: 1.5rem;
+      color: $accent-color;
+    }
+  }
+
+  .search-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: $text-primary;
+    margin: 0;
+
+    .search-query {
+      color: $accent-color;
+    }
+  }
+
+  .result-count {
+    font-size: 0.9rem;
+    color: $text-secondary;
+    margin: 0.25rem 0 0 2.25rem;
+  }
+}
+
+.search-section {
+  margin-bottom: 2.5rem;
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+
+    h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: $text-primary;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .section-icon {
+      font-size: 1.1rem;
+
+      &.my-icon {
+        color: $accent-color;
+      }
+
+      &.community-icon {
+        color: #3b82f6;
+      }
+    }
+
+    .section-count {
+      font-size: 0.875rem;
+      color: $text-secondary;
+    }
+  }
+
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.skeleton-card {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $radius-card;
+  padding: 1.5rem;
+  min-height: 180px;
+
+  --p-skeleton-background: #2a4a6e;
+  --p-skeleton-animation-background: rgba(255, 255, 255, 0.06);
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 5rem 2rem;
+  text-align: center;
+
+  .empty-icon {
+    font-size: 3.5rem;
+    color: $text-secondary;
+    margin-bottom: 1.25rem;
+    opacity: 0.5;
+  }
+
+  .empty-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: $text-primary;
+    margin: 0 0 0.5rem;
+  }
+
+  .empty-subtitle {
+    font-size: 0.9rem;
+    color: $text-secondary;
+    max-width: 400px;
+    line-height: 1.6;
+
+    strong {
+      color: $text-primary;
+    }
+  }
+}
+
+.error-state {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.25rem 1.5rem;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: $radius-card;
+  margin-top: 1rem;
+
+  .error-icon {
+    font-size: 1.25rem;
+    color: #ef4444;
+    flex-shrink: 0;
+  }
+
+  .error-message {
+    font-size: 0.9rem;
+    color: #ef4444;
+    margin: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .search-page {
+    padding: 1.25rem;
+  }
+
+  .search-header .search-title {
+    font-size: 1.375rem;
+  }
+
+  .card-grid {
+    grid-template-columns: 1fr;
+  }
+}

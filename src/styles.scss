@@ -3,6 +3,182 @@
 @use 'app/styles/variables' as *;
 @import 'primeicons/primeicons.css';
 
+// ── Skeleton dark theme override ────────────────────────────────────────
+.p-skeleton {
+  background-color: #2a4a6e !important;
+  &::after {
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.06),
+      transparent
+    ) !important;
+  }
+}
+
+// ── Avatar dialog dark theme overrides ─────────────────────────────────
+.p-dialog {
+  background: $bg-secondary !important;
+  border: 1px solid $border-color !important;
+  border-radius: 12px !important;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5) !important;
+
+  .p-dialog-header {
+    background: $bg-secondary !important;
+    border-bottom: 1px solid $border-color !important;
+    border-radius: 12px 12px 0 0 !important;
+    color: $text-primary !important;
+    padding: 1.25rem 1.5rem !important;
+
+    .p-dialog-title {
+      color: $text-primary !important;
+      font-weight: 600 !important;
+    }
+
+    .p-dialog-close-button {
+      color: $text-secondary !important;
+      &:hover { color: $text-primary !important; background: rgba(255,255,255,0.08) !important; }
+    }
+  }
+
+  .p-dialog-content {
+    background: $bg-secondary !important;
+    color: $text-primary !important;
+    border-radius: 0 0 12px 12px !important;
+    padding: 1.5rem !important;
+  }
+}
+
+// ── PrimeNG dark theme: InputText & Textarea ────────────────────────────
+.p-inputtext,
+textarea.p-textarea {
+  background: $bg-secondary !important;
+  color: $text-primary !important;
+  border-color: $border-color !important;
+
+  &::placeholder {
+    color: $text-secondary !important;
+    opacity: 1;
+  }
+
+  &:focus,
+  &:focus-visible {
+    border-color: $accent-color !important;
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.12) !important;
+    outline: none !important;
+  }
+
+  &:hover:not(:focus) {
+    border-color: #4a5568 !important;
+  }
+}
+
+// Exception: auth forms (signin/signup) keep white inputs
+.bl_input_group .p-inputtext,
+.bl_input_group input {
+  background: #fff !important;
+  color: #374151 !important;
+  border-color: #d1d5db !important;
+
+  &::placeholder {
+    color: #9ca3af !important;
+  }
+
+  &:focus {
+    border-color: $accent-color !important;
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.15) !important;
+  }
+}
+
+// ── PrimeNG dark theme: Select (p-select) ───────────────────────────────
+.p-select {
+  background: $bg-secondary !important;
+  border-color: $border-color !important;
+  color: $text-primary !important;
+  box-shadow: none !important;
+
+  &:hover {
+    border-color: #4a5568 !important;
+  }
+
+  &.p-focus {
+    border-color: $accent-color !important;
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.12) !important;
+  }
+
+  .p-select-label {
+    color: $text-primary !important;
+
+    &.p-placeholder {
+      color: $text-secondary !important;
+    }
+  }
+
+  .p-select-dropdown {
+    color: $text-secondary !important;
+  }
+}
+
+// Select overlay (dropdown panel – teleported to body)
+.p-select-overlay {
+  background: $bg-secondary !important;
+  border: 1px solid $border-color !important;
+  border-radius: $radius-button !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45) !important;
+
+  .p-select-list-container {
+    background: $bg-secondary !important;
+  }
+
+  .p-select-list {
+    background: $bg-secondary !important;
+    padding: 0.25rem !important;
+  }
+
+  .p-select-option {
+    color: $text-primary !important;
+    border-radius: 6px !important;
+
+    &:hover,
+    &.p-select-option-focused {
+      background: $bg-card !important;
+      color: $text-primary !important;
+    }
+
+    &.p-select-option-selected {
+      background: rgba(34, 197, 94, 0.15) !important;
+      color: $accent-color !important;
+      font-weight: 500 !important;
+    }
+  }
+}
+
+// ── PrimeNG dark theme: Password field ──────────────────────────────────
+p-password:not(.bl_input_group p-password) .p-inputtext {
+  background: $bg-secondary !important;
+  color: $text-primary !important;
+  border-color: $border-color !important;
+
+  &:focus {
+    border-color: $accent-color !important;
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.12) !important;
+  }
+}
+
+// ── Divider dark theme ──────────────────────────────────────────────────
+.p-divider {
+  &.p-divider-horizontal::before {
+    border-top-color: $border-color !important;
+  }
+
+  .p-divider-content {
+    background: $bg-secondary !important;
+    color: $text-secondary !important;
+    font-size: 0.8125rem !important;
+    padding: 0 0.75rem !important;
+  }
+}
+
 * {
   margin: 0;
   padding: 0;

@@ -1,0 +1,80 @@
+@if (isLoading$ | async) {
+  <div class="loading-state">
+    <i class="pi pi-spin pi-spinner loading-spinner"></i>
+    <p>Đang tải...</p>
+  </div>
+} @else if (error$ | async; as error) {
+  <div class="error-state">
+    <i class="pi pi-exclamation-triangle"></i>
+    <p>{{ error }}</p>
+  </div>
+} @else if (profile$ | async; as profile) {
+  <div class="user-profile-page">
+    <!-- Profile Header -->
+    <div class="profile-header">
+      <div class="avatar-wrapper">
+        @if (profile.avatarUrl) {
+          <img [src]="profile.avatarUrl" [alt]="profile.displayName" class="profile-avatar" />
+        } @else {
+          <div class="profile-avatar avatar-placeholder">
+            <i class="pi pi-user"></i>
+          </div>
+        }
+      </div>
+      <div class="profile-info">
+        <h1>{{ profile.displayName }}</h1>
+        @if (profile.bio) {
+          <p class="bio">{{ profile.bio }}</p>
+        }
+        <p class="joined">Tham gia {{ profile.createdAt | date:'dd/MM/yyyy' }}</p>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <app-stats-card icon="pi pi-bolt" [value]="profile.streakCount" label="Streak" color="#f59e0b"></app-stats-card>
+      <app-stats-card icon="pi pi-trophy" [value]="profile.xpPoints" label="XP" color="#8b5cf6"></app-stats-card>
+      <app-stats-card icon="pi pi-star" [value]="profile.level" label="Level" color="#22c55e"></app-stats-card>
+      <app-stats-card icon="pi pi-book" [value]="profile.publicStudySetCount" label="Bộ học" color="#3b82f6"></app-stats-card>
+    </div>
+
+    <!-- Study Sets -->
+    <div class="section-card">
+      <h2>Bộ học công khai</h2>
+
+      @if (isStudySetsLoading$ | async) {
+        <div class="loading-state">
+          <i class="pi pi-spin pi-spinner"></i>
+        </div>
+      }
+
+      @if (studySets$ | async; as studySets) {
+        @if (studySets.length === 0 && !(isStudySetsLoading$ | async)) {
+          <p class="empty-message">Người dùng này chưa có bộ học công khai nào.</p>
+        } @else {
+          <div class="studysets-grid">
+            @for (studySet of studySets; track studySet.id) {
+              <app-studyset-card [studySet]="studySet" [hideVisibility]="true"></app-studyset-card>
+            }
+          </div>
+
+          @if (hasMore) {
+            <div class="load-more-wrapper">
+              <button
+                class="load-more-btn"
+                (click)="loadMore()"
+                [disabled]="isStudySetsLoading$ | async"
+              >
+                @if (isStudySetsLoading$ | async) {
+                  <i class="pi pi-spin pi-spinner"></i> Đang tải...
+                } @else {
+                  Xem thêm
+                }
+              </button>
+            </div>
+          }
+        }
+      }
+    </div>
+  </div>
+}

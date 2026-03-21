@@ -1,47 +1,49 @@
 <div class="form-page">
     <!-- Page Header -->
     <div class="page-header">
+        @if (backUrl) {
+        <a class="back-btn" [routerLink]="backUrl">
+            <i class="pi pi-arrow-left"></i>
+            Quay lại
+        </a>
+        }
         <h1 class="page-title">{{ pageTitle }}</h1>
         <p class="page-subtitle">{{ pageSubtitle }}</p>
     </div>
 
-    <!-- Form Card with Tabs -->
-    <p-tabs [value]="activeTab()" (valueChange)="activeTab.set($any($event))">
-        <p-tablist>
-            <!-- Manual tab always visible -->
-            <p-tab value="manual">
-                <i class="pi pi-pencil"></i>
-                {{ manualTabLabel }}
-            </p-tab>
-
-            <!-- AI tab – only for create mode -->
-            @if (mode === 'create') {
-            <span class="ai-tab-wrapper" [pTooltip]="aiTooltip" tooltipPosition="top">
-                <p-tab value="ai" [disabled]="aiDisabled">
-                    <i class="pi pi-sparkles"></i>
-                    Tạo bằng AI
-                    @if (aiUsage) {
-                    <span class="usage-count" [class.exhausted]="aiDisabled">
-                        {{ aiUsage.remaining }}/{{ aiUsage.maxUsage }}
-                    </span>
-                    }
+    <!-- Form Card -->
+    <div [class.edit-mode]="mode === 'edit'">
+        <p-tabs [value]="activeTab()" (valueChange)="activeTab.set($any($event))">
+            <p-tablist>
+                <p-tab value="manual">
+                    <i class="pi pi-pencil"></i>
+                    {{ manualTabLabel }}
                 </p-tab>
-            </span>
-            }
-        </p-tablist>
+                @if (mode === 'create') {
+                <span class="ai-tab-wrapper" [pTooltip]="aiTooltip" tooltipPosition="top">
+                    <p-tab value="ai" [disabled]="aiDisabled">
+                        <i class="pi pi-sparkles"></i>
+                        Tạo bằng AI
+                        @if (aiUsage) {
+                        <span class="usage-count" [class.exhausted]="aiDisabled">
+                            {{ aiUsage.remaining }}/{{ aiUsage.maxUsage }}
+                        </span>
+                        }
+                    </p-tab>
+                </span>
+                }
+            </p-tablist>
 
-        <p-tabpanels>
-            <!-- Manual Tab -->
-            <p-tabpanel value="manual">
-                <ng-content select="[manual]" />
-            </p-tabpanel>
-
-            <!-- AI Tab (create mode only) -->
-            @if (mode === 'create') {
-            <p-tabpanel value="ai">
-                <ng-content select="[ai]" />
-            </p-tabpanel>
-            }
-        </p-tabpanels>
-    </p-tabs>
+            <p-tabpanels>
+                <p-tabpanel value="manual">
+                    <ng-content select="[manual]" />
+                </p-tabpanel>
+                @if (mode === 'create') {
+                <p-tabpanel value="ai">
+                    <ng-content select="[ai]" />
+                </p-tabpanel>
+                }
+            </p-tabpanels>
+        </p-tabs>
+    </div>
 </div>

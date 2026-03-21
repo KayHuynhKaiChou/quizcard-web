@@ -24,9 +24,9 @@
     }
   </div>
 
-  @if (showAuthor && studySet.authorDisplayName) {
+  @if (studySet.authorDisplayName) {
     <div class="card-footer">
-      <div class="author-info">
+      <div class="author-info" (click)="navigateToAuthor($event)">
         @if (studySet.authorAvatarUrl) {
           <img [src]="studySet.authorAvatarUrl" [alt]="studySet.authorDisplayName" class="author-avatar" />
         } @else {

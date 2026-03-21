@@ -207,6 +207,26 @@ export const authReducer = createReducer(
     error,
   })),
 
+  // Upload Avatar
+  on(AuthActions.uploadAvatar, (state) => ({
+    ...state,
+    isLoading: true,
+    error: null,
+  })),
+
+  on(AuthActions.uploadAvatarSuccess, (state, { user }) => ({
+    ...state,
+    user,
+    isLoading: false,
+    error: null,
+  })),
+
+  on(AuthActions.uploadAvatarFailure, (state, { error }) => ({
+    ...state,
+    isLoading: false,
+    error,
+  })),
+
   // Utility
   on(AuthActions.clearError, (state) => ({
     ...state,

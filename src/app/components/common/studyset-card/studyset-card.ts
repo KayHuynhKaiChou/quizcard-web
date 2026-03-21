@@ -1,6 +1,6 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { StudySet } from '../../../types';
 import { BadgeModule } from 'primeng/badge';
 import { CardModule } from 'primeng/card';
@@ -13,6 +13,15 @@ import { CardModule } from 'primeng/card';
 })
 export class StudysetCard {
   @Input() studySet!: StudySet;
-  @Input() showAuthor = false;
   @Input() hideVisibility = false;
+
+  private router = inject(Router);
+
+  navigateToAuthor(event: Event): void {
+    event.stopPropagation();
+    event.preventDefault();
+    if (this.studySet.userId) {
+      this.router.navigate(['/user', this.studySet.userId]);
+    }
+  }
 }

@@ -1,20 +1,24 @@
-import { Component, OnInit, OnDestroy, AfterViewChecked, HostListener, inject, signal, computed, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewChecked, HostListener, inject, signal, computed, ViewChild, ElementRef, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { Observable, Subject, takeUntil } from 'rxjs';
+import { Observable, Subject, takeUntil, combineLatest, debounceTime, distinctUntilChanged } from 'rxjs';
+import { toObservable } from '@angular/core/rxjs-interop';
 import { StudySetDetail, Term } from '../../types';
 import { AppState } from '../../store/app.state';
 import * as StudySetActions from '../../store/studyset/studyset.actions';
 import * as StudySetSelectors from '../../store/studyset/studyset.selectors';
+import * as AuthSelectors from '../../store/auth/auth.selectors';
 import { Flashcard } from '../../components/common/flashcard/flashcard';
 import { TermViewToggle } from '../../components/common/term-view-toggle/term-view-toggle';
 import { TermGrid } from '../../components/common/term-grid/term-grid';
 import { ButtonModule } from 'primeng/button';
+import { FormsModule } from '@angular/forms';
+import { StudySetService } from '../../services/studyset.service';
 
 @Component({
   selector: 'app-studyset-detail',
-  imports: [CommonModule, RouterModule, Flashcard, TermViewToggle, TermGrid, ButtonModule],
+  imports: [CommonModule, RouterModule, Flashcard, TermViewToggle, TermGrid, ButtonModule, FormsModule],
   templateUrl: './studyset-detail.html',
   styleUrl: './studyset-detail.scss',
 })
@@ -22,7 +26,25 @@ export class StudySetDetailPage implements OnInit, OnDestroy, AfterViewChecked {
   private store = inject(Store<AppState>);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private studySetService = inject(StudySetService);
   private destroy$ = new Subject<void>();
+
+  constructor() {
+    // Must be in constructor (injection context) for toObservable to work
+    toObservable(this.searchQuery).pipe(
+      debounceTime(400),
+      distinctUntilChanged(),
+      takeUntil(this.destroy$)
+    ).subscribe(query => {
+      if (query.trim().length > 0) {
+        this.runSearch(query.trim(), true);
+      } else {
+        this.searchResults.set([]);
+        this.searchCursor.set(0);
+        this.searchHasMore.set(false);
+      }
+    });
+  }
   private scrollObserver: IntersectionObserver | null = null;
   private observedElement: Element | null = null;
 
@@ -38,6 +60,7 @@ export class StudySetDetailPage implements OnInit, OnDestroy, AfterViewChecked {
     StudySetSelectors.selectIsLoadingTerms
   );
   studySet = signal<StudySetDetail | null>(null);
+  isOwner = signal(false);
 
   currentIndex = signal(0);
   showTermFirst = signal(true);
@@ -46,8 +69,21 @@ export class StudySetDetailPage implements OnInit, OnDestroy, AfterViewChecked {
   shuffledTerms = signal<Term[]>([]);
   viewMode = signal<'flashcard' | 'grid'>('flashcard');
 
-  // Computed: active terms list (shuffled or original)
+  // Search state
+  searchQuery = signal('');
+  searchField = signal<'term' | 'definition'>('term');
+  searchResults = signal<Term[]>([]);
+  searchCursor = signal<number>(0);
+  searchHasMore = signal(false);
+  isSearching = signal(false);
+
+  isSearchMode = computed(() => this.searchQuery().trim().length > 0);
+
+  // Computed: active terms list (search results, shuffled, or original)
   activeTerms = computed(() => {
+    if (this.isSearchMode()) {
+      return this.searchResults();
+    }
     if (this.isShuffled() && this.shuffledTerms().length > 0) {
       return this.shuffledTerms();
     }
@@ -62,9 +98,14 @@ export class StudySetDetailPage implements OnInit, OnDestroy, AfterViewChecked {
       this.store.dispatch(StudySetActions.loadStudySetById({ id }));
     }
 
-    this.studySet$.pipe(takeUntil(this.destroy$)).subscribe((studySet) => {
-      this.studySet.set(studySet);
+    combineLatest([
+      this.studySet$,
+      this.store.select(AuthSelectors.selectUser)
+    ]).pipe(takeUntil(this.destroy$)).subscribe(([ss, user]) => {
+      this.studySet.set(ss);
+      this.isOwner.set(!!ss && !!user && ss.userId === user.id);
     });
+
   }
 
   ngAfterViewChecked(): void {
@@ -169,12 +210,76 @@ export class StudySetDetailPage implements OnInit, OnDestroy, AfterViewChecked {
 
   onViewChange(mode: 'flashcard' | 'grid'): void {
     this.viewMode.set(mode);
+    if (mode === 'flashcard') {
+      this.clearSearch();
+    }
   }
 
   goToQuiz(): void {
     const currentSet = this.studySet();
     if (!currentSet) return;
     this.router.navigate(['/quiz', currentSet.id]);
+  }
+
+  setSearchField(field: 'term' | 'definition'): void {
+    this.searchField.set(field);
+    const query = this.searchQuery().trim();
+    if (query.length > 0) {
+      this.runSearch(query, true);
+    }
+  }
+
+  onSearchFieldChange(): void {
+    const query = this.searchQuery().trim();
+    if (query.length > 0) {
+      this.runSearch(query, true);
+    }
+  }
+
+  clearSearch(): void {
+    this.searchQuery.set('');
+    this.searchResults.set([]);
+    this.searchCursor.set(0);
+    this.searchHasMore.set(false);
+  }
+
+  loadMoreSearchResults(): void {
+    const query = this.searchQuery().trim();
+    if (query.length > 0) {
+      this.runSearch(query, false);
+    }
+  }
+
+  private runSearch(query: string, reset: boolean): void {
+    const studySet = this.studySet();
+    if (!studySet) return;
+
+    if (reset) {
+      this.searchCursor.set(0);
+      this.searchResults.set([]);
+    }
+
+    this.isSearching.set(true);
+    this.studySetService
+      .searchTerms(studySet.id, query, this.searchField(), this.searchCursor(), 20)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (page) => {
+          if (reset) {
+            this.searchResults.set(page.items);
+          } else {
+            this.searchResults.update(prev => [...prev, ...page.items]);
+          }
+          this.searchHasMore.set(page.hasMore);
+          if (page.nextCursor !== null) {
+            this.searchCursor.set(page.nextCursor);
+          }
+          this.isSearching.set(false);
+        },
+        error: () => {
+          this.isSearching.set(false);
+        }
+      });
   }
 
   loadMoreTerms(): void {

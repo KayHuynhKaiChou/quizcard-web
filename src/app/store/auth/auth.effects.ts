@@ -201,6 +201,36 @@ export class AuthEffects {
     { dispatch: false }
   );
 
+  // Upload Avatar Effect
+  uploadAvatar$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AuthActions.uploadAvatar),
+      tap(() => this.loadingService.show('Đang tải ảnh...')),
+      switchMap(({ file }) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        return this.http.post<User>(`${this.API}/users/me/avatar`, formData).pipe(
+          map((user) => AuthActions.uploadAvatarSuccess({ user })),
+          catchError((error) =>
+            of(AuthActions.uploadAvatarFailure({ error: error.error?.message || 'Tải ảnh thất bại' }))
+          ),
+          finalize(() => this.loadingService.hide()),
+        );
+      })
+    )
+  );
+
+  uploadAvatarSuccess$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(AuthActions.uploadAvatarSuccess),
+        tap(() =>
+          this.messageService.add({ severity: 'success', summary: 'Cập nhật ảnh thành công', life: 3000 })
+        )
+      ),
+    { dispatch: false }
+  );
+
   // Forgot Password Effect
   forgotPassword$ = createEffect(() =>
     this.actions$.pipe(

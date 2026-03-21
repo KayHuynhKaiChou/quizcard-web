@@ -1,29 +1,30 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, AsyncPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Store } from '@ngrx/store';
 import { SidebarService } from '../../../services/sidebar.service';
 import { AuthService } from '../../../services/auth.service';
-import { User } from '../../../types';
+import { AppState } from '../../../store/app.state';
+import * as AuthSelectors from '../../../store/auth/auth.selectors';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, AsyncPipe],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss'
 })
 export class HeaderComponent {
   searchQuery: string = '';
   private router = inject(Router);
+  private store = inject(Store<AppState>);
   sidebarService = inject(SidebarService);
   authService = inject(AuthService);
-  
+
   isProfileDropdownOpen = false;
-  
-  get currentUser(): User | null {
-    return this.authService.getCurrentUser();
-  }
+
+  currentUser$ = this.store.select(AuthSelectors.selectUser);
   
   onMenuClick(): void {
     this.sidebarService.toggle(); // Toggle sidebar
@@ -53,6 +54,13 @@ export class HeaderComponent {
 
   onClickOutside(): void {
     this.isProfileDropdownOpen = false;
+  }
+
+  onSearchSubmit(): void {
+    const query = this.searchQuery.trim();
+    if (query) {
+      this.router.navigate(['/search'], { queryParams: { query } });
+    }
   }
 }
 

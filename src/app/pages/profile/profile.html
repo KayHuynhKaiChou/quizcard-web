@@ -2,11 +2,16 @@
 <div class="profile-page">
   <!-- Profile Header -->
   <div class="profile-header">
-    <img
-      [src]="user.avatarUrl || 'https://i.pravatar.cc/150?img=36'"
-      alt="Avatar"
-      class="profile-avatar"
-    />
+    <div class="avatar-wrapper" (click)="openAvatarDialog()">
+      <img
+        [src]="avatarPreviewUrl()"
+        alt="Avatar"
+        class="profile-avatar"
+      />
+      <div class="avatar-overlay">
+        <i class="pi pi-camera"></i>
+      </div>
+    </div>
     <div class="profile-info">
       <h1>{{ user.displayName }}</h1>
       <p class="email">{{ user.email }}</p>
@@ -65,3 +70,49 @@
   </div>
 </div>
 }
+
+<!-- Avatar Dialog -->
+<p-dialog
+  [visible]="isAvatarDialogVisible()"
+  (visibleChange)="isAvatarDialogVisible.set($event)"
+  header="Cập nhật ảnh đại diện"
+  [modal]="true"
+  [style]="{'width': '500px'}"
+>
+  <!-- Upload custom section -->
+  <div class="upload-section">
+    <label class="upload-btn">
+      <i class="pi pi-upload"></i> Tải ảnh lên
+      <input type="file" accept="image/*" (change)="onFileSelected($event)" hidden />
+    </label>
+    @if (selectedFile()) {
+      <div class="preview-wrapper">
+        <img [src]="localPreviewUrl()" class="preview-img" alt="Preview" />
+        <button pButton label="Xác nhận" icon="pi pi-check" (click)="uploadAvatar()"></button>
+      </div>
+    }
+  </div>
+
+  <!-- Divider -->
+  <p-divider align="center"><span>hoặc chọn avatar có sẵn</span></p-divider>
+
+  <!-- Preset grid header -->
+  <div class="preset-header">
+    <span class="preset-label">Avatar có sẵn</span>
+    <button pButton icon="pi pi-refresh" severity="secondary" [text]="true" size="small"
+      (click)="refreshPresets()" pTooltip="Tải avatar khác" tooltipPosition="left"></button>
+  </div>
+
+  <!-- Preset grid -->
+  <div class="preset-grid">
+    @for (preset of avatarPresets(); track preset.url) {
+      <div
+        class="preset-item"
+        [class.active]="user?.avatarUrl === preset.url"
+        (click)="selectPresetAvatar(preset.url)"
+      >
+        <img [src]="preset.url" [alt]="preset.label" />
+      </div>
+    }
+  </div>
+</p-dialog>

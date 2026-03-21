@@ -5,6 +5,7 @@ import { QuizState } from './quiz/quiz.state';
 import { LearningState } from './learning/learning.state';
 import { ExploreState } from './explore/explore.state';
 import { AiState } from './ai/ai.state';
+import { UserProfileState } from './user-profile/user-profile.state';
 
 export interface AppState {
   auth: AuthState;
@@ -14,4 +15,5 @@ export interface AppState {
   learning: LearningState;
   explore: ExploreState;
   ai: AiState;
+  userProfile: UserProfileState;
 }

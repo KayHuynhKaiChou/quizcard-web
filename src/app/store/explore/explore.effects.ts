@@ -90,12 +90,12 @@ export class ExploreEffects {
       tap(() => this.loadingService.show('Đang tìm kiếm...')),
       switchMap(({ query, page = 0, size = 20 }) => {
         const params = new HttpParams()
-          .set('q', query)
+          .set('query', query)
           .set('page', page.toString())
           .set('size', size.toString());
 
         return this.http
-          .get<Page<StudySet>>(`${environment.apiUrl}/explore/search`, { params })
+          .get<Page<StudySet>>(`${environment.apiUrl}/study-sets/search`, { params })
           .pipe(
             map((response) =>
               ExploreActions.searchStudySetsSuccess({

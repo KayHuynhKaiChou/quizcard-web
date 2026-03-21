@@ -16,64 +16,67 @@
         class="search-input"
         placeholder="Tìm thẻ ghi nhớ"
         [(ngModel)]="searchQuery"
+        (keyup.enter)="onSearchSubmit()"
       />
     </div>
   </div>
 
   <div class="header-right">
-    <button class="action-button create-button" (click)="onCreateClick()" title="Tạo mới">
-      <i class="pi pi-plus"></i>
-    </button>
+    @if (currentUser$ | async; as user) {
+      <button class="action-button create-button" (click)="onCreateClick()" title="Tạo mới">
+        <i class="pi pi-plus"></i>
+      </button>
 
-    <div class="profile-container" (click)="onProfileClick()">
-      <img
-        [src]="currentUser?.avatarUrl || 'https://i.pravatar.cc/150?img=36'"
-        alt="Profile"
-        class="profile-avatar"
-      />
-    </div>
-
-    <!-- Profile Dropdown -->
-    @if (isProfileDropdownOpen) {
-      <div class="profile-dropdown" (click)="$event.stopPropagation()">
-        <div class="dropdown-header">
-          <img
-            [src]="currentUser?.avatarUrl || 'https://i.pravatar.cc/150?img=36'"
-            alt="Avatar"
-            class="dropdown-avatar"
-          />
-          <div class="dropdown-user-info">
-            <div class="username">{{ currentUser?.displayName || 'User' }}</div>
-            <div class="fullname">{{ currentUser?.email || '' }}</div>
-          </div>
-        </div>
-
-        <div class="dropdown-separator"></div>
-
-        <div class="dropdown-menu">
-          <div class="menu-item">
-            <i class="pi pi-trophy menu-icon"></i>
-            <span>XP: {{ currentUser?.xpPoints || 0 }}</span>
-          </div>
-          <div class="menu-item">
-            <i class="pi pi-bolt menu-icon"></i>
-            <span>Streak: {{ currentUser?.streakCount || 0 }}</span>
-          </div>
-          <div class="menu-item" (click)="onNavigateProfile()">
-            <i class="pi pi-user menu-icon"></i>
-            <span>Hồ sơ</span>
-          </div>
-        </div>
-
-        <div class="dropdown-separator"></div>
-
-        <div class="dropdown-menu">
-          <div class="menu-item logout" (click)="onLogout()">
-            <i class="pi pi-sign-out menu-icon"></i>
-            <span>Đăng xuất</span>
-          </div>
-        </div>
+      <div class="profile-container" (click)="onProfileClick()">
+        <img
+          [src]="user.avatarUrl || 'https://i.pravatar.cc/150?img=36'"
+          alt="Profile"
+          class="profile-avatar"
+        />
       </div>
+
+      <!-- Profile Dropdown -->
+      @if (isProfileDropdownOpen) {
+        <div class="profile-dropdown" (click)="$event.stopPropagation()">
+          <div class="dropdown-header">
+            <img
+              [src]="user.avatarUrl || 'https://i.pravatar.cc/150?img=36'"
+              alt="Avatar"
+              class="dropdown-avatar"
+            />
+            <div class="dropdown-user-info">
+              <div class="username">{{ user.displayName || 'User' }}</div>
+              <div class="fullname">{{ user.email || '' }}</div>
+            </div>
+          </div>
+
+          <div class="dropdown-separator"></div>
+
+          <div class="dropdown-menu">
+            <div class="menu-item">
+              <i class="pi pi-trophy menu-icon"></i>
+              <span>XP: {{ user.xpPoints || 0 }}</span>
+            </div>
+            <div class="menu-item">
+              <i class="pi pi-bolt menu-icon"></i>
+              <span>Streak: {{ user.streakCount || 0 }}</span>
+            </div>
+            <div class="menu-item" (click)="onNavigateProfile()">
+              <i class="pi pi-user menu-icon"></i>
+              <span>Hồ sơ</span>
+            </div>
+          </div>
+
+          <div class="dropdown-separator"></div>
+
+          <div class="dropdown-menu">
+            <div class="menu-item logout" (click)="onLogout()">
+              <i class="pi pi-sign-out menu-icon"></i>
+              <span>Đăng xuất</span>
+            </div>
+          </div>
+        </div>
+      }
     }
   </div>
 

@@ -101,6 +101,7 @@ export interface StudySet {
   ratingAvg: number;
   createdAt: string;
   updatedAt: string;
+  isOwner?: boolean;
 }
 
 export interface StudySetDetail extends StudySet {
@@ -317,5 +318,7 @@ export interface UserPublicProfile {
   bio: string | null;
   streakCount: number;
   xpPoints: number;
+  level: number;
+  publicStudySetCount: number;
   createdAt: string;
 }

@@ -291,6 +291,13 @@
     .header-center {
       display: none;
     }
+
+    .header-right {
+      .profile-dropdown {
+        min-width: min(280px, calc(100vw - 1rem));
+        right: -0.5rem;
+      }
+    }
   }
 }
 

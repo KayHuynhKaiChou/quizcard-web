@@ -1,5 +1,6 @@
 import { Component, Input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { TabsModule } from 'primeng/tabs';
 import { TooltipModule } from 'primeng/tooltip';
 import { AiUsageResponse } from '../../../types';
@@ -9,7 +10,7 @@ export type StudySetFormPageMode = 'create' | 'edit';
 @Component({
     selector: 'app-study-set-form-page',
     standalone: true,
-    imports: [CommonModule, TabsModule, TooltipModule],
+    imports: [CommonModule, RouterModule, TabsModule, TooltipModule],
     templateUrl: './study-set-form-page.html',
     styleUrl: './study-set-form-page.scss',
 })
@@ -25,6 +26,9 @@ export class StudySetFormPage {
 
     /** Chế độ: 'create' hiển thị cả AI tab, 'edit' chỉ có manual tab */
     @Input() mode: StudySetFormPageMode = 'create';
+
+    /** URL nút back (nếu có sẽ hiển thị nút quay lại) */
+    @Input() backUrl: string | null = null;
 
     /** Dữ liệu usage AI – chỉ dùng khi mode = 'create' */
     @Input() aiUsage: AiUsageResponse | null = null;

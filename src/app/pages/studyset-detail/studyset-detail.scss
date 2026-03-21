@@ -47,6 +47,116 @@
     }
   }
 
+  .term-search-bar {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto 1.5rem auto;
+
+    .search-input-wrapper {
+      flex: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+
+      .search-icon {
+        position: absolute;
+        left: 0.875rem;
+        color: $text-secondary;
+        font-size: 0.875rem;
+        pointer-events: none;
+      }
+
+      .search-input {
+        width: 100%;
+        padding: 0.625rem 2.5rem 0.625rem 2.25rem;
+        background: $bg-secondary;
+        border: 1px solid $border-color;
+        border-radius: $radius-button;
+        color: $text-primary;
+        font-size: 0.9375rem;
+        outline: none;
+        transition: border-color 0.2s;
+
+        &::placeholder {
+          color: $text-secondary;
+        }
+
+        &:focus {
+          border-color: $accent-color;
+        }
+      }
+
+      .clear-btn {
+        position: absolute;
+        right: 0.5rem;
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: $text-secondary;
+        padding: 0.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &:hover {
+          color: $text-primary;
+        }
+      }
+    }
+
+    .field-toggle {
+      display: flex;
+      gap: 0.25rem;
+      background: $bg-secondary;
+      border-radius: $radius-button;
+      padding: 0.25rem;
+      flex-shrink: 0;
+
+      .field-btn {
+        background: none;
+        border: none;
+        border-radius: 6px;
+        color: $text-secondary;
+        font-size: 0.875rem;
+        font-weight: 500;
+        padding: 0.375rem 0.75rem;
+        cursor: pointer;
+        transition: background 0.15s, color 0.15s;
+        white-space: nowrap;
+
+        &:hover {
+          color: $text-primary;
+        }
+
+        &.active {
+          background: rgba(255, 255, 255, 0.1);
+          color: $text-primary;
+        }
+      }
+    }
+  }
+
+  .search-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 0;
+    gap: 0.75rem;
+    color: $text-secondary;
+
+    i {
+      font-size: 2rem;
+    }
+
+    p {
+      font-size: 1rem;
+      margin: 0;
+    }
+  }
+
   .flashcard-section {
     max-width: 800px;
     margin: 0 auto;
@@ -200,6 +310,40 @@
 
     .flashcard-section .navigation-controls .keyboard-hint {
       display: none;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .studyset-detail-page {
+    padding: 0.75rem;
+
+    .detail-header .header-content .header-info h1 {
+      font-size: 1.25rem;
+    }
+
+    .term-search-bar {
+      flex-wrap: wrap;
+
+      .field-toggle {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    .flashcard-section {
+      .controls-toolbar {
+        flex-direction: column;
+        gap: 0.75rem;
+
+        .right-actions {
+          align-self: flex-end;
+        }
+      }
+
+      .navigation-controls {
+        gap: 0.5rem;
+      }
     }
   }
 }

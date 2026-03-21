@@ -155,6 +155,11 @@ export const changePasswordFailure = createAction(
   props<{ error: string }>()
 );
 
+// Upload Avatar
+export const uploadAvatar = createAction('[Auth] Upload Avatar', props<{ file: File }>());
+export const uploadAvatarSuccess = createAction('[Auth] Upload Avatar Success', props<{ user: User }>());
+export const uploadAvatarFailure = createAction('[Auth] Upload Avatar Failure', props<{ error: string }>());
+
 // Utility Actions
 export const clearError = createAction('[Auth] Clear Error');
 

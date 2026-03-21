@@ -26,6 +26,7 @@ import { quizReducer } from './store/quiz/quiz.reducer';
 import { learningReducer } from './store/learning/learning.reducer';
 import { exploreReducer } from './store/explore/explore.reducer';
 import { aiReducer } from './store/ai/ai.reducer';
+import { userProfileReducer } from './store/user-profile/user-profile.reducer';
 
 // Effects
 import { AuthEffects } from './store/auth/auth.effects';
@@ -35,6 +36,7 @@ import { QuizEffects } from './store/quiz/quiz.effects';
 import { LearningEffects } from './store/learning/learning.effects';
 import { ExploreEffects } from './store/explore/explore.effects';
 import { AiEffects } from './store/ai/ai.effects';
+import { UserProfileEffects } from './store/user-profile/user-profile.effects';
 
 // LocalStorage sync meta reducer
 export function localStorageSyncReducer(reducer: any) {
@@ -83,6 +85,7 @@ export const appConfig: ApplicationConfig = {
         learning: learningReducer,
         explore: exploreReducer,
         ai: aiReducer,
+        userProfile: userProfileReducer,
       },
       {
         metaReducers: [localStorageSyncReducer],
@@ -96,6 +99,7 @@ export const appConfig: ApplicationConfig = {
       LearningEffects,
       ExploreEffects,
       AiEffects,
+      UserProfileEffects,
     ]),
     provideRouterStore(),
     provideStoreDevtools({

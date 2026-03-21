@@ -1,0 +1,112 @@
+<div class="search-page">
+  <div class="search-header">
+    <div class="search-heading">
+      <i class="pi pi-search search-heading-icon"></i>
+      <h1 class="search-title">
+        Kết quả cho <span class="search-query">"{{ searchQuery }}"</span>
+      </h1>
+    </div>
+
+    @if (!(isLoading$ | async)) {
+      @if ((results$ | async)?.length !== undefined) {
+        <p class="result-count">
+          {{ (results$ | async)?.length || 0 }} bộ thẻ được tìm thấy
+        </p>
+      }
+    }
+  </div>
+
+  <!-- Loading skeleton -->
+  @if (isLoading$ | async) {
+    <div class="search-section">
+      <div class="section-header">
+        <p-skeleton height="1.25rem" width="160px" />
+      </div>
+      <div class="card-grid">
+        @for (item of skeletons.slice(0, 4); track $index) {
+          <div class="skeleton-card">
+            <p-skeleton height="1.5rem" styleClass="mb-3" />
+            <p-skeleton height="0.875rem" width="60%" styleClass="mb-2" />
+            <p-skeleton height="0.8rem" styleClass="mb-1" />
+            <p-skeleton height="0.8rem" width="80%" />
+          </div>
+        }
+      </div>
+    </div>
+    <div class="search-section">
+      <div class="section-header">
+        <p-skeleton height="1.25rem" width="200px" />
+      </div>
+      <div class="card-grid">
+        @for (item of skeletons.slice(0, 4); track $index) {
+          <div class="skeleton-card">
+            <p-skeleton height="1.5rem" styleClass="mb-3" />
+            <p-skeleton height="0.875rem" width="60%" styleClass="mb-2" />
+            <p-skeleton height="0.8rem" styleClass="mb-1" />
+            <p-skeleton height="0.8rem" width="80%" />
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- Results -->
+  @if (!(isLoading$ | async)) {
+    @if ((results$ | async)?.length) {
+      <!-- My study sets section -->
+      @if ((myResults$ | async)?.length) {
+        <section class="search-section">
+          <div class="section-header">
+            <h2>
+              <i class="pi pi-user section-icon my-icon"></i>
+              Bộ thẻ của bạn
+            </h2>
+            <span class="section-count">{{ (myResults$ | async)?.length }} bộ thẻ</span>
+          </div>
+          <div class="card-grid">
+            @for (set of myResults$ | async; track set.id) {
+              <app-studyset-card [studySet]="set" />
+            }
+          </div>
+        </section>
+      }
+
+      <!-- Community study sets section -->
+      @if ((otherResults$ | async)?.length) {
+        <section class="search-section">
+          <div class="section-header">
+            <h2>
+              <i class="pi pi-globe section-icon community-icon"></i>
+              Bộ thẻ từ cộng đồng
+            </h2>
+            <span class="section-count">{{ (otherResults$ | async)?.length }} bộ thẻ</span>
+          </div>
+          <div class="card-grid">
+            @for (set of otherResults$ | async; track set.id) {
+              <app-studyset-card [studySet]="set" [hideVisibility]="true" />
+            }
+          </div>
+        </section>
+      }
+    } @else if (searchQuery) {
+      <div class="empty-state">
+        <i class="pi pi-inbox empty-icon"></i>
+        <h2 class="empty-title">Không tìm thấy kết quả</h2>
+        <p class="empty-subtitle">
+          Không có bộ thẻ nào phù hợp với "<strong>{{ searchQuery }}</strong>".
+          Hãy thử từ khóa khác.
+        </p>
+      </div>
+    }
+  }
+
+  <!-- Error state -->
+  @if (error$ | async; as error) {
+    @if (!(isLoading$ | async)) {
+      <div class="error-state">
+        <i class="pi pi-exclamation-triangle error-icon"></i>
+        <p class="error-message">{{ error }}</p>
+      </div>
+    }
+  }
+</div>

@@ -110,7 +110,16 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/quiz-history/quiz-history').then((m) => m.QuizHistoryPage),
       },
-{ path: 'notifications', component: NotificationsComponent },
+      {
+        path: 'search',
+        loadComponent: () => import('./pages/search/search').then((m) => m.SearchPage),
+      },
+      {
+        path: 'user/:id',
+        loadComponent: () =>
+          import('./pages/user-profile/user-profile').then((m) => m.UserProfilePage),
+      },
+      { path: 'notifications', component: NotificationsComponent },
     ],
     canActivate: [AuthGuard],
   },

@@ -51,7 +51,7 @@
     @if (trending.length > 0) {
     <div class="card-grid">
       @for (studySet of trending; track studySet.id) {
-      <app-studyset-card [studySet]="studySet" [showAuthor]="true" [hideVisibility]="true">
+      <app-studyset-card [studySet]="studySet"[hideVisibility]="true">
       </app-studyset-card>
       }
     </div>
@@ -74,7 +74,7 @@
     @if (recent.length > 0) {
     <div class="card-grid">
       @for (studySet of recent; track studySet.id) {
-      <app-studyset-card [studySet]="studySet" [showAuthor]="true" [hideVisibility]="true">
+      <app-studyset-card [studySet]="studySet"[hideVisibility]="true">
       </app-studyset-card>
       }
     </div>
