@@ -81,18 +81,16 @@
       }
 
       .header-toolbar {
-        flex-wrap: wrap;
+        app-view-toggle {
+          display: none;
+        }
       }
     }
 
     .studyset-grid,
     .skeleton-grid {
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: 1fr;
       gap: 1rem;
-
-      &.list-view {
-        grid-template-columns: 1fr;
-      }
     }
   }
 }

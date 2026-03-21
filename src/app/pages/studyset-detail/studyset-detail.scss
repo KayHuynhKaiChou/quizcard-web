@@ -328,7 +328,7 @@
 @media (max-width: 768px) {
   .studyset-detail-page {
     padding: 1rem;
-    padding-bottom: calc(1rem + env(safe-area-inset-bottom, 60px));
+    padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
 
     .detail-header {
       .header-top-bar {
