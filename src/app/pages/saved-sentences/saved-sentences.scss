@@ -1,0 +1,110 @@
+@use '../../styles/variables' as *;
+
+.saved-sentences-page {
+  padding: 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
+}
+
+.page-header {
+  margin-bottom: 2rem;
+
+  .page-title {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #f1f5f9;
+    margin: 0 0 0.5rem;
+
+    i {
+      color: $accent-color;
+      font-size: 1.5rem;
+    }
+  }
+
+  .page-subtitle {
+    color: $text-secondary;
+    margin: 0;
+    font-size: 0.875rem;
+  }
+}
+
+.sentence-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.sentence-card {
+  background: #1a2642;
+  border: 1px solid #3f4d66;
+  border-radius: 8px;
+  padding: 1.25rem;
+  transition: border-color 0.2s ease;
+
+  &:hover {
+    border-color: $accent-color;
+  }
+
+  &.skeleton-card:hover {
+    border-color: #3f4d66;
+  }
+
+  .card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.625rem;
+  }
+
+  .word-badge {
+    padding: 0.125rem 0.625rem;
+    border-radius: 20px;
+    background: rgba(34, 197, 94, 0.15);
+    color: $accent-color;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .delete-btn {
+    flex-shrink: 0;
+  }
+
+  .sentence-text {
+    margin: 0 0 0.375rem;
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.5;
+    color: #f1f5f9;
+  }
+
+  .sentence-translation {
+    margin: 0 0 0.625rem;
+    font-size: 0.875rem;
+    color: $text-secondary;
+    line-height: 1.5;
+  }
+
+  .sentence-date {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.75rem;
+    color: $text-secondary;
+
+    i { font-size: 0.6875rem; }
+  }
+}
+
+.paginator-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5rem;
+}

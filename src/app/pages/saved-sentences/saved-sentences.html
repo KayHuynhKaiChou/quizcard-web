@@ -1,0 +1,59 @@
+<p-confirmDialog></p-confirmDialog>
+
+<div class="saved-sentences-page">
+  <div class="page-header">
+    <h1 class="page-title">
+      <i class="pi pi-comments"></i>
+      Câu đã lưu
+    </h1>
+    <p class="page-subtitle">
+      @if (totalElements() > 0) {
+        {{ totalElements() }} câu
+      } @else {
+        Các câu ví dụ bạn đã lưu từ thẻ từ vựng
+      }
+    </p>
+  </div>
+
+  @if (isLoading()) {
+    <div class="sentence-list">
+      @for (item of skeletonItems(); track $index) {
+        <div class="sentence-card skeleton-card">
+          <p-skeleton width="70px" height="1.25rem" borderRadius="12px" styleClass="mb-2" />
+          <p-skeleton width="85%" height="1.15rem" styleClass="mb-2" />
+          <p-skeleton width="60%" height="1rem" />
+        </div>
+      }
+    </div>
+  } @else if (items().length === 0) {
+    <app-empty-state icon="pi-comments" title="Chưa có câu nào được lưu"
+      message="Mở một thẻ từ vựng và bấm nút câu ví dụ để bắt đầu." />
+  } @else {
+    <div class="sentence-list">
+      @for (item of items(); track item.id) {
+        <div class="sentence-card">
+          <div class="card-top">
+            <span class="word-badge">{{ item.word }}</span>
+            <button pButton icon="pi pi-trash"
+              class="p-button-text p-button-danger p-button-sm delete-btn"
+              title="Xóa câu" (click)="confirmDelete(item)"></button>
+          </div>
+          <p class="sentence-text">{{ item.sentence }}</p>
+          @if (item.translation) {
+            <p class="sentence-translation">{{ item.translation }}</p>
+          }
+          <span class="sentence-date">
+            <i class="pi pi-calendar"></i> {{ formatDate(item.createdAt) }}
+          </span>
+        </div>
+      }
+    </div>
+
+    @if (totalElements() > pageSize) {
+      <div class="paginator-wrapper">
+        <p-paginator [rows]="pageSize" [totalRecords]="totalElements()"
+          [first]="currentPage() * pageSize" (onPageChange)="onPageChange($event)" />
+      </div>
+    }
+  }
+</div>

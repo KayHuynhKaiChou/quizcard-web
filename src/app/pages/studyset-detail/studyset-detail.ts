@@ -18,10 +18,11 @@ import { FormsModule } from '@angular/forms';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
 import { StudySetService } from '../../services/studyset.service';
+import { SentenceModal } from '../../components/common/sentence-modal/sentence-modal';
 
 @Component({
   selector: 'app-studyset-detail',
-  imports: [CommonModule, RouterModule, Flashcard, TermViewToggle, TermGrid, ButtonModule, FormsModule, ConfirmDialogModule],
+  imports: [CommonModule, RouterModule, Flashcard, TermViewToggle, TermGrid, ButtonModule, FormsModule, ConfirmDialogModule, SentenceModal],
   templateUrl: './studyset-detail.html',
   styleUrl: './studyset-detail.scss',
 })
@@ -81,6 +82,9 @@ export class StudySetDetailPage implements OnInit, OnDestroy, AfterViewChecked {
   learnedIds = signal<Set<string>>(new Set());
   shuffledTerms = signal<Term[]>([]);
   viewMode = signal<'flashcard' | 'grid'>('flashcard');
+
+  // Sentence modal is hosted once here; both views feed it a term.
+  activeTermForSentences = signal<Term | null>(null);
 
   // Search state
   searchQuery = signal('');
@@ -220,6 +224,14 @@ export class StudySetDetailPage implements OnInit, OnDestroy, AfterViewChecked {
     const terms = this.activeTerms();
     const currentTerm = terms[this.currentIndex()];
     return currentTerm ? this.learnedIds().has(currentTerm.id) : false;
+  }
+
+  onSentencesRequested(term: Term): void {
+    this.activeTermForSentences.set(term);
+  }
+
+  closeSentencesModal(): void {
+    this.activeTermForSentences.set(null);
   }
 
   onViewChange(mode: 'flashcard' | 'grid'): void {

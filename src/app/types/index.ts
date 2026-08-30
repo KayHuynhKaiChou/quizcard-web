@@ -285,6 +285,22 @@ export interface AiTermResponse {
   category: string | null;
 }
 
+// ---- AI example sentences (not metered against the daily AI limit) ----
+export interface AiSentence {
+  word: string;
+  sentence: string;
+  translation: string | null;
+}
+
+export interface AiGenerateSentencesRequest {
+  term: string;
+  count?: number;
+}
+
+export interface AiGenerateSentencesResponse {
+  sentences: AiSentence[];
+}
+
 export interface AiUsageResponse {
   date: string;
   usageCount: number;
@@ -308,6 +324,19 @@ export interface Notification {
 // ============ Rating DTO ============
 export interface RateStudySetRequest {
   rating: number;
+}
+
+// ============ Saved Sentence DTOs ============
+export interface SavedSentence {
+  id: string;
+  word: string;
+  sentence: string;
+  translation: string | null;
+  createdAt: string;
+}
+
+export interface SaveSentencesRequest {
+  sentences: AiSentence[];
 }
 
 // ============ User Public Profile DTO ============

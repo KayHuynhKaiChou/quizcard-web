@@ -7,7 +7,7 @@ import { MessageService } from 'primeng/api';
 import * as AiActions from './ai.actions';
 import { environment } from '../../../environments/environment';
 import { LoadingService } from '../../services/loading.service';
-import { AiGenerateResponse, AiUsageResponse } from '../../types';
+import { AiGenerateResponse, AiGenerateSentencesResponse, AiUsageResponse } from '../../types';
 
 @Injectable()
 export class AiEffects {
@@ -95,6 +95,38 @@ export class AiEffects {
     )
   );
 
+  // Generate Sentences Effect
+  // No global loading overlay here: the modal renders its own spinner, and the
+  // full-screen overlay would cover it.
+  generateSentences$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AiActions.generateSentences),
+      switchMap(({ termId, term, count }) =>
+        this.http
+          .post<AiGenerateSentencesResponse>(`${this.API}/ai/generate-sentences`, {
+            term,
+            ...(count != null ? { count } : {}),
+          })
+          .pipe(
+            map((response) =>
+              AiActions.generateSentencesSuccess({
+                termId,
+                sentences: response.sentences,
+              })
+            ),
+            catchError((error) =>
+              of(
+                AiActions.generateSentencesFailure({
+                  termId,
+                  error: error.error?.message || 'Failed to generate sentences',
+                })
+              )
+            )
+          )
+      )
+    )
+  );
+
   // Success notification for generate terms
   generateTermsSuccess$ = createEffect(
     () =>
@@ -155,6 +187,22 @@ export class AiEffects {
             severity: 'error',
             summary: 'Extraction Failed',
             detail: error || 'Failed to extract terms from text',
+            life: 3000,
+          });
+        })
+      ),
+    { dispatch: false }
+  );
+
+  generateSentencesFailure$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(AiActions.generateSentencesFailure),
+        tap(({ error }) => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Tạo câu thất bại',
+            detail: error || 'Không tạo được câu ví dụ',
             life: 3000,
           });
         })

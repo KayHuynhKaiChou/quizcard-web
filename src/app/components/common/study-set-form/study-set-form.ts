@@ -1,12 +1,13 @@
-import { Component, Input, Output, EventEmitter, OnInit, signal } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
 import { TextareaModule } from 'primeng/textarea';
-import { TermEditor, TermRow } from '../term-editor/term-editor';
-import { CreateStudySetRequest, StudySetDetail } from '../../../types';
+import { TermEditor, TermEditorMode, TermRow } from '../term-editor/term-editor';
+import { StudySetDetail } from '../../../types';
 import { Visibility } from '../../../types/enum';
 
 export interface StudySetFormData {
@@ -22,6 +23,7 @@ export interface StudySetFormData {
   imports: [
     CommonModule,
     FormsModule,
+    RouterModule,
     InputTextModule,
     ButtonModule,
     SelectModule,
@@ -35,7 +37,32 @@ export class StudySetForm implements OnInit {
   @Input() initialData: StudySetDetail | null = null;
   @Input() submitLabel = 'Tạo bộ thẻ';
   @Input() isSubmitting = false;
+
+  /** 'edit' bật nút nạp thêm và theo dõi thay đổi thuật ngữ chờ lưu */
+  @Input() mode: TermEditorMode = 'create';
+
+  /**
+   * Thuật ngữ đã nạp, do trang cha lấy từ store. Dùng input riêng thay vì đọc
+   * initialData.terms để tham chiếu mảng ổn định — TermEditor dựa vào đó để biết
+   * khi nào thực sự có dữ liệu mới cần gộp.
+   */
+  @Input() termRows: TermRow[] = [];
+
+  /** Tổng số thuật ngữ của bộ thẻ (kể cả phần chưa nạp) */
+  @Input() totalTermCount = 0;
+  @Input() hasMoreTerms = false;
+  @Input() isLoadingMoreTerms = false;
+
+  /** Số thay đổi thuật ngữ chưa ghi xuống server */
+  @Input() pendingTermChanges = 0;
+
+  /** Đích của nút "Quay lại" trên thanh footer; chỉ dùng ở mode 'edit' */
+  @Input() backUrl: string | null = null;
+
   @Output() formSubmit = new EventEmitter<StudySetFormData>();
+  @Output() termRowChanged = new EventEmitter<TermRow>();
+  @Output() termRowRemoved = new EventEmitter<TermRow>();
+  @Output() loadMoreTerms = new EventEmitter<void>();
 
   title = '';
   description = '';
@@ -53,11 +80,6 @@ export class StudySetForm implements OnInit {
       this.description = this.initialData.description || '';
       this.visibility = this.initialData.visibility;
     }
-  }
-
-  get initialTerms(): CreateStudySetRequest['terms'] {
-    if (!this.initialData?.terms?.length) return undefined;
-    return this.initialData.terms.map((t) => ({ term: t.term, definition: t.definition }));
   }
 
   onTermsChange(rows: TermRow[]): void {

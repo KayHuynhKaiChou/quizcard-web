@@ -111,6 +111,11 @@ export const routes: Routes = [
           import('./pages/quiz-history/quiz-history').then((m) => m.QuizHistoryPage),
       },
       {
+        path: 'saved-sentences',
+        loadComponent: () =>
+          import('./pages/saved-sentences/saved-sentences').then((m) => m.SavedSentencesPage),
+      },
+      {
         path: 'search',
         loadComponent: () => import('./pages/search/search').then((m) => m.SearchPage),
       },

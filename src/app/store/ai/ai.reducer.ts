@@ -67,9 +67,35 @@ export const aiReducer = createReducer(
     error,
   })),
 
+  // Generate Sentences
+  on(AiActions.generateSentences, (state, { termId }) => ({
+    ...state,
+    sentencesLoadingTermId: termId,
+    sentencesError: null,
+  })),
+
+  on(AiActions.generateSentencesSuccess, (state, { termId, sentences }) => ({
+    ...state,
+    generatedSentences: { ...state.generatedSentences, [termId]: sentences },
+    sentencesLoadingTermId: null,
+    sentencesError: null,
+  })),
+
+  on(AiActions.generateSentencesFailure, (state, { error }) => ({
+    ...state,
+    sentencesLoadingTermId: null,
+    sentencesError: error,
+  })),
+
   // Clear Generated Terms
   on(AiActions.clearGeneratedTerms, (state) => ({
     ...state,
     generatedTerms: [],
-  }))
+  })),
+
+  // Clear cached sentences for one term (used by the "regenerate" button)
+  on(AiActions.clearSentencesForTerm, (state, { termId }) => {
+    const { [termId]: _removed, ...rest } = state.generatedSentences;
+    return { ...state, generatedSentences: rest, sentencesError: null };
+  })
 );

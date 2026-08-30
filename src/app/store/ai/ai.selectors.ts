@@ -18,3 +18,21 @@ export const selectRemainingUsage = createSelector(
   selectAiUsage,
   (usage) => usage?.remaining ?? null
 );
+
+export const selectGeneratedSentences = createSelector(
+  selectAiState,
+  (state) => state.generatedSentences
+);
+
+export const selectSentencesForTerm = (termId: string) =>
+  createSelector(selectGeneratedSentences, (map) => map[termId]);
+
+export const selectSentencesLoadingTermId = createSelector(
+  selectAiState,
+  (state) => state.sentencesLoadingTermId
+);
+
+export const selectSentencesError = createSelector(
+  selectAiState,
+  (state) => state.sentencesError
+);

@@ -1,0 +1,68 @@
+<p-dialog [visible]="visible()" (visibleChange)="onVisibleChange($event)" [modal]="true"
+  [draggable]="false" [dismissableMask]="true" [style]="{ width: '640px' }"
+  styleClass="sentence-dialog">
+
+  <ng-template #header>
+    <div class="dialog-header">
+      <span class="dialog-title"><i class="pi pi-comments"></i> Câu ví dụ</span>
+      @if (currentTerm(); as t) {
+        <span class="dialog-subtitle">{{ t.term }}</span>
+      }
+    </div>
+  </ng-template>
+
+  @if (isLoading()) {
+    <div class="state-block">
+      <i class="pi pi-spin pi-spinner"></i>
+      <p>Đang tạo câu ví dụ...</p>
+    </div>
+  } @else if (error() && !sentences()) {
+    <div class="state-block error">
+      <i class="pi pi-exclamation-triangle"></i>
+      <p>{{ error() }}</p>
+      <button pButton label="Thử lại" icon="pi pi-refresh" class="p-button-outlined p-button-sm"
+        (click)="retry()"></button>
+    </div>
+  } @else if (sentences(); as list) {
+    <div class="select-bar">
+      <label class="select-all">
+        <p-checkbox [binary]="true" [ngModel]="allSelected()" (onChange)="toggleAll()" />
+        <span>Chọn tất cả</span>
+      </label>
+      <span class="count">Đã chọn {{ selectedCount() }}/{{ list.length }}</span>
+    </div>
+
+    <ul class="sentence-list">
+      @for (s of list; track $index) {
+        <li class="sentence-item" [class.selected]="selected().has($index)"
+          (click)="toggle($index)">
+          <p-checkbox [binary]="true" [ngModel]="selected().has($index)"
+            (click)="$event.stopPropagation()" (onChange)="toggle($index)" />
+          <div class="sentence-body">
+            <div class="sentence-text">{{ s.sentence }}</div>
+            <div class="sentence-meta">
+              <span class="word-badge">{{ s.word }}</span>
+              @if (s.translation) {
+                <span class="translation">{{ s.translation }}</span>
+              }
+            </div>
+          </div>
+        </li>
+      }
+    </ul>
+  }
+
+  <ng-template #footer>
+    <div class="dialog-footer">
+      <button pButton label="Tạo lại" icon="pi pi-refresh" class="p-button-text p-button-sm"
+        [disabled]="isLoading() || isSaving()" (click)="regenerate()"></button>
+      <span class="footer-spacer"></span>
+      <button pButton label="Hủy" class="p-button-text p-button-sm" [disabled]="isSaving()"
+        (click)="close()"></button>
+      <button pButton [label]="'Lưu (' + selectedCount() + ')'"
+        [icon]="isSaving() ? 'pi pi-spin pi-spinner' : 'pi pi-check'"
+        class="p-button-success p-button-sm"
+        [disabled]="selectedCount() === 0 || isSaving()" (click)="save()"></button>
+    </div>
+  </ng-template>
+</p-dialog>

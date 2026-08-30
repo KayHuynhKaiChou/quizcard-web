@@ -5,6 +5,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
     margin-bottom: 1rem;
 
     .term-count {
@@ -53,7 +55,9 @@
       gap: 0.75rem;
 
       .term-input {
-        flex: 1;
+        // min-width: 0 để flex item co lại được thay vì tràn ra ngoài hàng
+        flex: 1 1 0;
+        min-width: 0;
         background: $bg-primary;
         border: 1px solid $border-color;
         color: $text-primary;
@@ -61,9 +65,10 @@
         padding: 0.5rem 0.75rem;
         font-size: 0.875rem;
         resize: none;
-        overflow: hidden;
+        // Chiều cao do AutoGrowTextareaDirective tính; overflow-y cũng do directive bật/tắt
+        overflow-y: hidden;
         min-height: 36px;
-        max-height: calc(21px * 4 + 16px); // 4 dòng + padding
+        max-height: calc(21px * 4 + 16px + 2px); // 4 dòng + padding + viền (box-sizing: border-box)
         line-height: 1.5;
         font-family: inherit;
         word-break: break-word;
@@ -80,6 +85,37 @@
     }
   }
 
+  .load-more-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+  }
+
+  .load-more-btn {
+    background: transparent;
+    color: $text-primary;
+    border: 1px solid $border-color;
+    border-radius: $radius-button;
+    padding: 0.625rem 1.75rem;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background 0.2s ease, border-color 0.2s ease;
+
+    &:hover:not(:disabled) {
+      background: $bg-secondary;
+      border-color: $accent-color;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
   .add-btn {
     margin-top: 1rem;
     width: 100%;
@@ -89,5 +125,12 @@
 @media (max-width: 640px) {
   .term-editor .term-row .row-fields {
     flex-direction: column;
+
+    .term-input {
+      // Ở layout dọc, flex chi phối chiều cao: flex-basis 0 ép ô nhập về đúng min-height
+      // và nuốt mất phần nội dung xuống dòng, kể cả khi height đã được tính sẵn.
+      // Trả về auto để chiều cao do nội dung (và AutoGrowTextareaDirective) quyết định.
+      flex: 0 0 auto;
+    }
   }
 }

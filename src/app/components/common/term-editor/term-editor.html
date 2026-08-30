@@ -1,14 +1,18 @@
 <div class="term-editor">
   <div class="term-header">
-    <span class="term-count">{{ rows().length }} thuật ngữ</span>
+    @if (mode === 'edit') {
+      <span class="term-count">Đang xem {{ rows().length }} / {{ displayTotal }} thuật ngữ</span>
+    } @else {
+      <span class="term-count">{{ rows().length }} thuật ngữ</span>
+    }
   </div>
 
-  <div class="term-list">
-    @for (row of rows(); track trackByIndex($index)) {
+  <div class="term-list" #termList>
+    @for (row of rows(); track trackByKey($index, row)) {
       <div class="term-row">
         <div class="row-top">
           <span class="row-number">{{ $index + 1 }}</span>
-          @if ($index >= 2) {
+          @if (canRemove($index)) {
             <button
               pButton
               icon="pi pi-trash"
@@ -22,8 +26,9 @@
             pTextarea
             placeholder="Thuật ngữ"
             [(ngModel)]="row.term"
-            (ngModelChange)="onFieldChange()"
-            (input)="autoResize($event.target)"
+            (ngModelChange)="onFieldChange(row)"
+            [appAutoGrow]="row.term"
+            [autoGrowMaxRows]="maxRows"
             class="term-input"
             rows="1"
           ></textarea>
@@ -31,8 +36,9 @@
             pTextarea
             placeholder="Nghĩa / Định nghĩa"
             [(ngModel)]="row.definition"
-            (ngModelChange)="onFieldChange()"
-            (input)="autoResize($event.target)"
+            (ngModelChange)="onFieldChange(row)"
+            [appAutoGrow]="row.definition"
+            [autoGrowMaxRows]="maxRows"
             class="term-input"
             rows="1"
           ></textarea>
@@ -40,6 +46,19 @@
       </div>
     }
   </div>
+
+  @if (hasMore) {
+    <div class="load-more-wrapper">
+      <button class="load-more-btn" (click)="onLoadMore()" [disabled]="isLoadingMore">
+        @if (isLoadingMore) {
+          <i class="pi pi-spin pi-spinner"></i> Đang tải...
+        } @else {
+          Hiển thị thêm
+          <i class="pi pi-chevron-down"></i>
+        }
+      </button>
+    </div>
+  }
 
   <button
     pButton

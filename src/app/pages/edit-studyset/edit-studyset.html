@@ -4,6 +4,11 @@
   mode="edit" [backUrl]="'/set/' + studySetId">
   <ng-container manual>
     <app-study-set-form [initialData]="studySet" submitLabel="Lưu thay đổi" [isSubmitting]="isSubmitting()"
+      mode="edit" [termRows]="termRows()" [totalTermCount]="totalTermCount()" [hasMoreTerms]="hasMoreTerms()"
+      [isLoadingMoreTerms]="isLoadingMoreTerms()" [pendingTermChanges]="termChanges.pendingCount()"
+      [backUrl]="'/set/' + studySetId"
+      (termRowChanged)="onTermRowChanged($event)"
+      (termRowRemoved)="onTermRowRemoved($event)" (loadMoreTerms)="onLoadMoreTerms()"
       (formSubmit)="onFormSubmit($event)" />
   </ng-container>
 </app-study-set-form-page>

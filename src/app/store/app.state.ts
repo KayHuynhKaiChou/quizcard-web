@@ -6,6 +6,7 @@ import { LearningState } from './learning/learning.state';
 import { ExploreState } from './explore/explore.state';
 import { AiState } from './ai/ai.state';
 import { UserProfileState } from './user-profile/user-profile.state';
+import { SavedSentenceState } from './saved-sentence/saved-sentence.state';
 
 export interface AppState {
   auth: AuthState;
@@ -16,4 +17,5 @@ export interface AppState {
   explore: ExploreState;
   ai: AiState;
   userProfile: UserProfileState;
+  savedSentence: SavedSentenceState;
 }

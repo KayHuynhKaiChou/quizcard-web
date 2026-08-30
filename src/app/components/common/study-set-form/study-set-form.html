@@ -37,19 +37,51 @@
   <div class="form-divider"></div>
 
   <app-term-editor
-    [initialTerms]="initialTerms ?? []"
+    [mode]="mode"
+    [initialTerms]="termRows"
+    [totalCount]="totalTermCount"
+    [hasMore]="hasMoreTerms"
+    [isLoadingMore]="isLoadingMoreTerms"
     (termsChange)="onTermsChange($event)"
+    (rowChanged)="termRowChanged.emit($event)"
+    (rowRemoved)="termRowRemoved.emit($event)"
+    (loadMore)="loadMoreTerms.emit()"
   />
 
-  <div class="form-actions">
-    <button
-      pButton
-      [label]="submitLabel"
-      icon="pi pi-check"
-      class="p-button-success"
-      [disabled]="!title.trim() || isSubmitting"
-      [loading]="isSubmitting"
-      (click)="onSubmit()">
-    </button>
-  </div>
+  @if (mode === 'edit') {
+    <!-- Thanh hành động dính đáy: bộ thẻ dài hàng trăm dòng nên nút lưu phải luôn với tới được -->
+    <div class="form-footer-bar">
+      @if (pendingTermChanges > 0) {
+        <span class="footer-pending">
+          <i class="pi pi-pencil"></i> {{ pendingTermChanges }} thay đổi chưa lưu
+        </span>
+      }
+      @if (backUrl) {
+        <a pButton class="p-button-text footer-back" [routerLink]="backUrl">
+          <i class="pi pi-arrow-left"></i> Quay lại
+        </a>
+      }
+      <button
+        pButton
+        [label]="submitLabel"
+        icon="pi pi-check"
+        class="p-button-success"
+        [disabled]="!title.trim() || isSubmitting"
+        [loading]="isSubmitting"
+        (click)="onSubmit()">
+      </button>
+    </div>
+  } @else {
+    <div class="form-actions">
+      <button
+        pButton
+        [label]="submitLabel"
+        icon="pi pi-check"
+        class="p-button-success"
+        [disabled]="!title.trim() || isSubmitting"
+        [loading]="isSubmitting"
+        (click)="onSubmit()">
+      </button>
+    </div>
+  }
 </div>

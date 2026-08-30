@@ -1,4 +1,6 @@
 <p-confirmDialog></p-confirmDialog>
+<app-sentence-modal [term]="activeTermForSentences()"
+  (closed)="closeSentencesModal()"></app-sentence-modal>
 <div class="studyset-detail-page" *ngIf="studySet$ | async as studySet">
   <div class="detail-header">
     <div class="header-top-bar">
@@ -75,7 +77,7 @@
     </div>
 
     <app-flashcard *ngIf="activeTerms()[currentIndex()]" [term]="activeTerms()[currentIndex()]"
-      [showTermFirst]="showTermFirst()">
+      [showTermFirst]="showTermFirst()" (sentencesRequested)="onSentencesRequested($event)">
     </app-flashcard>
 
     <div class="navigation-controls">
@@ -132,7 +134,8 @@
       <p>Không tìm thấy thuật ngữ nào</p>
     </div>
     } @else {
-    <app-term-grid [terms]="activeTerms()"></app-term-grid>
+    <app-term-grid [terms]="activeTerms()"
+      (sentencesRequested)="onSentencesRequested($event)"></app-term-grid>
 
     @if (!isSearchMode() && (isLoadingTerms$ | async)) {
     <div class="grid-loading-indicator">

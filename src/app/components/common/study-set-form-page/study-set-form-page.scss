@@ -85,6 +85,12 @@
             .p-tablist {
                 display: none;
             }
+
+            // overflow: hidden của .p-tabs chỉ để cắt góc bo quanh tablist; tablist đã ẩn ở
+            // chế độ chỉnh sửa, mà overflow ẩn lại vô hiệu hoá position: sticky của thanh đáy.
+            .p-tabs {
+                overflow: visible;
+            }
         }
     }
 

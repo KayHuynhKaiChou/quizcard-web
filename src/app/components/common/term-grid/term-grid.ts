@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Term } from '../../../types';
 import { Flashcard } from '../flashcard/flashcard';
 
@@ -10,4 +10,6 @@ import { Flashcard } from '../flashcard/flashcard';
 })
 export class TermGrid {
     @Input() terms: Term[] = [];
+    /** Forwarded from each card up to the page that hosts the sentence modal. */
+    @Output() sentencesRequested = new EventEmitter<Term>();
 }

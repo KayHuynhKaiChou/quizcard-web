@@ -5,6 +5,7 @@ import {
   AiGenerateResponse,
   AiUsageResponse,
   AiTermResponse,
+  AiSentence,
 } from '../../types';
 
 // Get AI Usage Actions
@@ -46,5 +47,27 @@ export const extractFromTextFailure = createAction(
   props<{ error: string }>()
 );
 
+// Generate Sentences Actions (per term, results cached in store)
+export const generateSentences = createAction(
+  '[AI] Generate Sentences',
+  props<{ termId: string; term: string; count?: number }>()
+);
+
+export const generateSentencesSuccess = createAction(
+  '[AI] Generate Sentences Success',
+  props<{ termId: string; sentences: AiSentence[] }>()
+);
+
+export const generateSentencesFailure = createAction(
+  '[AI] Generate Sentences Failure',
+  props<{ termId: string; error: string }>()
+);
+
 // Utility Actions
 export const clearGeneratedTerms = createAction('[AI] Clear Generated Terms');
+
+/** Drops the cache for one term so the next open regenerates. */
+export const clearSentencesForTerm = createAction(
+  '[AI] Clear Sentences For Term',
+  props<{ termId: string }>()
+);

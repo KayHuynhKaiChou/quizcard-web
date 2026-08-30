@@ -14,8 +14,12 @@
 }
 
 .main-content {
+  // Khoảng đệm của khung cuộn, phơi ra dạng biến để thanh dính đáy (position: sticky)
+  // bù lại được mà không phải lặp lại các breakpoint dưới đây ở từng component con.
+  --content-padding: 2rem;
+
   flex: 1;
-  padding: 2rem;
+  padding: var(--content-padding);
   overflow-y: auto;
   background: $bg-primary;
 
@@ -41,13 +45,13 @@
 // Mobile responsive styles
 @media (max-width: 768px) {
   .main-content {
-    padding: 1rem;
+    --content-padding: 1rem;
   }
 }
 
 @media (max-width: 480px) {
   .main-content {
-    padding: 0.75rem;
+    --content-padding: 0.75rem;
   }
 }
 

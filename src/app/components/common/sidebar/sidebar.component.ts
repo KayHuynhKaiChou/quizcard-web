@@ -21,6 +21,7 @@ export class SidebarComponent {
     { label: 'Trang chủ', icon: 'pi-home', route: '/' },
     { label: 'Thư viện của bạn', icon: 'pi-folder', route: '/library' },
     { label: 'Lịch sử Quiz', icon: 'pi-history', route: '/quiz-history' },
+    { label: 'Câu đã lưu', icon: 'pi-comments', route: '/saved-sentences' },
     { label: 'Thông báo', icon: 'pi-bell', route: '/notifications' },
   ];
   sidebarService = inject(SidebarService);

@@ -52,4 +52,54 @@
     justify-content: flex-end;
     gap: 0.75rem;
   }
+
+  // Thanh hành động dính đáy khung cuộn. Dùng sticky thay vì fixed để tự bám theo
+  // bề ngang cột nội dung, không phải tính bù độ rộng sidebar ở từng breakpoint.
+  .form-footer-bar {
+    position: sticky;
+    // Offset của sticky tính theo content box của khung cuộn, nên phải bù lại phần
+    // padding đáy; nếu không sẽ hở một dải cho nội dung trôi lọt xuống dưới thanh.
+    bottom: calc(var(--content-padding, 0px) * -1);
+    z-index: 5;
+    margin-top: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding: 0.875rem 1rem;
+    background: $bg-secondary;
+    border: 1px solid $border-color;
+    border-radius: $radius-card;
+    box-shadow: 0 -6px 18px rgba(0, 0, 0, 0.35);
+
+    .footer-pending {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      margin-right: auto;
+      font-size: 0.8125rem;
+      color: #f59e0b;
+    }
+
+    .footer-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      color: $text-secondary;
+      text-decoration: none;
+    }
+  }
+}
+
+@media (max-width: 640px) {
+  .study-set-form .form-footer-bar {
+    padding: 0.75rem;
+
+    .footer-pending {
+      // Đẩy xuống dòng riêng để 2 nút không bị bóp lại trên màn hẹp
+      flex-basis: 100%;
+      margin-right: 0;
+    }
+  }
 }

@@ -27,6 +27,7 @@ import { learningReducer } from './store/learning/learning.reducer';
 import { exploreReducer } from './store/explore/explore.reducer';
 import { aiReducer } from './store/ai/ai.reducer';
 import { userProfileReducer } from './store/user-profile/user-profile.reducer';
+import { savedSentenceReducer } from './store/saved-sentence/saved-sentence.reducer';
 
 // Effects
 import { AuthEffects } from './store/auth/auth.effects';
@@ -37,6 +38,7 @@ import { LearningEffects } from './store/learning/learning.effects';
 import { ExploreEffects } from './store/explore/explore.effects';
 import { AiEffects } from './store/ai/ai.effects';
 import { UserProfileEffects } from './store/user-profile/user-profile.effects';
+import { SavedSentenceEffects } from './store/saved-sentence/saved-sentence.effects';
 
 // LocalStorage sync meta reducer
 export function localStorageSyncReducer(reducer: any) {
@@ -87,6 +89,7 @@ export const appConfig: ApplicationConfig = {
         explore: exploreReducer,
         ai: aiReducer,
         userProfile: userProfileReducer,
+        savedSentence: savedSentenceReducer,
       },
       {
         metaReducers: [localStorageSyncReducer],
@@ -101,6 +104,7 @@ export const appConfig: ApplicationConfig = {
       ExploreEffects,
       AiEffects,
       UserProfileEffects,
+      SavedSentenceEffects,
     ]),
     provideRouterStore(),
     provideStoreDevtools({

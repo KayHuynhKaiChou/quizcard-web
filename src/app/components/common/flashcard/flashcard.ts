@@ -1,4 +1,4 @@
-import { Component, Input, signal, OnChanges, SimpleChanges, inject, PLATFORM_ID } from '@angular/core';
+import { Component, Input, Output, EventEmitter, signal, OnChanges, SimpleChanges, inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { Term } from '../../../types';
 
@@ -12,6 +12,8 @@ export class Flashcard implements OnChanges {
   private platformId = inject(PLATFORM_ID);
   @Input() term!: Term;
   @Input() showTermFirst = true;
+  /** Parent hosts the sentence modal; the card only asks for it. */
+  @Output() sentencesRequested = new EventEmitter<Term>();
   isFlipped = signal(false);
   isSpeaking = signal(false);
 
@@ -23,6 +25,12 @@ export class Flashcard implements OnChanges {
 
   flip(): void {
     this.isFlipped.update((value) => !value);
+  }
+
+  openSentences(event: Event): void {
+    // Same guard as speak(): the whole card is a flip target.
+    event.stopPropagation();
+    this.sentencesRequested.emit(this.term);
   }
 
   speak(text: string, event: Event): void {
