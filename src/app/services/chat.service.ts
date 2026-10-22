@@ -3,6 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {
   ChatMessage,
+  ChatCursorPage,
   ChatConversation,
   ChatResponse,
   Page,
@@ -42,8 +43,24 @@ export class ChatService {
     return this.http.get<Page<ChatConversation>>(`${this.API}/chat/conversations`, { params });
   }
 
-  getMessages(conversationId: string): Observable<ChatMessage[]> {
-    return this.http.get<ChatMessage[]>(`${this.API}/chat/conversations/${conversationId}/messages`);
+  getMessages(
+    conversationId: string,
+    options?: { before?: string; after?: string; limit?: number }
+  ): Observable<ChatCursorPage> {
+    let params = new HttpParams();
+    if (options?.before) {
+      params = params.set('before', options.before);
+    }
+    if (options?.after) {
+      params = params.set('after', options.after);
+    }
+    if (options?.limit) {
+      params = params.set('limit', options.limit);
+    }
+    return this.http.get<ChatCursorPage>(
+      `${this.API}/chat/conversations/${conversationId}/messages`,
+      { params }
+    );
   }
 
   deleteConversation(conversationId: string): Observable<void> {

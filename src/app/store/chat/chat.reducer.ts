@@ -15,6 +15,11 @@ export const chatReducer = createReducer(
     messages: [],
     activeInteraction: null,
     error: null,
+    hasOlderMessages: false,
+    hasNewerMessages: false,
+    loadingOlderMessages: false,
+    oldestCursor: null,
+    newestCursor: null,
   })),
 
   on(ChatActions.sendMessage, (state, { message }) => {
@@ -110,16 +115,34 @@ export const chatReducer = createReducer(
     activeInteraction: null,
   })),
 
-  on(ChatActions.loadMessagesSuccess, (state, { conversationId, messages }) => ({
+  on(ChatActions.loadMessagesSuccess, (state, { conversationId, page }) => ({
     ...state,
     loading: false,
     conversationId,
-    messages,
+    messages: page.messages,
+    hasOlderMessages: page.hasOlder,
+    hasNewerMessages: page.hasNewer,
+    oldestCursor: page.oldestCursor ?? null,
+    newestCursor: page.newestCursor ?? null,
   })),
 
-  on(ChatActions.loadMessagesFailure, (state, { error }) => ({
+  on(ChatActions.loadOlderMessages, (state) => ({
     ...state,
-    loading: false,
+    loadingOlderMessages: true,
+    error: null,
+  })),
+
+  on(ChatActions.loadOlderMessagesSuccess, (state, { page }) => ({
+    ...state,
+    loadingOlderMessages: false,
+    messages: [...page.messages, ...state.messages],
+    hasOlderMessages: page.hasOlder,
+    oldestCursor: page.oldestCursor ?? state.oldestCursor,
+  })),
+
+  on(ChatActions.loadOlderMessagesFailure, (state, { error }) => ({
+    ...state,
+    loadingOlderMessages: false,
     error,
   })),
 

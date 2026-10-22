@@ -1,6 +1,7 @@
 import { createAction, props } from '@ngrx/store';
 import {
   ChatMessage,
+  ChatCursorPage,
   ChatConversation,
   ChatResponse,
 } from '../../types';
@@ -59,10 +60,24 @@ export const selectConversation = createAction(
 );
 export const loadMessagesSuccess = createAction(
   '[Chat] Load Messages Success',
-  props<{ conversationId: string; messages: ChatMessage[] }>()
+  props<{ conversationId: string; page: ChatCursorPage }>()
 );
 export const loadMessagesFailure = createAction(
   '[Chat] Load Messages Failure',
+  props<{ error: string }>()
+);
+
+// Reverse cursor - load older messages
+export const loadOlderMessages = createAction(
+  '[Chat] Load Older Messages',
+  props<{ conversationId: string; before: string }>()
+);
+export const loadOlderMessagesSuccess = createAction(
+  '[Chat] Load Older Messages Success',
+  props<{ conversationId: string; page: ChatCursorPage }>()
+);
+export const loadOlderMessagesFailure = createAction(
+  '[Chat] Load Older Messages Failure',
   props<{ error: string }>()
 );
 

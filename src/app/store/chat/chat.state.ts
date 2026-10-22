@@ -8,6 +8,11 @@ export interface ChatState {
   loading: boolean;
   error: string | null;
   isOpen: boolean;
+  hasOlderMessages: boolean;
+  hasNewerMessages: boolean;
+  loadingOlderMessages: boolean;
+  oldestCursor: string | null;
+  newestCursor: string | null;
 }
 
 export const initialChatState: ChatState = {
@@ -18,4 +23,9 @@ export const initialChatState: ChatState = {
   loading: false,
   error: null,
   isOpen: false,
+  hasOlderMessages: false,
+  hasNewerMessages: false,
+  loadingOlderMessages: false,
+  oldestCursor: null,
+  newestCursor: null,
 };

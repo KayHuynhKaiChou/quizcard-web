@@ -10,12 +10,14 @@ import {
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TextFieldModule } from '@angular/cdk/text-field';
 import { Store } from '@ngrx/store';
 import { DrawerModule } from 'primeng/drawer';
 import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
 
 import { environment } from '../../../../environments/environment';
+import { MarkdownPipe } from '../../../pipes/markdown.pipe';
 import { selectIsAuthenticated } from '../../../store/auth/auth.selectors';
 import * as ChatActions from '../../../store/chat/chat.actions';
 import {
@@ -25,6 +27,9 @@ import {
   selectChatLoading,
   selectChatConversations,
   selectConversationId,
+  selectHasOlderMessages,
+  selectLoadingOlderMessages,
+  selectOldestCursor,
 } from '../../../store/chat/chat.selectors';
 
 import { ChatFormComponent } from '../chat-form/chat-form.component';
@@ -45,9 +50,11 @@ import {
   imports: [
     CommonModule,
     FormsModule,
+    TextFieldModule,
     DrawerModule,
     ButtonModule,
     TooltipModule,
+    MarkdownPipe,
     ChatFormComponent,
     ChatTermPickerComponent,
     ChatConfirmComponent,
@@ -73,22 +80,40 @@ export class ChatWidgetComponent implements AfterViewChecked {
   readonly loading = this.store.selectSignal(selectChatLoading);
   readonly conversations = this.store.selectSignal(selectChatConversations);
   readonly currentConversationId = this.store.selectSignal(selectConversationId);
+  readonly hasOlder = this.store.selectSignal(selectHasOlderMessages);
+  readonly loadingOlder = this.store.selectSignal(selectLoadingOlderMessages);
+  readonly oldestCursor = this.store.selectSignal(selectOldestCursor);
 
   // Local UI state
   inputMessage = signal<string>('');
   showHistory = signal<boolean>(false);
+  showScrollBottomBtn = signal<boolean>(false);
+  unreadWhileScrolledUp = signal<number>(0);
+
   private shouldScrollBottom = false;
+  private isPrependingMessages = false;
+  private prevScrollHeight = 0;
+  private prevScrollTop = 0;
 
   constructor() {
-    // When messages change, schedule auto-scroll
+    // When messages change, schedule auto-scroll if near bottom
     effect(() => {
       this.messages();
-      this.shouldScrollBottom = true;
+      if (this.showScrollBottomBtn()) {
+        this.unreadWhileScrolledUp.update((n) => n + 1);
+      } else {
+        this.shouldScrollBottom = true;
+      }
     });
   }
 
   ngAfterViewChecked() {
-    if (this.shouldScrollBottom) {
+    if (this.isPrependingMessages && this.messagesContainer?.nativeElement) {
+      const el = this.messagesContainer.nativeElement;
+      const heightDiff = el.scrollHeight - this.prevScrollHeight;
+      el.scrollTop = this.prevScrollTop + heightDiff;
+      this.isPrependingMessages = false;
+    } else if (this.shouldScrollBottom) {
       this.scrollToBottom();
       this.shouldScrollBottom = false;
     }
@@ -108,6 +133,8 @@ export class ChatWidgetComponent implements AfterViewChecked {
   startNewChat() {
     this.store.dispatch(ChatActions.newChat());
     this.showHistory.set(false);
+    this.showScrollBottomBtn.set(false);
+    this.unreadWhileScrolledUp.set(0);
   }
 
   toggleHistory() {
@@ -120,6 +147,9 @@ export class ChatWidgetComponent implements AfterViewChecked {
   selectConversation(convId: string) {
     this.store.dispatch(ChatActions.selectConversation({ conversationId: convId }));
     this.showHistory.set(false);
+    this.showScrollBottomBtn.set(false);
+    this.unreadWhileScrolledUp.set(0);
+    this.shouldScrollBottom = true;
   }
 
   deleteConversation(event: Event, convId: string) {
@@ -133,6 +163,8 @@ export class ChatWidgetComponent implements AfterViewChecked {
 
     this.store.dispatch(ChatActions.sendMessage({ message: text }));
     this.inputMessage.set('');
+    this.showScrollBottomBtn.set(false);
+    this.unreadWhileScrolledUp.set(0);
     this.shouldScrollBottom = true;
   }
 
@@ -150,12 +182,53 @@ export class ChatWidgetComponent implements AfterViewChecked {
     summaryText?: string;
   }) {
     this.store.dispatch(ChatActions.submitInteraction(event));
+    this.showScrollBottomBtn.set(false);
+    this.unreadWhileScrolledUp.set(0);
     this.shouldScrollBottom = true;
   }
 
   sendQuickPrompt(promptText: string) {
     this.inputMessage.set(promptText);
     this.sendMessage();
+  }
+
+  onScroll() {
+    if (!this.messagesContainer?.nativeElement) return;
+    const el = this.messagesContainer.nativeElement;
+    const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
+    const isUp = distanceFromBottom > 150;
+    this.showScrollBottomBtn.set(isUp);
+    if (!isUp) {
+      this.unreadWhileScrolledUp.set(0);
+    }
+
+    // Auto load older messages when near top
+    if (el.scrollTop <= 40 && this.hasOlder() && !this.loadingOlder()) {
+      this.triggerLoadOlder();
+    }
+  }
+
+  triggerLoadOlder() {
+    const convId = this.currentConversationId();
+    const cursor = this.oldestCursor();
+    if (convId && cursor && !this.loadingOlder()) {
+      if (this.messagesContainer?.nativeElement) {
+        const el = this.messagesContainer.nativeElement;
+        this.isPrependingMessages = true;
+        this.prevScrollHeight = el.scrollHeight;
+        this.prevScrollTop = el.scrollTop;
+      }
+      this.store.dispatch(ChatActions.loadOlderMessages({ conversationId: convId, before: cursor }));
+    }
+  }
+
+  scrollToBottomSmooth() {
+    if (this.messagesContainer?.nativeElement) {
+      const el = this.messagesContainer.nativeElement;
+      el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
+      this.showScrollBottomBtn.set(false);
+      this.unreadWhileScrolledUp.set(0);
+    }
   }
 
   private scrollToBottom() {

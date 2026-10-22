@@ -5,6 +5,14 @@ export interface ChatMessage {
   createdAt?: string;
 }
 
+export interface ChatCursorPage {
+  messages: ChatMessage[];
+  hasOlder: boolean;
+  hasNewer: boolean;
+  oldestCursor?: string;
+  newestCursor?: string;
+}
+
 export interface ChatConversation {
   id: string;
   title: string;

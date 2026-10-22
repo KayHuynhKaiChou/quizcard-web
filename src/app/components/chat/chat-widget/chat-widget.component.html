@@ -16,7 +16,7 @@
     [visible]="isOpen()"
     (visibleChange)="closeWidget()"
     position="right"
-    [style]="{ width: '440px', maxWidth: '100vw' }"
+    [style]="{ width: '460px', maxWidth: '100vw' }"
     [showCloseIcon]="false"
     styleClass="chat-drawer"
   >
@@ -97,7 +97,19 @@
       </div>
 
       <!-- Messages Body -->
-      <div #messagesContainer class="chat-messages">
+      <div #messagesContainer class="chat-messages" (scroll)="onScroll()">
+        <!-- Load older messages indicator / button -->
+        <div *ngIf="loadingOlder()" class="load-older-indicator">
+          <i class="pi pi-spin pi-spinner"></i>
+          <span>Đang tải tin nhắn cũ hơn...</span>
+        </div>
+        <div *ngIf="hasOlder() && !loadingOlder()" class="load-older-bar">
+          <button type="button" class="btn-load-older" (click)="triggerLoadOlder()">
+            <i class="pi pi-angle-up"></i>
+            <span>Tải thêm tin nhắn trước</span>
+          </button>
+        </div>
+
         <!-- Welcome banner if empty -->
         <div *ngIf="messages().length === 0" class="welcome-section">
           <div class="welcome-icon-box">
@@ -143,8 +155,15 @@
           [class.user]="msg.role === 'user'"
           [class.assistant]="msg.role === 'assistant'"
         >
-          <div class="bubble">
-            <div class="message-text">{{ msg.content }}</div>
+          <div class="bubble" [class.user-bubble]="msg.role === 'user'" [class.assistant-bubble]="msg.role === 'assistant'">
+            <div
+              *ngIf="msg.role === 'assistant'"
+              class="markdown-body"
+              [innerHTML]="msg.content | markdown"
+            ></div>
+            <div *ngIf="msg.role !== 'assistant'" class="message-text">
+              {{ msg.content }}
+            </div>
           </div>
         </div>
 
@@ -184,14 +203,32 @@
         </div>
       </div>
 
+      <!-- Floating Scroll-To-Bottom Pill -->
+      <button
+        *ngIf="showScrollBottomBtn()"
+        type="button"
+        class="scroll-bottom-pill"
+        (click)="scrollToBottomSmooth()"
+        title="Cuộn xuống cuối"
+      >
+        <i class="pi pi-arrow-down"></i>
+        <span>Cuộn xuống</span>
+        <span *ngIf="unreadWhileScrolledUp() > 0" class="badge-count">
+          {{ unreadWhileScrolledUp() }}
+        </span>
+      </button>
+
       <!-- Chat Input Footer -->
       <div class="chat-footer">
         <div class="input-container">
           <textarea
             [(ngModel)]="inputMessage"
             (keydown)="onKeyDown($event)"
-            placeholder="Nhắn tin cho QuizCard AI... (Enter để gửi)"
-            rows="1"
+            placeholder="Nhắn tin cho QuizCard AI... (Shift+Enter để xuống dòng)"
+            cdkTextareaAutosize
+            #autosize="cdkTextareaAutosize"
+            cdkAutosizeMinRows="1"
+            cdkAutosizeMaxRows="5"
             class="chat-input"
             [disabled]="loading()"
           ></textarea>
@@ -200,6 +237,7 @@
             class="send-btn"
             [disabled]="!inputMessage().trim() || loading()"
             (click)="sendMessage()"
+            title="Gửi tin nhắn (Enter)"
           >
             <i class="pi pi-send"></i>
           </button>

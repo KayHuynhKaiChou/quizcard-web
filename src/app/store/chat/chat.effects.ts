@@ -84,11 +84,27 @@ export class ChatEffects {
       ofType(ChatActions.selectConversation),
       switchMap(({ conversationId }) =>
         this.chatService.getMessages(conversationId).pipe(
-          map((messages) =>
-            ChatActions.loadMessagesSuccess({ conversationId, messages })
+          map((page) =>
+            ChatActions.loadMessagesSuccess({ conversationId, page })
           ),
           catchError((error) =>
             of(ChatActions.loadMessagesFailure({ error: error.message }))
+          )
+        )
+      )
+    )
+  );
+
+  loadOlderMessages$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ChatActions.loadOlderMessages),
+      switchMap(({ conversationId, before }) =>
+        this.chatService.getMessages(conversationId, { before }).pipe(
+          map((page) =>
+            ChatActions.loadOlderMessagesSuccess({ conversationId, page })
+          ),
+          catchError((error) =>
+            of(ChatActions.loadOlderMessagesFailure({ error: error.message }))
           )
         )
       )
