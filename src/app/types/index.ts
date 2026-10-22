@@ -1,4 +1,5 @@
 import { Role, Visibility } from './enum';
+export * from './chat.types';
 
 // ============ Pagination ============
 export interface Page<T> {

@@ -1,0 +1,71 @@
+<div class="chat-form-card">
+  <div class="form-header">
+    <div class="form-badge">
+      <i class="pi pi-file-edit"></i>
+      <span>Biểu mẫu</span>
+    </div>
+    <h4 class="form-title">{{ interaction.title }}</h4>
+  </div>
+
+  <form (ngSubmit)="onSubmit()" class="form-body">
+    <div *ngFor="let field of interaction.fields" class="form-group">
+      <label class="form-label">
+        {{ field.label }}
+        <span *ngIf="field.required" class="required">*</span>
+      </label>
+
+      <!-- Select dropdown -->
+      <select
+        *ngIf="field.type === 'select'"
+        [(ngModel)]="formData[field.name]"
+        [name]="field.name"
+        class="custom-select"
+      >
+        <option *ngFor="let opt of field.options" [value]="opt">{{ opt }}</option>
+      </select>
+
+      <!-- Textarea -->
+      <textarea
+        *ngIf="field.type === 'textarea'"
+        [(ngModel)]="formData[field.name]"
+        [name]="field.name"
+        rows="2"
+        class="custom-input custom-textarea"
+        [placeholder]="field.label"
+      ></textarea>
+
+      <!-- Number input -->
+      <input
+        *ngIf="field.type === 'number'"
+        type="number"
+        [(ngModel)]="formData[field.name]"
+        [name]="field.name"
+        class="custom-input"
+        [placeholder]="field.label"
+      />
+
+      <!-- Default text input -->
+      <input
+        *ngIf="field.type === 'text' || (!field.type)"
+        type="text"
+        [(ngModel)]="formData[field.name]"
+        [name]="field.name"
+        class="custom-input"
+        [placeholder]="field.label"
+      />
+    </div>
+
+    <div *ngIf="validationError" class="validation-error">
+      <i class="pi pi-exclamation-circle"></i>
+      <span>{{ validationError }}</span>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn btn-cancel" (click)="onCancel()">Hủy</button>
+      <button type="submit" class="btn btn-submit">
+        <i class="pi pi-check"></i>
+        <span>Áp dụng</span>
+      </button>
+    </div>
+  </form>
+</div>

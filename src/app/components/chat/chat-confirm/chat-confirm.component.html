@@ -1,0 +1,33 @@
+<div class="chat-confirm-card" [class.danger]="interaction.danger">
+  <div class="confirm-header">
+    <div class="confirm-badge" [class.danger]="interaction.danger">
+      <i [class]="interaction.danger ? 'pi pi-exclamation-triangle' : 'pi pi-info-circle'"></i>
+      <span>{{ interaction.danger ? 'Thao tác nguy hiểm' : 'Xác nhận' }}</span>
+    </div>
+  </div>
+
+  <div class="confirm-content">
+    <p class="summary-text">{{ interaction.summary }}</p>
+
+    <div *ngIf="interaction.details" class="details-preview">
+      <div *ngFor="let entry of interaction.details | keyvalue" class="detail-row">
+        <span class="detail-key">{{ entry.key }}:</span>
+        <span class="detail-val">{{ entry.value | json }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="confirm-actions">
+    <button type="button" class="btn btn-cancel" (click)="onCancel()">Hủy</button>
+    <button
+      type="button"
+      class="btn"
+      [class.btn-danger]="interaction.danger"
+      [class.btn-confirm]="!interaction.danger"
+      (click)="onConfirm()"
+    >
+      <i class="pi pi-check"></i>
+      <span>{{ interaction.danger ? 'Tôi hiểu, thực hiện ngay' : 'Xác nhận' }}</span>
+    </button>
+  </div>
+</div>

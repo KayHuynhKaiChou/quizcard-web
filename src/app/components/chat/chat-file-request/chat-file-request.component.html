@@ -1,0 +1,59 @@
+<div class="chat-file-request-card">
+  <div class="request-header">
+    <div class="request-badge">
+      <i class="pi pi-upload"></i>
+      <span>Tải tệp</span>
+    </div>
+    <h4 class="request-title">{{ interaction.title || 'Tải lên tệp tài liệu PDF' }}</h4>
+  </div>
+
+  <div
+    class="dropzone"
+    (dragover)="onDragOver($event)"
+    (drop)="onDrop($event)"
+    (click)="fileInput.click()"
+  >
+    <input
+      #fileInput
+      type="file"
+      [accept]="(interaction.accept || ['application/pdf']).join(',')"
+      (change)="onFileSelected($event)"
+      style="display: none"
+    />
+
+    <div *ngIf="!selectedFile" class="dropzone-empty">
+      <i class="pi pi-cloud-upload upload-icon"></i>
+      <p class="dropzone-text">Kéo thả tệp PDF vào đây hoặc <span>chọn từ máy</span></p>
+      <small class="dropzone-hint">Dung lượng tối đa: {{ interaction.maxSizeMb || 10 }}MB</small>
+    </div>
+
+    <div *ngIf="selectedFile" class="file-selected">
+      <i class="pi pi-file-pdf file-icon"></i>
+      <div class="file-meta">
+        <span class="file-name">{{ selectedFile.name }}</span>
+        <span class="file-size">{{ (selectedFile.size / 1024 / 1024).toFixed(2) }} MB</span>
+      </div>
+      <button type="button" class="btn-remove" (click)="$event.stopPropagation(); selectedFile = null">
+        <i class="pi pi-times"></i>
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="errorMsg" class="error-msg">
+    <i class="pi pi-exclamation-circle"></i>
+    <span>{{ errorMsg }}</span>
+  </div>
+
+  <div class="request-actions">
+    <button type="button" class="btn btn-cancel" (click)="onCancel()">Hủy</button>
+    <button
+      type="button"
+      class="btn btn-submit"
+      [disabled]="!selectedFile"
+      (click)="onSubmit()"
+    >
+      <i class="pi pi-check"></i>
+      <span>Xác nhận tải lên</span>
+    </button>
+  </div>
+</div>

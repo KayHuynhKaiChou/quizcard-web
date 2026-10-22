@@ -1,0 +1,96 @@
+<div class="chat-term-picker-card">
+  <div class="picker-header">
+    <div class="header-left">
+      <div class="picker-badge">
+        <i class="pi pi-list-check"></i>
+        <span>Chọn từ</span>
+      </div>
+      <h4 class="picker-title">{{ interaction.title }}</h4>
+    </div>
+
+    <label class="select-all-label">
+      <input
+        type="checkbox"
+        [checked]="allChecked"
+        (change)="toggleAll($event)"
+      />
+      <span>Chọn tất cả</span>
+    </label>
+  </div>
+
+  <div class="terms-list">
+    <div
+      *ngFor="let item of terms; let i = index"
+      class="term-item"
+      [class.checked]="item.checked"
+      [class.already-owned]="item.alreadyOwned"
+    >
+      <div class="term-select">
+        <input
+          type="checkbox"
+          [(ngModel)]="item.checked"
+          [id]="'term-cb-' + i"
+        />
+      </div>
+
+      <div class="term-content">
+        <div class="term-row-top">
+          <!-- Editable or display term -->
+          <input
+            *ngIf="interaction.allowEdit; else viewTerm"
+            type="text"
+            [(ngModel)]="item.term"
+            class="term-edit-input term-word"
+            placeholder="Thuật ngữ"
+          />
+          <ng-template #viewTerm>
+            <span class="term-word">{{ item.term }}</span>
+          </ng-template>
+
+          <span *ngIf="item.ipa" class="term-ipa">{{ item.ipa }}</span>
+
+          <span *ngIf="item.alreadyOwned" class="badge-owned" title="Từ này đã có trong bộ từ của bạn">
+            Đã có
+          </span>
+        </div>
+
+        <div class="term-row-bottom">
+          <!-- Editable or display definition -->
+          <input
+            *ngIf="interaction.allowEdit; else viewDef"
+            type="text"
+            [(ngModel)]="item.definition"
+            class="term-edit-input term-def"
+            placeholder="Định nghĩa tiếng Việt"
+          />
+          <ng-template #viewDef>
+            <span class="term-def">{{ item.definition }}</span>
+          </ng-template>
+        </div>
+
+        <div *ngIf="item.example" class="term-example">
+          <small>{{ item.example }}</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="picker-footer">
+    <div class="count-indicator">
+      Đã chọn: <strong>{{ selectedCount }}</strong> / {{ terms.length }}
+    </div>
+
+    <div class="picker-actions">
+      <button type="button" class="btn btn-cancel" (click)="onCancel()">Hủy</button>
+      <button
+        type="button"
+        class="btn btn-submit"
+        [disabled]="selectedCount === 0"
+        (click)="onSubmit()"
+      >
+        <i class="pi pi-plus"></i>
+        <span>Thêm {{ selectedCount }} từ</span>
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,210 @@
+<ng-container *ngIf="chatEnabled && isAuthenticated() && isBrowser">
+  <!-- Floating Button -->
+  <button
+    type="button"
+    class="chat-floating-btn"
+    (click)="toggleWidget()"
+    aria-label="Mở trợ lý AI"
+    [class.active]="isOpen()"
+  >
+    <div class="glow-effect"></div>
+    <i class="pi pi-sparkles chat-icon"></i>
+  </button>
+
+  <!-- Side Drawer -->
+  <p-drawer
+    [visible]="isOpen()"
+    (visibleChange)="closeWidget()"
+    position="right"
+    [style]="{ width: '440px', maxWidth: '100vw' }"
+    [showCloseIcon]="false"
+    styleClass="chat-drawer"
+  >
+    <div class="chat-container">
+      <!-- Drawer Header -->
+      <div class="chat-header">
+        <div class="assistant-info">
+          <div class="avatar-wrapper">
+            <i class="pi pi-sparkles avatar-icon"></i>
+            <span class="status-indicator"></span>
+          </div>
+          <div class="title-meta">
+            <h3 class="assistant-name">QuizCard AI</h3>
+            <span class="assistant-sub">Trợ lý học tập thông minh</span>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <button
+            type="button"
+            class="header-btn"
+            [class.active]="showHistory()"
+            (click)="toggleHistory()"
+            title="Lịch sử trò chuyện"
+          >
+            <i class="pi pi-history"></i>
+          </button>
+          <button
+            type="button"
+            class="header-btn"
+            (click)="startNewChat()"
+            title="Cuộc trò chuyện mới"
+          >
+            <i class="pi pi-plus"></i>
+          </button>
+          <button
+            type="button"
+            class="header-btn close-btn"
+            (click)="closeWidget()"
+            title="Đóng"
+          >
+            <i class="pi pi-times"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Conversations History Overlay/Panel -->
+      <div *ngIf="showHistory()" class="history-panel">
+        <div class="history-header">
+          <span>Lịch sử hội thoại</span>
+          <button type="button" class="btn-text" (click)="toggleHistory()">Đóng</button>
+        </div>
+        <div class="history-list">
+          <div *ngIf="conversations().length === 0" class="history-empty">
+            Chưa có cuộc trò chuyện nào trước đây.
+          </div>
+          <div
+            *ngFor="let conv of conversations()"
+            class="history-item"
+            [class.active]="conv.id === currentConversationId()"
+            (click)="selectConversation(conv.id)"
+          >
+            <i class="pi pi-comments conv-icon"></i>
+            <div class="conv-details">
+              <span class="conv-title">{{ conv.title || 'Hội thoại' }}</span>
+              <span class="conv-time">{{ conv.updatedAt | date: 'short' }}</span>
+            </div>
+            <button
+              type="button"
+              class="conv-delete-btn"
+              (click)="deleteConversation($event, conv.id)"
+              title="Xóa hội thoại"
+            >
+              <i class="pi pi-trash"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Messages Body -->
+      <div #messagesContainer class="chat-messages">
+        <!-- Welcome banner if empty -->
+        <div *ngIf="messages().length === 0" class="welcome-section">
+          <div class="welcome-icon-box">
+            <i class="pi pi-sparkles"></i>
+          </div>
+          <h4 class="welcome-title">Xin chào! Tôi có thể giúp gì cho bạn?</h4>
+          <p class="welcome-desc">
+            Bạn có thể hỏi giải thích từ vựng, ngữ pháp, hoặc yêu cầu tạo học phần tự động theo chủ đề.
+          </p>
+
+          <div class="quick-prompts">
+            <button
+              type="button"
+              class="quick-chip"
+              (click)="sendQuickPrompt('Tạo bộ từ vựng mới')"
+            >
+              <i class="pi pi-plus-circle"></i>
+              <span>Tạo bộ từ vựng mới</span>
+            </button>
+            <button
+              type="button"
+              class="quick-chip"
+              (click)="sendQuickPrompt('Hôm nay tôi cần ôn tập những từ nào?')"
+            >
+              <i class="pi pi-calendar"></i>
+              <span>Hôm nay cần ôn gì?</span>
+            </button>
+            <button
+              type="button"
+              class="quick-chip"
+              (click)="sendQuickPrompt('Phân biệt affect và effect')"
+            >
+              <i class="pi pi-book"></i>
+              <span>Phân biệt affect và effect</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Render Message Bubbles -->
+        <div
+          *ngFor="let msg of messages()"
+          class="message-wrapper"
+          [class.user]="msg.role === 'user'"
+          [class.assistant]="msg.role === 'assistant'"
+        >
+          <div class="bubble">
+            <div class="message-text">{{ msg.content }}</div>
+          </div>
+        </div>
+
+        <!-- Active Generative UI Interaction Card -->
+        <div *ngIf="activeInteraction()" class="interaction-container">
+          <app-chat-form
+            *ngIf="activeInteraction()!.type === 'form'"
+            [interaction]="asForm(activeInteraction()!)"
+            (submitted)="handleInteractionSubmit($event)"
+          ></app-chat-form>
+
+          <app-chat-term-picker
+            *ngIf="activeInteraction()!.type === 'term_picker'"
+            [interaction]="asTermPicker(activeInteraction()!)"
+            (submitted)="handleInteractionSubmit($event)"
+          ></app-chat-term-picker>
+
+          <app-chat-confirm
+            *ngIf="activeInteraction()!.type === 'confirm'"
+            [interaction]="asConfirm(activeInteraction()!)"
+            (submitted)="handleInteractionSubmit($event)"
+          ></app-chat-confirm>
+
+          <app-chat-file-request
+            *ngIf="activeInteraction()!.type === 'file_request'"
+            [interaction]="asFileRequest(activeInteraction()!)"
+            (submitted)="handleInteractionSubmit($event)"
+          ></app-chat-file-request>
+        </div>
+
+        <!-- Typing Loading Indicator -->
+        <div *ngIf="loading()" class="typing-indicator">
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <span class="typing-text">AI đang suy nghĩ...</span>
+        </div>
+      </div>
+
+      <!-- Chat Input Footer -->
+      <div class="chat-footer">
+        <div class="input-container">
+          <textarea
+            [(ngModel)]="inputMessage"
+            (keydown)="onKeyDown($event)"
+            placeholder="Nhắn tin cho QuizCard AI... (Enter để gửi)"
+            rows="1"
+            class="chat-input"
+            [disabled]="loading()"
+          ></textarea>
+          <button
+            type="button"
+            class="send-btn"
+            [disabled]="!inputMessage().trim() || loading()"
+            (click)="sendMessage()"
+          >
+            <i class="pi pi-send"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </p-drawer>
+</ng-container>
