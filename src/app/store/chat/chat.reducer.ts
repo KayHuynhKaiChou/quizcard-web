@@ -31,33 +31,88 @@ export const chatReducer = createReducer(
     return {
       ...state,
       loading: true,
+      isStreaming: true,
+      streamStatus: 'Đang kết nối...',
       error: null,
       messages: [...state.messages, userMsg],
     };
   }),
 
-  on(ChatActions.sendMessageSuccess, (state, { response }) => {
-    const newMessages = [...state.messages];
-    if (response.reply) {
-      newMessages.push({
+  on(ChatActions.chatStreamInit, (state, { conversationId }) => ({
+    ...state,
+    conversationId: conversationId || state.conversationId,
+  })),
+
+  on(ChatActions.chatStreamStatus, (state, { statusText }) => ({
+    ...state,
+    streamStatus: statusText,
+  })),
+
+  on(ChatActions.chatStreamDelta, (state, { delta }) => {
+    const msgs = [...state.messages];
+    const lastMsg = msgs[msgs.length - 1];
+    if (lastMsg && lastMsg.role === 'assistant') {
+      msgs[msgs.length - 1] = {
+        ...lastMsg,
+        content: (lastMsg.content || '') + delta,
+      };
+    } else {
+      msgs.push({
         role: 'assistant' as const,
-        content: response.reply,
+        content: delta,
         createdAt: new Date().toISOString(),
       });
+    }
+    return {
+      ...state,
+      messages: msgs,
+      streamStatus: null,
+    };
+  }),
+
+  on(ChatActions.chatStreamInteraction, (state, { interaction }) => ({
+    ...state,
+    activeInteraction: interaction,
+    loading: false,
+    isStreaming: false,
+    streamStatus: null,
+  })),
+
+  on(ChatActions.sendMessageSuccess, (state, { response }) => {
+    const msgs = [...state.messages];
+    const lastMsg = msgs[msgs.length - 1];
+
+    if (response.reply) {
+      if (lastMsg && lastMsg.role === 'assistant') {
+        msgs[msgs.length - 1] = {
+          ...lastMsg,
+          content: response.reply,
+        };
+      } else {
+        msgs.push({
+          role: 'assistant' as const,
+          content: response.reply,
+          createdAt: new Date().toISOString(),
+        });
+      }
     }
 
     return {
       ...state,
       loading: false,
+      isStreaming: false,
+      streamStatus: null,
       conversationId: response.conversationId || state.conversationId,
-      messages: newMessages,
-      activeInteraction: response.type === 'interaction' ? response.interaction : null,
+      messages: msgs,
+      activeInteraction: response.type === 'interaction' ? response.interaction : state.activeInteraction,
     };
   }),
 
   on(ChatActions.sendMessageFailure, (state, { error }) => ({
     ...state,
     loading: false,
+    isStreaming: false,
+    streamStatus: null,
     error,
   })),
 
@@ -119,7 +174,10 @@ export const chatReducer = createReducer(
     ...state,
     loading: false,
     conversationId,
-    messages: page.messages,
+    messages: (page.messages || []).map((m) => ({
+      ...m,
+      role: ((m.role || '').toLowerCase() as any) || 'user',
+    })),
     hasOlderMessages: page.hasOlder,
     hasNewerMessages: page.hasNewer,
     oldestCursor: page.oldestCursor ?? null,
@@ -135,7 +193,13 @@ export const chatReducer = createReducer(
   on(ChatActions.loadOlderMessagesSuccess, (state, { page }) => ({
     ...state,
     loadingOlderMessages: false,
-    messages: [...page.messages, ...state.messages],
+    messages: [
+      ...(page.messages || []).map((m) => ({
+        ...m,
+        role: ((m.role || '').toLowerCase() as any) || 'user',
+      })),
+      ...state.messages,
+    ],
     hasOlderMessages: page.hasOlder,
     oldestCursor: page.oldestCursor ?? state.oldestCursor,
   })),

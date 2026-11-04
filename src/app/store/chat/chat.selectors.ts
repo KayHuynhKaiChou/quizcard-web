@@ -28,6 +28,16 @@ export const selectChatLoading = createSelector(
   (state) => state?.loading ?? false
 );
 
+export const selectIsStreaming = createSelector(
+  selectChatState,
+  (state) => state?.isStreaming ?? false
+);
+
+export const selectStreamStatus = createSelector(
+  selectChatState,
+  (state) => state?.streamStatus ?? null
+);
+
 export const selectChatError = createSelector(
   selectChatState,
   (state) => state?.error ?? null

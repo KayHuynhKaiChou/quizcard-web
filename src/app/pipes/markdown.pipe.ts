@@ -25,7 +25,9 @@ export class MarkdownPipe implements PipeTransform {
     }
 
     try {
-      const rawHtml = marked.parse(value) as string;
+      // Normalize unicode bullet points (•, ●, ◦, ⁃, ▪, ▫, ✦, ✧) into markdown lists (- )
+      const normalized = value.replace(/^[ \t]*[•●◦⁃▪▫✦✧]\s*/gm, '- ');
+      const rawHtml = marked.parse(normalized) as string;
       const cleanHtml = this.isBrowser ? DOMPurify.sanitize(rawHtml) : rawHtml;
       return this.sanitizer.bypassSecurityTrustHtml(cleanHtml);
     } catch (e) {

@@ -9,8 +9,6 @@ import {
   AfterViewChecked,
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { TextFieldModule } from '@angular/cdk/text-field';
 import { Store } from '@ngrx/store';
 import { DrawerModule } from 'primeng/drawer';
 import { ButtonModule } from 'primeng/button';
@@ -30,31 +28,32 @@ import {
   selectHasOlderMessages,
   selectLoadingOlderMessages,
   selectOldestCursor,
+  selectIsStreaming,
+  selectStreamStatus,
 } from '../../../store/chat/chat.selectors';
 
+import { ChatInputComponent } from '../chat-input/chat-input.component';
 import { ChatFormComponent } from '../chat-form/chat-form.component';
 import { ChatTermPickerComponent } from '../chat-term-picker/chat-term-picker.component';
 import { ChatConfirmComponent } from '../chat-confirm/chat-confirm.component';
 import { ChatFileRequestComponent } from '../chat-file-request/chat-file-request.component';
 import {
-  ChatInteraction,
-  ConfirmInteraction,
-  FileRequestInteraction,
-  FormInteraction,
-  TermPickerInteraction,
-} from '../../../types';
+  asFormInteraction,
+  asTermPickerInteraction,
+  asConfirmInteraction,
+  asFileRequestInteraction,
+} from '../chat-interaction-guards';
 
 @Component({
   selector: 'app-chat-widget',
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
-    TextFieldModule,
     DrawerModule,
     ButtonModule,
     TooltipModule,
     MarkdownPipe,
+    ChatInputComponent,
     ChatFormComponent,
     ChatTermPickerComponent,
     ChatConfirmComponent,
@@ -68,6 +67,7 @@ export class ChatWidgetComponent implements AfterViewChecked {
   private platformId = inject(PLATFORM_ID);
 
   @ViewChild('messagesContainer') private messagesContainer!: ElementRef<HTMLDivElement>;
+  @ViewChild('chatInput') private chatInput?: ChatInputComponent;
 
   readonly chatEnabled = environment.chatEnabled ?? false;
   readonly isBrowser = isPlatformBrowser(this.platformId);
@@ -83,9 +83,10 @@ export class ChatWidgetComponent implements AfterViewChecked {
   readonly hasOlder = this.store.selectSignal(selectHasOlderMessages);
   readonly loadingOlder = this.store.selectSignal(selectLoadingOlderMessages);
   readonly oldestCursor = this.store.selectSignal(selectOldestCursor);
+  readonly isStreaming = this.store.selectSignal(selectIsStreaming);
+  readonly streamStatus = this.store.selectSignal(selectStreamStatus);
 
   // Local UI state
-  inputMessage = signal<string>('');
   showHistory = signal<boolean>(false);
   showScrollBottomBtn = signal<boolean>(false);
   unreadWhileScrolledUp = signal<number>(0);
@@ -120,9 +121,16 @@ export class ChatWidgetComponent implements AfterViewChecked {
   }
 
   toggleWidget() {
+    const willOpen = !this.isOpen();
     this.store.dispatch(ChatActions.toggleChat());
-    if (!this.isOpen() && this.conversations().length === 0) {
+    if (willOpen && this.conversations().length === 0) {
       this.store.dispatch(ChatActions.loadConversations());
+    }
+  }
+
+  onVisibleChange(visible: boolean) {
+    if (!visible) {
+      this.closeWidget();
     }
   }
 
@@ -157,22 +165,18 @@ export class ChatWidgetComponent implements AfterViewChecked {
     this.store.dispatch(ChatActions.deleteConversation({ conversationId: convId }));
   }
 
-  sendMessage() {
-    const text = this.inputMessage().trim();
-    if (!text || this.loading()) return;
+  sendMessage(text?: string) {
+    const message = (text ?? '').trim();
+    if (!message || this.loading()) return;
 
-    this.store.dispatch(ChatActions.sendMessage({ message: text }));
-    this.inputMessage.set('');
+    this.store.dispatch(ChatActions.sendMessage({ message }));
     this.showScrollBottomBtn.set(false);
     this.unreadWhileScrolledUp.set(0);
     this.shouldScrollBottom = true;
   }
 
-  onKeyDown(event: KeyboardEvent) {
-    if (event.key === 'Enter' && !event.shiftKey) {
-      event.preventDefault();
-      this.sendMessage();
-    }
+  onAttachFile() {
+    // Reserved for Phase 5 attachment workflow
   }
 
   handleInteractionSubmit(event: {
@@ -188,8 +192,7 @@ export class ChatWidgetComponent implements AfterViewChecked {
   }
 
   sendQuickPrompt(promptText: string) {
-    this.inputMessage.set(promptText);
-    this.sendMessage();
+    this.sendMessage(promptText);
   }
 
   onScroll() {
@@ -238,20 +241,9 @@ export class ChatWidgetComponent implements AfterViewChecked {
     }
   }
 
-  // Type guards for templates
-  asForm(interaction: ChatInteraction): FormInteraction {
-    return interaction as FormInteraction;
-  }
-
-  asTermPicker(interaction: ChatInteraction): TermPickerInteraction {
-    return interaction as TermPickerInteraction;
-  }
-
-  asConfirm(interaction: ChatInteraction): ConfirmInteraction {
-    return interaction as ConfirmInteraction;
-  }
-
-  asFileRequest(interaction: ChatInteraction): FileRequestInteraction {
-    return interaction as FileRequestInteraction;
-  }
+  // Type casting references for templates
+  readonly asForm = asFormInteraction;
+  readonly asTermPicker = asTermPickerInteraction;
+  readonly asConfirm = asConfirmInteraction;
+  readonly asFileRequest = asFileRequestInteraction;
 }

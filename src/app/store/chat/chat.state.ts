@@ -13,6 +13,8 @@ export interface ChatState {
   loadingOlderMessages: boolean;
   oldestCursor: string | null;
   newestCursor: string | null;
+  streamStatus: string | null;
+  isStreaming: boolean;
 }
 
 export const initialChatState: ChatState = {
@@ -28,4 +30,6 @@ export const initialChatState: ChatState = {
   loadingOlderMessages: false,
   oldestCursor: null,
   newestCursor: null,
+  streamStatus: null,
+  isStreaming: false,
 };

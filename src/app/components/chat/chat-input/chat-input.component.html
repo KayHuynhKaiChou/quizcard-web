@@ -1,0 +1,49 @@
+<div class="chat-input-card" [class.has-text]="text().trim().length > 0" [class.is-loading]="loading()">
+  <!-- Main Auto-expanding Textarea -->
+  <textarea
+    #textareaRef
+    [(ngModel)]="text"
+    (input)="onInput()"
+    (keydown)="onKeyDown($event)"
+    [placeholder]="placeholder()"
+    class="card-textarea"
+    [disabled]="disabled() || loading()"
+    rows="1"
+  ></textarea>
+
+  <!-- Bottom Action Toolbar -->
+  <div class="card-toolbar">
+    <div class="toolbar-left">
+      <button
+        type="button"
+        class="toolbar-btn attach-btn"
+        (click)="handleAttach()"
+        title="Đính kèm tệp / tài liệu"
+        aria-label="Đính kèm tệp"
+        [disabled]="disabled() || loading()"
+      >
+        <i class="pi pi-paperclip"></i>
+      </button>
+    </div>
+
+    <div class="toolbar-right">
+      <button
+        type="button"
+        class="send-btn"
+        [class.active]="text().trim().length > 0"
+        [class.loading]="loading()"
+        [disabled]="!text().trim() || disabled() || loading()"
+        (click)="handleSend()"
+        [title]="loading() ? 'AI đang trả lời...' : 'Gửi tin nhắn (Enter)'"
+        aria-label="Gửi tin nhắn"
+      >
+        <i *ngIf="loading()" class="pi pi-spin pi-spinner"></i>
+        <i *ngIf="!loading()" class="pi pi-arrow-up"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="chat-disclaimer">
+  <span>Nhấn <kbd>Enter</kbd> gửi &bull; <kbd>Shift + Enter</kbd> xuống dòng</span>
+</div>

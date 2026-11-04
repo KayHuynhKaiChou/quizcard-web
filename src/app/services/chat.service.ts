@@ -25,6 +25,86 @@ export class ChatService {
     return this.http.post<ChatResponse>(`${this.API}/chat`, payload);
   }
 
+  sendMessageStream(
+    message: string,
+    conversationId?: string
+  ): Observable<{ event: string; data: any }> {
+    return new Observable((subscriber) => {
+      const controller = new AbortController();
+      const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+        Accept: 'text/event-stream',
+      };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      const payload: { message: string; conversationId?: string } = { message };
+      if (conversationId) {
+        payload.conversationId = conversationId;
+      }
+
+      fetch(`${this.API}/chat/stream`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(payload),
+        signal: controller.signal,
+      })
+        .then(async (response) => {
+          if (!response.ok) {
+            const errText = await response.text();
+            throw new Error(errText || `HTTP error ${response.status}`);
+          }
+          const reader = response.body?.getReader();
+          if (!reader) {
+            throw new Error('No readable stream returned by server');
+          }
+          const decoder = new TextDecoder();
+          let buffer = '';
+
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            buffer += decoder.decode(value, { stream: true });
+            const parts = buffer.split('\n\n');
+            buffer = parts.pop() || '';
+
+            for (const part of parts) {
+              const lines = part.split('\n');
+              let event = 'message';
+              let dataStr = '';
+              for (const line of lines) {
+                if (line.startsWith('event:')) {
+                  event = line.substring(6).trim();
+                } else if (line.startsWith('data:')) {
+                  dataStr = line.substring(5).trim();
+                }
+              }
+              if (dataStr) {
+                try {
+                  const data = JSON.parse(dataStr);
+                  subscriber.next({ event, data });
+                } catch {
+                  subscriber.next({ event, data: dataStr });
+                }
+              }
+            }
+          }
+          subscriber.complete();
+        })
+        .catch((err) => {
+          if (err.name !== 'AbortError') {
+            subscriber.error(err);
+          }
+        });
+
+      return () => {
+        controller.abort();
+      };
+    });
+  }
+
   submitInteraction(
     interactionId: string,
     action: 'submit' | 'cancel',

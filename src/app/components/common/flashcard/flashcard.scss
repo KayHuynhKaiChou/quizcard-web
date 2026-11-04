@@ -88,10 +88,28 @@
     justify-content: center;
     cursor: pointer;
     color: white;
-    font-size: 1rem;
-    transition: background 0.2s;
+    transition: background 0.2s, transform 0.15s;
 
-    &:hover { background: rgba(255, 255, 255, 0.35); }
+    i {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    // Optical balance: pi-comments glyph has two conversation bubbles and is naturally wider than pi-volume-up
+    .pi-comments {
+      font-size: 0.825rem;
+    }
+
+    .pi-volume-up {
+      font-size: 0.95rem;
+    }
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.35);
+      transform: scale(1.05);
+    }
     &.speaking { background: rgba(255, 255, 255, 0.4); }
   }
 
@@ -161,7 +179,14 @@
     .card-action-btn {
       width: 30px;
       height: 30px;
-      font-size: 0.875rem;
+
+      .pi-comments {
+        font-size: 0.725rem;
+      }
+
+      .pi-volume-up {
+        font-size: 0.85rem;
+      }
     }
   }
 }

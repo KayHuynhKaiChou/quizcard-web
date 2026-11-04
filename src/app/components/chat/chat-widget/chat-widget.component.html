@@ -1,11 +1,11 @@
 <ng-container *ngIf="chatEnabled && isAuthenticated() && isBrowser">
-  <!-- Floating Button -->
+  <!-- Floating Button (only visible when drawer is closed) -->
   <button
+    *ngIf="!isOpen()"
     type="button"
     class="chat-floating-btn"
     (click)="toggleWidget()"
     aria-label="Mở trợ lý AI"
-    [class.active]="isOpen()"
   >
     <div class="glow-effect"></div>
     <i class="pi pi-sparkles chat-icon"></i>
@@ -14,10 +14,12 @@
   <!-- Side Drawer -->
   <p-drawer
     [visible]="isOpen()"
-    (visibleChange)="closeWidget()"
+    (visibleChange)="onVisibleChange($event)"
+    (onHide)="closeWidget()"
     position="right"
     [style]="{ width: '460px', maxWidth: '100vw' }"
     [showCloseIcon]="false"
+    [closable]="false"
     styleClass="chat-drawer"
   >
     <div class="chat-container">
@@ -150,18 +152,23 @@
 
         <!-- Render Message Bubbles -->
         <div
-          *ngFor="let msg of messages()"
+          *ngFor="let msg of messages(); let last = last"
           class="message-wrapper"
-          [class.user]="msg.role === 'user'"
-          [class.assistant]="msg.role === 'assistant'"
+          [class.user]="(msg.role || '').toLowerCase() === 'user'"
+          [class.assistant]="(msg.role || '').toLowerCase() === 'assistant'"
         >
-          <div class="bubble" [class.user-bubble]="msg.role === 'user'" [class.assistant-bubble]="msg.role === 'assistant'">
+          <div
+            class="bubble"
+            [class.user-bubble]="(msg.role || '').toLowerCase() === 'user'"
+            [class.assistant-bubble]="(msg.role || '').toLowerCase() === 'assistant'"
+          >
             <div
-              *ngIf="msg.role === 'assistant'"
+              *ngIf="(msg.role || '').toLowerCase() === 'assistant'"
               class="markdown-body"
+              [class.streaming-cursor]="last && isStreaming()"
               [innerHTML]="msg.content | markdown"
             ></div>
-            <div *ngIf="msg.role !== 'assistant'" class="message-text">
+            <div *ngIf="(msg.role || '').toLowerCase() !== 'assistant'" class="message-text">
               {{ msg.content }}
             </div>
           </div>
@@ -195,11 +202,14 @@
         </div>
 
         <!-- Typing Loading Indicator -->
-        <div *ngIf="loading()" class="typing-indicator">
+        <div
+          *ngIf="loading() && (!isStreaming() || streamStatus() || messages().length === 0 || (messages()[messages().length - 1].role !== 'assistant'))"
+          class="typing-indicator"
+        >
           <div class="dot"></div>
           <div class="dot"></div>
           <div class="dot"></div>
-          <span class="typing-text">AI đang suy nghĩ...</span>
+          <span class="typing-text">{{ streamStatus() || 'AI đang suy nghĩ...' }}</span>
         </div>
       </div>
 
@@ -220,28 +230,12 @@
 
       <!-- Chat Input Footer -->
       <div class="chat-footer">
-        <div class="input-container">
-          <textarea
-            [(ngModel)]="inputMessage"
-            (keydown)="onKeyDown($event)"
-            placeholder="Nhắn tin cho QuizCard AI... (Shift+Enter để xuống dòng)"
-            cdkTextareaAutosize
-            #autosize="cdkTextareaAutosize"
-            cdkAutosizeMinRows="1"
-            cdkAutosizeMaxRows="5"
-            class="chat-input"
-            [disabled]="loading()"
-          ></textarea>
-          <button
-            type="button"
-            class="send-btn"
-            [disabled]="!inputMessage().trim() || loading()"
-            (click)="sendMessage()"
-            title="Gửi tin nhắn (Enter)"
-          >
-            <i class="pi pi-send"></i>
-          </button>
-        </div>
+        <app-chat-input
+          #chatInput
+          [loading]="loading()"
+          (send)="sendMessage($event)"
+          (attachFile)="onAttachFile()"
+        ></app-chat-input>
       </div>
     </div>
   </p-drawer>

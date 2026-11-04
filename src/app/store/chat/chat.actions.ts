@@ -28,6 +28,24 @@ export const sendMessageFailure = createAction(
   props<{ error: string }>()
 );
 
+// Stream events
+export const chatStreamInit = createAction(
+  '[Chat] Stream Init',
+  props<{ conversationId: string }>()
+);
+export const chatStreamStatus = createAction(
+  '[Chat] Stream Status',
+  props<{ statusText: string }>()
+);
+export const chatStreamDelta = createAction(
+  '[Chat] Stream Delta',
+  props<{ delta: string }>()
+);
+export const chatStreamInteraction = createAction(
+  '[Chat] Stream Interaction',
+  props<{ interaction: any }>()
+);
+
 // Submit interaction (form, term picker, confirm)
 export const submitInteraction = createAction(
   '[Chat] Submit Interaction',

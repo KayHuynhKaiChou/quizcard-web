@@ -1,12 +1,13 @@
 import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { of } from 'rxjs';
-import { map, catchError, switchMap, withLatestFrom } from 'rxjs/operators';
+import { of, from, EMPTY } from 'rxjs';
+import { map, catchError, switchMap, concatMap, withLatestFrom } from 'rxjs/operators';
 import * as ChatActions from './chat.actions';
 import { selectConversationId } from './chat.selectors';
 import { ChatService } from '../../services/chat.service';
 import * as StudySetActions from '../studyset/studyset.actions';
+import { ChatResponse } from '../../types';
 
 @Injectable()
 export class ChatEffects {
@@ -19,13 +20,43 @@ export class ChatEffects {
       ofType(ChatActions.sendMessage),
       withLatestFrom(this.store.select(selectConversationId)),
       switchMap(([action, conversationId]) =>
-        this.chatService.sendMessage(action.message, conversationId || undefined).pipe(
-          switchMap((response) => {
-            const actions: any[] = [ChatActions.sendMessageSuccess({ response })];
-            if (response.actions?.includes('REFRESH_STUDY_SETS')) {
-              actions.push(StudySetActions.loadStudySets({ page: 0, size: 20 }));
+        this.chatService.sendMessageStream(action.message, conversationId || undefined).pipe(
+          concatMap(({ event, data }) => {
+            if (event === 'init') {
+              const cid = data.conversation_id || data.conversationId;
+              return of(ChatActions.chatStreamInit({ conversationId: cid }));
             }
-            return actions;
+            if (event === 'status') {
+              const statusText = data.status || (typeof data === 'string' ? data : 'Đang xử lý...');
+              return of(ChatActions.chatStreamStatus({ statusText }));
+            }
+            if (event === 'delta') {
+              const delta = typeof data === 'string' ? data : (data.delta ?? '');
+              return of(ChatActions.chatStreamDelta({ delta }));
+            }
+            if (event === 'interaction') {
+              const interaction = data.interaction || data;
+              return of(ChatActions.chatStreamInteraction({ interaction }));
+            }
+            if (event === 'error') {
+              const error = data.error || (typeof data === 'string' ? data : 'Lỗi xử lý');
+              return of(ChatActions.sendMessageFailure({ error }));
+            }
+            if (event === 'done') {
+              const response: ChatResponse = {
+                type: data.type || (data.interaction ? 'interaction' : 'text'),
+                reply: data.reply,
+                conversationId: data.conversationId || data.conversation_id,
+                interaction: data.interaction,
+                actions: data.actions || [],
+              };
+              const actions: any[] = [ChatActions.sendMessageSuccess({ response })];
+              if (response.actions?.includes('REFRESH_STUDY_SETS')) {
+                actions.push(StudySetActions.loadStudySets({ page: 0, size: 20 }));
+              }
+              return from(actions);
+            }
+            return EMPTY;
           }),
           catchError((error) =>
             of(
